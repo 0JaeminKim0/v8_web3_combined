@@ -58,7 +58,119 @@ app.get('/api/network-info', (c) => {
   })
 })
 
-// Main wallet connection page
+// Investment Contract APIs
+app.get('/api/investment/contract-info', (c) => {
+  return c.json({
+    contractAddress: '0x742d35Cc8058C65C0863a9e20C0be2A7C1234567', // Mock contract address
+    contractName: 'InvestmentReceiptSBT',
+    version: '1.0.0',
+    network: 'Ethereum Mainnet',
+    abi: 'https://api.example.com/abi/investment-receipt-sbt.json'
+  })
+})
+
+app.get('/api/investment/templates', (c) => {
+  return c.json({
+    templates: [
+      {
+        id: 'fixed-term',
+        name: 'Fixed Term Investment',
+        description: 'Traditional fixed-term investment with guaranteed APY',
+        minAmount: '0.1',
+        maxAmount: '100',
+        terms: ['3 months', '6 months', '12 months'],
+        targetAPYRange: { min: 5, max: 15 },
+        features: ['Fixed APY', 'Principal Protected', 'Early Exit Penalty']
+      },
+      {
+        id: 'variable-yield',
+        name: 'Variable Yield Investment', 
+        description: 'Market-linked investment with variable returns',
+        minAmount: '0.5',
+        maxAmount: '1000',
+        terms: ['6 months', '12 months', '24 months'],
+        targetAPYRange: { min: 8, max: 25 },
+        features: ['Variable APY', 'Market Exposure', 'Flexible Exit']
+      },
+      {
+        id: 'defi-strategy',
+        name: 'DeFi Strategy Pool',
+        description: 'Automated DeFi yield farming strategy',
+        minAmount: '1',
+        maxAmount: '500',
+        terms: ['1 month', '3 months', '6 months'],
+        targetAPYRange: { min: 12, max: 40 },
+        features: ['DeFi Protocols', 'Auto-Compound', 'High Yield']
+      }
+    ]
+  })
+})
+
+// Mock external services
+app.post('/api/external/generate-pdf', async (c) => {
+  const body = await c.req.json()
+  
+  // Mock PDF generation service
+  await new Promise(resolve => setTimeout(resolve, 2000)) // Simulate processing time
+  
+  return c.json({
+    success: true,
+    pdfUrl: `https://mock-pdf-service.com/contracts/${Math.random().toString(36).substring(7)}.pdf`,
+    hash: `0x${Math.random().toString(36).substring(7)}abc123def456`,
+    size: Math.floor(Math.random() * 500) + 100 // KB
+  })
+})
+
+app.post('/api/external/upload-ipfs', async (c) => {
+  const body = await c.req.json()
+  
+  // Mock IPFS upload service
+  await new Promise(resolve => setTimeout(resolve, 1500))
+  
+  return c.json({
+    success: true,
+    ipfsHash: `Qm${Math.random().toString(36).substring(7)}XyZ123`,
+    ipfsUrl: `https://gateway.pinata.cloud/ipfs/Qm${Math.random().toString(36).substring(7)}XyZ123`,
+    pinned: true
+  })
+})
+
+// Mock investment data
+app.get('/api/investment/user-investments/:address', (c) => {
+  const address = c.req.param('address')
+  
+  // Mock user investments data
+  const mockInvestments = [
+    {
+      tokenId: '1',
+      investor: address,
+      principal: '5.5',
+      targetAPY: 12.5,
+      startTime: Date.now() - (30 * 24 * 60 * 60 * 1000), // 30 days ago
+      maturityTime: Date.now() + (335 * 24 * 60 * 60 * 1000), // 335 days from now  
+      status: 'Active',
+      contractType: 'Fixed Term Investment',
+      ipfsHash: 'QmAbC123dEf456GhI789jKl012MnO345pQr678StU901vWx234',
+      termsHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890'
+    },
+    {
+      tokenId: '2', 
+      investor: address,
+      principal: '2.0',
+      targetAPY: 18.0,
+      startTime: Date.now() - (7 * 24 * 60 * 60 * 1000), // 7 days ago
+      maturityTime: Date.now() + (358 * 24 * 60 * 60 * 1000), // 358 days from now
+      status: 'Active',
+      contractType: 'DeFi Strategy Pool',
+      ipfsHash: 'QmXyZ789aBc012DeF345gHi678JkL901mNo234PqR567sT890',
+      termsHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
+    }
+  ]
+  
+  return c.json({ investments: mockInvestments })
+})
+
+// Investment Contract DApp page
 app.get('/', (c) => {
   return c.html(`
     <!DOCTYPE html>
@@ -66,7 +178,7 @@ app.get('/', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Multi-Wallet Connection</title>
+        <title>Investment Receipt SBT - Blockchain Investment Contracts</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <script>
@@ -97,6 +209,46 @@ app.get('/', (c) => {
             .pulse-animation {
                 animation: pulse 2s infinite;
             }
+            .step-circle {
+                width: 2rem;
+                height: 2rem;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(255,255,255,0.2);
+                font-weight: bold;
+                transition: all 0.3s ease;
+            }
+            .step-circle.active {
+                background: #10b981;
+                color: white;
+            }
+            .step-circle.completed {
+                background: #059669;
+                color: white;
+            }
+            .investment-card {
+                transition: all 0.3s ease;
+                border-left: 4px solid transparent;
+            }
+            .investment-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                border-left-color: #10b981;
+            }
+            .status-active {
+                color: #10b981;
+                background: rgba(16, 185, 129, 0.1);
+            }
+            .status-pending {
+                color: #f59e0b;
+                background: rgba(245, 158, 11, 0.1);
+            }
+            .status-completed {
+                color: #6b7280;
+                background: rgba(107, 114, 128, 0.1);
+            }
         </style>
     </head>
     <body class="gradient-bg min-h-screen flex items-center justify-center p-4">
@@ -104,12 +256,77 @@ app.get('/', (c) => {
             <!-- Header -->
             <div class="text-center mb-8">
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                    <i class="fas fa-wallet mr-3"></i>
-                    Connect Your Wallet
+                    <i class="fas fa-file-contract mr-3"></i>
+                    Investment Receipt SBT
                 </h1>
                 <p class="text-xl text-gray-200 max-w-2xl mx-auto">
-                    Choose your preferred wallet to connect to Web3. Support for MetaMask, Trust Wallet, Coinbase Wallet, and WalletConnect.
+                    Create blockchain-verified investment contracts with Soul Bound Token receipts. Transparent, secure, and immutable proof of investment terms.
                 </p>
+            </div>
+
+            <!-- App Sections -->
+            <div id="app-sections" class="space-y-8">
+                <!-- Wallet Connection Section -->
+                <div id="wallet-section" class="bg-white/10 backdrop-blur rounded-xl p-6">
+                    <h2 class="text-2xl font-bold text-white mb-4">
+                        <i class="fas fa-wallet mr-2"></i>
+                        Step 1: Connect Your Wallet
+                    </h2>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Wallet cards will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Investment Dashboard Section -->
+                <div id="dashboard-section" class="hidden bg-white/10 backdrop-blur rounded-xl p-6 text-white">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">
+                            <i class="fas fa-tachometer-alt mr-2"></i>
+                            Investment Dashboard
+                        </h2>
+                        <button id="create-investment-btn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-plus mr-2"></i>New Investment
+                        </button>
+                    </div>
+                    
+                    <!-- User investments will be populated here -->
+                    <div id="user-investments" class="space-y-4">
+                        <!-- Investment cards will be populated -->
+                    </div>
+                </div>
+
+                <!-- Investment Creation Section -->
+                <div id="create-section" class="hidden bg-white/10 backdrop-blur rounded-xl p-6 text-white">
+                    <h2 class="text-2xl font-bold mb-6">
+                        <i class="fas fa-plus-circle mr-2"></i>
+                        Create New Investment Contract
+                    </h2>
+                    
+                    <!-- Step indicators -->
+                    <div class="flex justify-between mb-8">
+                        <div class="flex items-center text-sm">
+                            <div class="step-circle active" data-step="1">1</div>
+                            <span class="ml-2">Choose Template</span>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <div class="step-circle" data-step="2">2</div>
+                            <span class="ml-2">Set Terms</span>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <div class="step-circle" data-step="3">3</div>
+                            <span class="ml-2">Generate Contract</span>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <div class="step-circle" data-step="4">4</div>
+                            <span class="ml-2">Deposit & Mint</span>
+                        </div>
+                    </div>
+
+                    <!-- Investment creation form -->
+                    <div id="investment-form">
+                        <!-- Form content will be populated here -->
+                    </div>
+                </div>
             </div>
 
             <!-- Connection Status -->
@@ -129,50 +346,40 @@ app.get('/', (c) => {
             </div>
 
             <!-- Connected Wallet Info -->
-            <div id="wallet-info" class="hidden bg-white/10 backdrop-blur rounded-xl p-6 text-white">
-                <h3 class="text-xl font-semibold mb-4">
-                    <i class="fas fa-check-circle text-green-400 mr-2"></i>
-                    Wallet Connected
-                </h3>
-                <div class="grid md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Wallet Address</label>
-                        <div id="wallet-address" class="bg-black/20 rounded p-3 font-mono text-sm break-all"></div>
+            <div id="wallet-info" class="hidden bg-green-600/20 backdrop-blur rounded-xl p-4 text-white border border-green-500/30">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                        <span class="font-semibold">Connected: </span>
+                        <span id="wallet-address-short" class="font-mono text-sm ml-1"></span>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Network</label>
-                        <div id="wallet-network" class="bg-black/20 rounded p-3 text-sm"></div>
+                    <div class="flex gap-2">
+                        <button id="wallet-details-btn" class="text-xs bg-white/20 hover:bg-white/30 px-2 py-1 rounded transition-colors">
+                            Details
+                        </button>
+                        <button id="disconnect-btn" class="text-xs bg-red-600/80 hover:bg-red-600 px-2 py-1 rounded transition-colors">
+                            Disconnect
+                        </button>
                     </div>
-                </div>
-                <div class="mt-4 flex flex-wrap gap-3">
-                    <button id="disconnect-btn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Disconnect
-                    </button>
-                    <button id="switch-network-btn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-exchange-alt mr-2"></i>Switch Network
-                    </button>
-                    <button id="sign-message-btn" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-signature mr-2"></i>Sign Message
-                    </button>
                 </div>
             </div>
 
             <!-- Features -->
             <div class="mt-8 grid md:grid-cols-3 gap-6 text-center text-white">
                 <div class="bg-white/10 backdrop-blur rounded-xl p-6">
-                    <div class="text-3xl mb-3">🔒</div>
-                    <h3 class="font-semibold mb-2">Secure Connection</h3>
-                    <p class="text-sm text-gray-200">Your wallet remains in your control. We never store your private keys.</p>
+                    <div class="text-3xl mb-3">📋</div>
+                    <h3 class="font-semibold mb-2">Smart Contracts</h3>
+                    <p class="text-sm text-gray-200">Automated investment terms with blockchain verification and SBT receipts.</p>
                 </div>
                 <div class="bg-white/10 backdrop-blur rounded-xl p-6">
-                    <div class="text-3xl mb-3">⚡</div>
-                    <h3 class="font-semibold mb-2">Multi-Chain Support</h3>
-                    <p class="text-sm text-gray-200">Connect to Ethereum, Polygon, Arbitrum, and other popular networks.</p>
+                    <div class="text-3xl mb-3">🔗</div>
+                    <h3 class="font-semibold mb-2">Soul Bound Tokens</h3>
+                    <p class="text-sm text-gray-200">Non-transferable NFT receipts that prove your investment terms immutably.</p>
                 </div>
                 <div class="bg-white/10 backdrop-blur rounded-xl p-6">
-                    <div class="text-3xl mb-3">🌐</div>
-                    <h3 class="font-semibold mb-2">Universal Compatibility</h3>
-                    <p class="text-sm text-gray-200">Works with all major wallets and supports both mobile and desktop.</p>
+                    <div class="text-3xl mb-3">📄</div>
+                    <h3 class="font-semibold mb-2">IPFS Documentation</h3>
+                    <p class="text-sm text-gray-200">Contract documents stored permanently on IPFS with cryptographic hashes.</p>
                 </div>
             </div>
 
@@ -190,10 +397,40 @@ app.get('/', (c) => {
                     </div>
                 </div>
             </div>
+
+            <!-- Investment Details Modal -->
+            <div id="investment-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                <div class="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold">Investment Contract Details</h3>
+                        <button id="close-investment-modal" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div id="investment-details">
+                        <!-- Investment details will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallet Details Modal -->
+            <div id="wallet-details-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                <div class="bg-white rounded-xl max-w-md w-full p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold">Wallet Details</h3>
+                        <button id="close-wallet-details-modal" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div id="wallet-details-content">
+                        <!-- Wallet details will be populated here -->
+                    </div>
+                </div>
+            </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-        <script src="/static/wallet-connect.js"></script>
+        <script src="/static/investment-dapp.js"></script>
     </body>
     </html>
   `)
