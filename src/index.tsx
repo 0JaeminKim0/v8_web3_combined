@@ -502,7 +502,7 @@ app.get('/', (c) => {
                 <div id="testnet-info" class="hidden mt-3 p-3 bg-yellow-600/20 border border-yellow-500/30 rounded-lg text-sm">
                     <div class="flex items-start gap-2">
                         <i class="fas fa-info-circle text-yellow-400 mt-0.5"></i>
-                        <div>
+                        <div class="flex-1">
                             <div class="font-semibold text-yellow-300 mb-1">Testnet Mode Active</div>
                             <div class="text-yellow-200 text-xs">
                                 You're connected to a test network. Use test ETH for transactions.
@@ -513,24 +513,81 @@ app.get('/', (c) => {
                         </div>
                     </div>
                 </div>
+                
+                <!-- Non-Sepolia Network Warning -->
+                <div id="network-warning" class="hidden mt-3 p-3 bg-orange-600/20 border border-orange-500/30 rounded-lg text-sm">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-start gap-2">
+                            <i class="fas fa-exclamation-triangle text-orange-400 mt-0.5"></i>
+                            <div>
+                                <div class="font-semibold text-orange-300 mb-1">Not on Sepolia Testnet</div>
+                                <div class="text-orange-200 text-xs">
+                                    For the best experience, switch to Sepolia Testnet for free test ETH and optimized features.
+                                </div>
+                            </div>
+                        </div>
+                        <button id="switch-to-sepolia-btn" class="bg-orange-600 hover:bg-orange-700 text-white text-xs px-3 py-1 rounded transition-colors whitespace-nowrap">
+                            Switch to Sepolia
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Setup Guide -->
+            <div id="setup-guide" class="mt-8 bg-blue-600/20 backdrop-blur rounded-xl p-6 text-white">
+                <h3 class="text-xl font-semibold mb-4">
+                    <i class="fas fa-rocket mr-2"></i>
+                    Quick Setup Guide
+                </h3>
+                <div class="grid md:grid-cols-3 gap-6 text-sm">
+                    <div class="space-y-2">
+                        <div class="font-semibold text-blue-300">
+                            <span class="bg-blue-600 text-white rounded-full w-6 h-6 inline-flex items-center justify-center text-xs mr-2">1</span>
+                            Install MetaMask
+                        </div>
+                        <p class="text-gray-200 ml-8">
+                            Download MetaMask browser extension from 
+                            <a href="https://metamask.io" target="_blank" class="underline text-blue-300">metamask.io</a>
+                        </p>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="font-semibold text-blue-300">
+                            <span class="bg-blue-600 text-white rounded-full w-6 h-6 inline-flex items-center justify-center text-xs mr-2">2</span>
+                            Get Test ETH
+                        </div>
+                        <p class="text-gray-200 ml-8">
+                            Visit <a href="https://sepoliafaucet.com" target="_blank" class="underline text-blue-300">Sepolia Faucet</a> 
+                            to get free test ETH (0.5 ETH daily)
+                        </p>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="font-semibold text-blue-300">
+                            <span class="bg-blue-600 text-white rounded-full w-6 h-6 inline-flex items-center justify-center text-xs mr-2">3</span>
+                            Connect & Switch
+                        </div>
+                        <p class="text-gray-200 ml-8">
+                            Connect your wallet and switch to Sepolia Testnet when prompted
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <!-- Features -->
             <div class="mt-8 grid md:grid-cols-3 gap-6 text-center text-white">
                 <div class="bg-white/10 backdrop-blur rounded-xl p-6">
-                    <div class="text-3xl mb-3">📋</div>
-                    <h3 class="font-semibold mb-2">Smart Contracts</h3>
-                    <p class="text-sm text-gray-200">Automated investment terms with blockchain verification and SBT receipts.</p>
-                </div>
-                <div class="bg-white/10 backdrop-blur rounded-xl p-6">
-                    <div class="text-3xl mb-3">🔗</div>
-                    <h3 class="font-semibold mb-2">Soul Bound Tokens</h3>
-                    <p class="text-sm text-gray-200">Non-transferable NFT receipts that prove your investment terms immutably.</p>
+                    <div class="text-3xl mb-3">🧪</div>
+                    <h3 class="font-semibold mb-2">Testnet Ready</h3>
+                    <p class="text-sm text-gray-200">Experience full functionality with free test ETH on Sepolia Testnet.</p>
                 </div>
                 <div class="bg-white/10 backdrop-blur rounded-xl p-6">
                     <div class="text-3xl mb-3">📄</div>
-                    <h3 class="font-semibold mb-2">IPFS Documentation</h3>
-                    <p class="text-sm text-gray-200">Contract documents stored permanently on IPFS with cryptographic hashes.</p>
+                    <h3 class="font-semibold mb-2">Real PDF Contracts</h3>
+                    <p class="text-sm text-gray-200">Generate and download actual PDF investment contracts with cryptographic verification.</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur rounded-xl p-6">
+                    <div class="text-3xl mb-3">🌐</div>
+                    <h3 class="font-semibold mb-2">IPFS Storage</h3>
+                    <p class="text-sm text-gray-200">Documents stored permanently on IPFS with immutable hash verification.</p>
                 </div>
             </div>
 

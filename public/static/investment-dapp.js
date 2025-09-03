@@ -168,6 +168,88 @@ class InvestmentDApp {
         return faucets[chainId];
     }
 
+    async switchToSepolia(ethereum) {
+        try {
+            this.showStatus('info', 'Switching to Sepolia Testnet...');
+            
+            // First, try to switch to Sepolia
+            await ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0xaa36a7' }]
+            });
+            
+            // Success - update connection info
+            const newChainId = await ethereum.request({ method: 'eth_chainId' });
+            this.currentChainId = newChainId;
+            this.updateWalletInfo();
+            
+            this.showStatus('success', 'Successfully switched to Sepolia Testnet!');
+            setTimeout(() => this.hideStatus(), 3000);
+            
+        } catch (switchError) {
+            console.log('Switch error:', switchError);
+            
+            // If network doesn't exist (error 4902), add it first
+            if (switchError.code === 4902) {
+                try {
+                    this.showStatus('info', 'Adding Sepolia Testnet to MetaMask...');
+                    
+                    await ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: '0xaa36a7',
+                            chainName: 'Sepolia Test Network',
+                            nativeCurrency: {
+                                name: 'Sepolia Ether',
+                                symbol: 'ETH',
+                                decimals: 18
+                            },
+                            rpcUrls: [
+                                'https://sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+                                'https://rpc.sepolia.org',
+                                'https://ethereum-sepolia.blockpi.network/v1/rpc/public'
+                            ],
+                            blockExplorerUrls: ['https://sepolia.etherscan.io/']
+                        }]
+                    });
+                    
+                    this.showStatus('success', 'Sepolia Testnet added! You can now switch to it manually.');
+                    setTimeout(() => this.hideStatus(), 5000);
+                    
+                } catch (addError) {
+                    console.error('Add network error:', addError);
+                    this.showStatus('error', 'Failed to add Sepolia network. Please add it manually.');
+                    setTimeout(() => this.hideStatus(), 5000);
+                }
+            } else if (switchError.code === 4001) {
+                // User rejected
+                this.showStatus('info', 'Network switch cancelled by user.');
+                setTimeout(() => this.hideStatus(), 3000);
+            } else {
+                console.error('Unexpected switch error:', switchError);
+                this.showStatus('error', `Failed to switch network: ${switchError.message}`);
+                setTimeout(() => this.hideStatus(), 5000);
+            }
+        }
+    }
+
+    // Manual network switch function for UI buttons
+    async manualSwitchToSepolia() {
+        if (!window.ethereum) {
+            this.showStatus('error', 'MetaMask not detected');
+            return;
+        }
+
+        let ethereum = window.ethereum;
+        
+        // Handle multiple providers
+        if (window.ethereum.providers?.length) {
+            ethereum = window.ethereum.providers.find(p => p.isMetaMask) || window.ethereum;
+        }
+
+        await this.switchToSepolia(ethereum);
+    }
+
     renderWalletCards() {
         const container = document.querySelector('#wallet-section .grid');
         if (!container) return;
@@ -283,54 +365,25 @@ class InvestmentDApp {
             // Get current chain ID
             const chainId = await ethereum.request({ method: 'eth_chainId' });
             
-            // Verify we're on a supported network
+            // Log current network for debugging
+            console.log('Current network:', chainId, 'Expected: 0xaa36a7 (Sepolia)');
+            
+            // Always try to connect with current network first, then suggest switch
+            this.handleSuccessfulConnection('metamask', accounts[0], chainId);
+            
+            // If not on a preferred testnet, show network switch option
             if (!this.isValidChainId(chainId)) {
-                this.showStatus('info', 'Please switch to Sepolia Testnet for the best experience.');
-                // Attempt to switch to Sepolia Testnet
-                try {
-                    await ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: '0xaa36a7' }], // Sepolia Testnet
-                    });
-                    // Get updated chainId after switch
-                    const newChainId = await ethereum.request({ method: 'eth_chainId' });
-                    this.handleSuccessfulConnection('metamask', accounts[0], newChainId);
-                } catch (switchError) {
-                    // If Sepolia is not added, try to add it
-                    if (switchError.code === 4902) {
-                        try {
-                            await ethereum.request({
-                                method: 'wallet_addEthereumChain',
-                                params: [{
-                                    chainId: '0xaa36a7',
-                                    chainName: 'Sepolia Testnet',
-                                    nativeCurrency: {
-                                        name: 'Ethereum',
-                                        symbol: 'ETH',
-                                        decimals: 18
-                                    },
-                                    rpcUrls: ['https://sepolia.infura.io/v3/'],
-                                    blockExplorerUrls: ['https://sepolia.etherscan.io']
-                                }]
-                            });
-                            // After adding, switch to it
-                            await ethereum.request({
-                                method: 'wallet_switchEthereumChain',
-                                params: [{ chainId: '0xaa36a7' }]
-                            });
-                            const newChainId = await ethereum.request({ method: 'eth_chainId' });
-                            this.handleSuccessfulConnection('metamask', accounts[0], newChainId);
-                        } catch (addError) {
-                            // User rejected adding network, connect with current network
-                            this.handleSuccessfulConnection('metamask', accounts[0], chainId);
-                        }
-                    } else {
-                        // User rejected network switch, but still connect with current network
-                        this.handleSuccessfulConnection('metamask', accounts[0], chainId);
+                setTimeout(async () => {
+                    const shouldSwitch = confirm(
+                        `You're currently on ${this.getChainName(chainId)}.\n\n` +
+                        `Would you like to switch to Sepolia Testnet for the best experience?\n\n` +
+                        `Sepolia provides free test ETH and is optimized for this DApp.`
+                    );
+                    
+                    if (shouldSwitch) {
+                        await this.switchToSepolia(ethereum);
                     }
-                }
-            } else {
-                this.handleSuccessfulConnection('metamask', accounts[0], chainId);
+                }, 1000);
             }
             
             this.setupWalletEventListeners();
@@ -432,12 +485,22 @@ class InvestmentDApp {
     updateTestnetInfo() {
         const testnetBadge = document.getElementById('testnet-badge');
         const testnetInfo = document.getElementById('testnet-info');
+        const networkWarning = document.getElementById('network-warning');
         const getTestEthBtn = document.getElementById('get-test-eth-btn');
+        const switchToSepoliaBtn = document.getElementById('switch-to-sepolia-btn');
         const faucetLinks = document.getElementById('faucet-links');
 
         if (!this.currentChainId) return;
 
         const isTestnet = this.isTestnet(this.currentChainId);
+        const isSepolia = this.currentChainId === '0xaa36a7';
+
+        console.log('Network status:', { 
+            chainId: this.currentChainId, 
+            isTestnet, 
+            isSepolia,
+            chainName: this.getChainName(this.currentChainId)
+        });
 
         if (isTestnet) {
             // Show testnet indicators
@@ -448,24 +511,46 @@ class InvestmentDApp {
             // Add faucet links
             if (faucetLinks) {
                 const faucetUrl = this.getFaucetUrl(this.currentChainId);
-                faucetLinks.innerHTML = `
-                    <a href="${faucetUrl}" target="_blank" class="underline hover:text-yellow-100">
-                        Get test ETH from faucet →
-                    </a>
-                `;
+                if (faucetUrl) {
+                    faucetLinks.innerHTML = `
+                        <a href="${faucetUrl}" target="_blank" class="underline hover:text-yellow-100">
+                            Get test ETH from faucet →
+                        </a>
+                    `;
+                }
             }
 
             // Add click handler for get test ETH button
-            getTestEthBtn?.addEventListener('click', () => {
-                const faucetUrl = this.getFaucetUrl(this.currentChainId);
-                window.open(faucetUrl, '_blank');
-            });
+            if (getTestEthBtn && !getTestEthBtn.hasAttribute('data-listener')) {
+                getTestEthBtn.addEventListener('click', () => {
+                    const faucetUrl = this.getFaucetUrl(this.currentChainId);
+                    if (faucetUrl) {
+                        window.open(faucetUrl, '_blank');
+                    }
+                });
+                getTestEthBtn.setAttribute('data-listener', 'true');
+            }
 
         } else {
-            // Hide testnet indicators
+            // Hide testnet indicators for mainnet
             testnetBadge?.classList.add('hidden');
             testnetInfo?.classList.add('hidden');
             getTestEthBtn?.classList.add('hidden');
+        }
+
+        // Show network warning if not on Sepolia
+        if (!isSepolia) {
+            networkWarning?.classList.remove('hidden');
+            
+            // Add switch to Sepolia handler
+            if (switchToSepoliaBtn && !switchToSepoliaBtn.hasAttribute('data-listener')) {
+                switchToSepoliaBtn.addEventListener('click', () => {
+                    this.manualSwitchToSepolia();
+                });
+                switchToSepoliaBtn.setAttribute('data-listener', 'true');
+            }
+        } else {
+            networkWarning?.classList.add('hidden');
         }
     }
 
@@ -1531,6 +1616,8 @@ class InvestmentDApp {
         if (!modal || !content) return;
 
         const network = this.networks.find(n => n.chainId === this.currentChainId);
+        const isSepolia = this.currentChainId === '0xaa36a7';
+        const isTestnet = this.isTestnet(this.currentChainId);
 
         content.innerHTML = `
             <div class="space-y-4">
@@ -1543,11 +1630,45 @@ class InvestmentDApp {
                     <div class="bg-gray-50 rounded p-3 text-sm">${this.getWalletName(this.currentWallet)}</div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Network</label>
-                    <div class="bg-gray-50 rounded p-3 text-sm">${network ? `${network.name} (${network.symbol})` : 'Unknown Network'}</div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Network</label>
+                    <div class="bg-gray-50 rounded p-3 text-sm flex items-center justify-between">
+                        <span>${network ? `${network.name} (${network.symbol})` : 'Unknown Network'}</span>
+                        ${isTestnet ? '<span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">TESTNET</span>' : ''}
+                    </div>
                 </div>
+                
+                ${!isSepolia ? `
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-info-circle text-orange-600"></i>
+                            <span class="font-medium text-orange-800">Recommended Network</span>
+                        </div>
+                        <p class="text-sm text-orange-700 mb-3">
+                            For the best experience, switch to Sepolia Testnet. It provides free test ETH and is optimized for this DApp.
+                        </p>
+                        <button id="switch-to-sepolia-modal" class="w-full bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded transition-colors">
+                            <i class="fas fa-exchange-alt mr-2"></i>Switch to Sepolia Testnet
+                        </button>
+                    </div>
+                ` : ''}
+                
+                ${isTestnet && this.getFaucetUrl(this.currentChainId) ? `
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-coins text-blue-600"></i>
+                            <span class="font-medium text-blue-800">Need Test ETH?</span>
+                        </div>
+                        <p class="text-sm text-blue-700 mb-3">
+                            Get free test ETH to use this DApp. You can receive up to 0.5 ETH daily.
+                        </p>
+                        <button id="get-faucet-eth-modal" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors">
+                            <i class="fas fa-external-link-alt mr-2"></i>Get Test ETH from Faucet
+                        </button>
+                    </div>
+                ` : ''}
+                
                 <div class="flex gap-2">
-                    <button id="copy-address" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors">
+                    <button id="copy-address" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors">
                         <i class="fas fa-copy mr-2"></i>Copy Address
                     </button>
                     <button id="view-on-explorer" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition-colors">
@@ -1569,6 +1690,18 @@ class InvestmentDApp {
         document.getElementById('view-on-explorer')?.addEventListener('click', () => {
             const explorerUrl = this.getExplorerUrl(this.currentChainId);
             window.open(`${explorerUrl}/address/${this.currentAccount}`, '_blank');
+        });
+
+        document.getElementById('switch-to-sepolia-modal')?.addEventListener('click', async () => {
+            document.getElementById('wallet-details-modal').classList.add('hidden');
+            await this.manualSwitchToSepolia();
+        });
+
+        document.getElementById('get-faucet-eth-modal')?.addEventListener('click', () => {
+            const faucetUrl = this.getFaucetUrl(this.currentChainId);
+            if (faucetUrl) {
+                window.open(faucetUrl, '_blank');
+            }
         });
     }
 
