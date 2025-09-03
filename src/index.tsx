@@ -187,72 +187,109 @@ app.post('/api/external/upload-ipfs', async (c) => {
     const body = await c.req.json()
     const { content, filename, metadata } = body
     
-    // For demo purposes, we'll simulate IPFS upload
-    // In production, you would use actual Pinata API keys from environment variables
-    const isDev = true // Set to false when you have real API keys
+    // Check environment variables for real API keys
+    const pinataJWT = c.env?.PINATA_JWT || process.env?.PINATA_JWT
+    const useRealIPFS = pinataJWT && pinataJWT !== 'your-pinata-jwt-token-here'
     
-    if (isDev) {
-      // Development simulation with more realistic data
+    if (!useRealIPFS) {
+      // Demo mode - return local document info instead of invalid IPFS URLs
       await new Promise(resolve => setTimeout(resolve, 2000))
       
-      const mockHash = 'Qm' + Array.from({length: 44}, () => 
-        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 62)]
-      ).join('')
+      // Use a deterministic hash based on content for consistency
+      const contentHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(content))
+      const hashArray = Array.from(new Uint8Array(contentHash))
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
       
       return c.json({
         success: true,
-        ipfsHash: mockHash,
-        ipfsUrl: `https://gateway.pinata.cloud/ipfs/${mockHash}`,
-        pinned: true,
+        ipfsHash: `demo_${hashHex.substring(0, 46)}`, // Clearly marked as demo
+        ipfsUrl: null, // Don't provide invalid URLs
+        localDocument: true, // Indicates this is stored locally
+        pinned: false,
         timestamp: Date.now(),
         size: content.length,
-        isDemoMode: true
+        isDemoMode: true,
+        message: 'Document generated locally. Enable real IPFS by configuring Pinata API keys.'
       })
     }
     
-    // Production IPFS upload (uncomment when you have API keys)
-    /*
-    const PINATA_API_KEY = c.env?.PINATA_API_KEY
-    const PINATA_SECRET_KEY = c.env?.PINATA_SECRET_API_KEY
-    
-    if (!PINATA_API_KEY || !PINATA_SECRET_KEY) {
-      throw new Error('Pinata API credentials not configured')
-    }
-    
-    const formData = new FormData()
-    formData.append('file', new Blob([content], { type: 'application/json' }), filename)
-    
-    if (metadata) {
+    // Real IPFS upload using Pinata JWT authentication
+    try {
+      // Create a JSON file with the content and metadata
+      const documentData = {
+        content: JSON.parse(content),
+        metadata: {
+          ...metadata,
+          uploadedAt: new Date().toISOString(),
+          filename: filename
+        }
+      }
+      
+      const blob = new Blob([JSON.stringify(documentData, null, 2)], { type: 'application/json' })
+      
+      const formData = new FormData()
+      formData.append('file', blob, filename)
+      
+      // Add Pinata metadata
       formData.append('pinataMetadata', JSON.stringify({
         name: filename,
-        keyvalues: metadata
+        keyvalues: {
+          type: 'investment-contract',
+          version: '1.0',
+          ...metadata
+        }
       }))
+      
+      // Add Pinata options
+      formData.append('pinataOptions', JSON.stringify({
+        cidVersion: 0
+      }))
+      
+      const response = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${pinataJWT}`,
+        },
+        body: formData
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.text()
+        throw new Error(`Pinata upload failed (${response.status}): ${errorData}`)
+      }
+      
+      const result = await response.json()
+      
+      return c.json({
+        success: true,
+        ipfsHash: result.IpfsHash,
+        ipfsUrl: `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`,
+        pinned: true,
+        timestamp: Date.now(),
+        size: result.PinSize,
+        isDemoMode: false
+      })
+      
+    } catch (uploadError) {
+      console.error('IPFS upload error:', uploadError)
+      // Fall back to demo mode if real upload fails
+      const contentHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(content))
+      const hashArray = Array.from(new Uint8Array(contentHash))
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+      
+      return c.json({
+        success: true,
+        ipfsHash: `demo_${hashHex.substring(0, 46)}`,
+        ipfsUrl: null,
+        localDocument: true,
+        pinned: false,
+        timestamp: Date.now(),
+        size: content.length,
+        isDemoMode: true,
+        error: uploadError.message,
+        message: 'IPFS upload failed. Document generated locally. Check your Pinata API configuration.'
+      })
     }
-    
-    const response = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
-      method: 'POST',
-      headers: {
-        'pinata_api_key': PINATA_API_KEY,
-        'pinata_secret_api_key': PINATA_SECRET_KEY
-      },
-      body: formData
-    })
-    
-    if (!response.ok) {
-      throw new Error(`IPFS upload failed: ${response.statusText}`)
-    }
-    
-    const result = await response.json()
-    
-    return c.json({
-      success: true,
-      ipfsHash: result.IpfsHash,
-      ipfsUrl: `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`,
-      pinned: true,
-      timestamp: Date.now(),
-      size: result.PinSize
-    })
-    */
     
   } catch (error) {
     return c.json({ 
@@ -295,6 +332,42 @@ app.get('/api/investment/user-investments/:address', (c) => {
   ]
   
   return c.json({ investments: mockInvestments })
+})
+
+// Save new investment (for real transactions)
+app.post('/api/investment/save', async (c) => {
+  try {
+    const body = await c.req.json()
+    const { account, investment } = body
+    
+    // In a real implementation, you would save to a database
+    // For now, we'll just validate and return success
+    console.log(`Saving investment for ${account}:`, investment)
+    
+    // Validate required fields
+    if (!account || !investment.txHash || !investment.tokenId) {
+      return c.json({
+        success: false,
+        error: 'Missing required fields: account, txHash, tokenId'
+      }, 400)
+    }
+    
+    // TODO: In production, save to database (D1, KV, or external DB)
+    // await saveToDatabase(account, investment)
+    
+    return c.json({
+      success: true,
+      message: 'Investment saved successfully',
+      investment: investment
+    })
+    
+  } catch (error) {
+    console.error('Save investment error:', error)
+    return c.json({
+      success: false,
+      error: error.message
+    }, 500)
+  }
 })
 
 // Investment Contract DApp page

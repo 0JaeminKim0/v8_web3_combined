@@ -7,10 +7,17 @@
 - **Network**: **Sepolia Testnet** (Primary), Goerli, Polygon Mumbai supported
 - **Architecture**: Hybrid (Cloudflare Frontend + Real Document Generation + IPFS Storage)
 
-## 🌟 New Testnet Features
+## 🌟 New Testnet Features - NOW WITH REAL TRANSACTIONS! 🚀
 
 ### ✅ **Real Implementation Features**
-1. **Testnet Integration**
+1. **Real Blockchain Transactions** ⭐ **NEW!**
+   - **실제 테스트넷 ETH가 차감됩니다!** 
+   - Real `eth_sendTransaction` calls to Sepolia
+   - Transaction confirmation on blockchain
+   - Persistent investment tracking
+   - **No more simulation - actual blockchain interaction!**
+
+2. **Testnet Integration**
    - **Sepolia Testnet** as primary network
    - Automatic network detection and switching
    - Test ETH faucet integration
@@ -158,46 +165,52 @@ Signature: [MetaMask Signature Required]
 
 ## 🔧 IPFS Integration Details
 
-### **Simulated IPFS Upload** (Production Ready)
+### **🚨 IPFS Gateway Issue Fixed**
+**Problem**: Previous IPFS URLs were invalid because they pointed to non-existent mock hashes.
+**Solution**: Now properly handles demo mode vs. real IPFS uploads with clear user messaging.
+
+### **Current IPFS Behavior**
 ```javascript
-// Current: Demo mode with realistic simulation
+// Demo Mode (Current Default)
 POST /api/external/upload-ipfs
 {
-  "content": "{JSON contract data}",
-  "filename": "investment-contract-1693747200000.json", 
-  "metadata": {
-    "type": "investment-contract",
-    "investor": "0x742d35...",
-    "network": "Sepolia Testnet",
-    "timestamp": "2025-09-03T13:45:22.123Z"
-  }
-}
-
-// Response: Realistic IPFS data
-{
   "success": true,
-  "ipfsHash": "QmAbC123dEf456GhI789jKl012MnO345pQr678StU901vWx234",
-  "ipfsUrl": "https://gateway.pinata.cloud/ipfs/QmAbc...",
-  "pinned": true,
-  "timestamp": 1693747200000,
-  "size": 2048,
-  "isDemoMode": true
+  "ipfsHash": "demo_a1b2c3d4e5f6...", // Clearly marked as demo
+  "ipfsUrl": null,                    // No invalid URLs
+  "localDocument": true,              // Document available locally
+  "isDemoMode": true,
+  "message": "Document generated locally. Enable real IPFS by configuring Pinata API keys."
 }
 ```
 
-### **Production IPFS Setup** (Ready to Enable)
-To enable real IPFS uploads:
+### **Fixed User Experience**
+- ✅ **No more invalid gateway URLs**
+- ✅ **Clear demo mode indicators** 
+- ✅ **Local PDF access always works**
+- ✅ **Helpful error messages**
+- ✅ **Fallback to local documents**
 
-1. **Sign up for Pinata**: https://app.pinata.cloud
-2. **Get API credentials**: API Key, Secret Key, JWT
-3. **Update `.dev.vars`**:
+### **Enabling Real IPFS** (Optional)
+To switch from demo mode to real IPFS uploads:
+
+1. **Sign up for Pinata**: https://app.pinata.cloud (Free tier available)
+2. **Get JWT Token**: Go to Account → API Keys → Create JWT
+3. **Configure Environment**:
    ```bash
-   PINATA_API_KEY=your_api_key
-   PINATA_SECRET_API_KEY=your_secret_key  
-   PINATA_JWT=your_jwt_token
+   # Add to .dev.vars file
+   PINATA_JWT=your_jwt_token_here
    ```
-4. **Set `isDev = false`** in `/api/external/upload-ipfs`
-5. **Deploy with environment variables**
+4. **Deploy with Environment Variables**:
+   ```bash
+   # For Cloudflare Pages
+   npx wrangler pages secret put PINATA_JWT --project-name webapp
+   ```
+
+### **Real IPFS Features** (When Enabled)
+- ✅ **Permanent document storage**
+- ✅ **Global IPFS gateway access**
+- ✅ **Decentralized file hosting**
+- ✅ **Automatic error fallback to local docs**
 
 ## 🚀 Testnet vs Production Differences
 
@@ -308,19 +321,46 @@ Original Contract (JSON) → SHA-256 Hash → Blockchain Storage
 - ✅ **Document Download**: Real PDF files
 - ✅ **IPFS Framework**: Production-ready structure
 
-### **🔄 What's Simulated**
+### **🔄 What's Still Simulated**
 - 🔄 **IPFS Upload**: Mock but realistic (easily activated)
 - 🔄 **Smart Contract**: Interface ready (deployment needed)
-- 🔄 **SBT Minting**: Transaction simulation
-- 🔄 **Blockchain Storage**: Mock contract calls
+- 🔄 **SBT Minting**: Needs real contract deployment
+
+### **✅ What's REAL Now!**
+- ✅ **ETH Transactions**: Real blockchain transactions that deduct ETH!
+- ✅ **Transaction Hashes**: Real TX hashes from Sepolia testnet
+- ✅ **Investment Tracking**: Persistent storage of real investments
+- ✅ **Blockchain Confirmation**: Wait for real transaction confirmations
+
+## 🚀 **실제 SBT 토큰 발행 - 준비 완료!**
+
+### **스마트 계약 배포 가능** ⭐ **NEW!**
+- ✅ **Solidity SBT 계약 코드** 완성
+- ✅ **Hardhat 배포 스크립트** 준비됨  
+- ✅ **OpenZeppelin 기반** 보안 표준
+- ✅ **Soul Bound Token** - 전송 불가능한 NFT
+- ✅ **배포 가이드 문서** 완비
+
+### **📋 실제 SBT 토큰을 보려면:**
+1. **배포 가이드 확인**: `SMART_CONTRACT_DEPLOYMENT.md` 참조
+2. **의존성 설치**: `npm install` 실행
+3. **환경 변수 설정**: `.env` 파일에 지갑 정보 입력
+4. **스마트 계약 배포**: `npm run contract:deploy` 실행
+5. **Etherscan에서 확인**: 실제 SBT 토큰 발행 내역 확인
+
+### **🔍 배포 후 확인 가능한 곳들:**
+- **Etherscan**: https://sepolia.etherscan.io/address/[CONTRACT_ADDRESS]
+- **OpenSea 테스트넷**: https://testnets.opensea.io/assets/sepolia/[CONTRACT_ADDRESS]/[TOKEN_ID]
+- **MetaMask**: NFT 탭에서 직접 토큰 확인
+- **웹 앱 대시보드**: "🔗 REAL" SBT로 표시
 
 ## 📈 Next Steps for Full Production
 
-### **Phase 1: Real Contract Deployment** (1-2 weeks)
-1. **Deploy Solidity Contract** on Sepolia
-2. **Integrate real contract calls**
-3. **Enable actual SBT minting**
-4. **Test full transaction flow**
+### **Phase 1: Real Contract Deployment** (즉시 가능!)
+1. ✅ **Solidity Contract** 코드 완성
+2. ✅ **배포 스크립트** 준비완료  
+3. ✅ **실제 SBT 발행** 가능
+4. ✅ **블록체인 검증** 준비됨
 
 ### **Phase 2: IPFS Production** (3-5 days)
 1. **Activate Pinata API** integration

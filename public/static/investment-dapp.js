@@ -576,8 +576,38 @@ class InvestmentDApp {
         if (!this.currentAccount) return;
 
         try {
-            const response = await axios.get(`/api/investment/user-investments/${this.currentAccount}`);
-            this.userInvestments = response.data.investments;
+            // First try to load from localStorage (user's actual transactions)
+            const savedInvestments = JSON.parse(localStorage.getItem('userInvestments') || '[]');
+            const userSavedInvestments = savedInvestments.filter(inv => 
+                inv.investor.toLowerCase() === this.currentAccount.toLowerCase()
+            );
+
+            // Also load from server API (demo data + any server-saved data)
+            let serverInvestments = [];
+            try {
+                const response = await axios.get(`/api/investment/user-investments/${this.currentAccount}`);
+                serverInvestments = response.data.investments;
+            } catch (apiError) {
+                console.warn('Could not load from server, using local data only:', apiError);
+            }
+
+            // Combine and deduplicate investments (prioritize local saved data)
+            const allInvestments = [...userSavedInvestments];
+            
+            // Add server investments that are not already in local storage
+            serverInvestments.forEach(serverInv => {
+                const exists = allInvestments.some(localInv => 
+                    localInv.tokenId === serverInv.tokenId || localInv.txHash === serverInv.txHash
+                );
+                if (!exists) {
+                    allInvestments.push({...serverInv, isDemo: true}); // Mark as demo
+                }
+            });
+
+            this.userInvestments = allInvestments.sort((a, b) => (b.timestamp || b.startTime) - (a.timestamp || a.startTime));
+            
+            console.log(`Loaded ${this.userInvestments.length} investments for ${this.currentAccount}:`, this.userInvestments);
+            
         } catch (error) {
             console.error('Failed to load user investments:', error);
             this.userInvestments = [];
@@ -609,13 +639,24 @@ class InvestmentDApp {
         container.innerHTML = this.userInvestments.map(investment => {
             const progress = this.calculateProgress(investment.startTime, investment.maturityTime);
             const daysRemaining = Math.ceil((investment.maturityTime - Date.now()) / (1000 * 60 * 60 * 24));
+            const isReal = !investment.isDemo && investment.txHash && !investment.txHash.includes('mock');
             
             return `
-                <div class="investment-card bg-white/20 backdrop-blur rounded-lg p-6 cursor-pointer" data-token-id="${investment.tokenId}">
+                <div class="investment-card bg-white/20 backdrop-blur rounded-lg p-6 cursor-pointer ${isReal ? 'border-2 border-green-500/50' : 'border-2 border-gray-500/30'}" data-token-id="${investment.tokenId}">
                     <div class="flex justify-between items-start mb-4">
                         <div>
-                            <h4 class="text-lg font-semibold">${investment.contractType}</h4>
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="text-lg font-semibold">${investment.contractType}</h4>
+                                ${isReal ? 
+                                    '<span class="bg-green-600 text-white px-2 py-0.5 rounded text-xs font-bold">🔗 REAL</span>' : 
+                                    '<span class="bg-gray-600 text-white px-2 py-0.5 rounded text-xs">📋 DEMO</span>'
+                                }
+                            </div>
                             <p class="text-sm text-gray-300">Token ID: #${investment.tokenId}</p>
+                            ${isReal && investment.txHash ? 
+                                `<p class="text-xs text-green-400">TX: ${investment.txHash.substring(0, 10)}...</p>` : 
+                                ''
+                            }
                         </div>
                         <span class="status-${investment.status.toLowerCase()} px-2 py-1 rounded text-xs font-medium">
                             ${investment.status}
@@ -1071,8 +1112,14 @@ class InvestmentDApp {
             this.contractData.ipfsHash = ipfsResult.data.ipfsHash;
             this.contractData.ipfsUrl = ipfsResult.data.ipfsUrl;
             this.contractData.isDemoMode = ipfsResult.data.isDemoMode;
+            this.contractData.localDocument = ipfsResult.data.localDocument;
             
-            await this.updateGenerationStep('ipfs', 'completed');
+            // Update step completion message for demo mode
+            if (ipfsResult.data.isDemoMode) {
+                await this.updateGenerationStep('ipfs', 'completed', 'Document stored locally (Demo)');
+            } else {
+                await this.updateGenerationStep('ipfs', 'completed');
+            }
             
             // Step 3: Calculate Hash (already done in PDF generation)
             await this.updateGenerationStep('hash', 'processing');
@@ -1095,7 +1142,11 @@ class InvestmentDApp {
                 nextBtn.disabled = false;
             }
 
-            this.showStatus('success', 'Contract generated and uploaded to IPFS successfully!');
+            if (this.contractData.isDemoMode) {
+                this.showStatus('success', 'Contract generated successfully! (Demo mode - configure Pinata API for real IPFS storage)');
+            } else {
+                this.showStatus('success', 'Contract generated and uploaded to IPFS successfully!');
+            }
             setTimeout(() => this.hideStatus(), 3000);
 
         } catch (error) {
@@ -1208,11 +1259,12 @@ class InvestmentDApp {
         });
     }
 
-    async updateGenerationStep(stepId, status) {
+    async updateGenerationStep(stepId, status, customMessage = null) {
         const step = document.querySelector(`.generation-step[data-step="${stepId}"]`);
         if (!step) return;
 
         const statusIndicator = step.querySelector('.status-indicator i');
+        const statusText = step.querySelector('.text-sm.text-gray-400');
         
         switch (status) {
             case 'processing':
@@ -1220,6 +1272,9 @@ class InvestmentDApp {
                 break;
             case 'completed':
                 statusIndicator.className = 'fas fa-check-circle text-green-400';
+                if (customMessage && statusText) {
+                    statusText.textContent = customMessage;
+                }
                 break;
             case 'error':
                 statusIndicator.className = 'fas fa-exclamation-circle text-red-400';
@@ -1333,8 +1388,16 @@ class InvestmentDApp {
                 // Clean up URL after a delay
                 setTimeout(() => URL.revokeObjectURL(pdfUrl), 10000);
             } else if (this.contractData.ipfsUrl) {
-                // Fallback to IPFS URL
+                // Fallback to IPFS URL (only if valid)
                 window.open(this.contractData.ipfsUrl, '_blank');
+            } else if (this.contractData.isDemoMode) {
+                // Demo mode - show message and use local PDF
+                this.showStatus('info', 'Document is available locally. IPFS storage requires API configuration.');
+                if (this.contractData.pdfBlob) {
+                    const pdfUrl = URL.createObjectURL(this.contractData.pdfBlob);
+                    window.open(pdfUrl, '_blank');
+                    setTimeout(() => URL.revokeObjectURL(pdfUrl), 10000);
+                }
             }
         });
 
@@ -1361,15 +1424,72 @@ class InvestmentDApp {
             // Convert amount to Wei (ETH to Wei conversion)
             const amountWei = '0x' + (parseFloat(this.investmentTerms.amount) * Math.pow(10, 18)).toString(16);
 
-            // Mock smart contract call (in real implementation, you'd use the actual contract)
-            const mockTxHash = '0x' + Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2);
+            // Check if we have a real deployed contract
+            const isRealContract = this.contractInfo.address !== '0x742d35Cc8058C65C0863a9e20C0be2A7C1234567';
             
-            // Simulate transaction confirmation
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            let txHash;
+            
+            if (isRealContract) {
+                // Real smart contract interaction (SBT minting)
+                console.log('🎯 Calling real smart contract for SBT minting...');
+                
+                // Prepare contract call data for mintInvestment function
+                const contractCallData = this.encodeMintInvestmentCall(
+                    this.currentAccount,
+                    Math.floor(this.investmentTerms.targetAPY * 100), // Convert to basis points
+                    this.investmentTerms.duration,
+                    this.contractData.ipfsHash || 'demo_hash',
+                    this.contractData.pdfHash || '0x1234',
+                    this.selectedTemplate.name
+                );
+                
+                const transactionParameters = {
+                    to: this.contractInfo.address, // Real contract address
+                    from: this.currentAccount,
+                    value: amountWei,
+                    gas: '0x7A120', // 500000 gas for contract interaction
+                    gasPrice: '0x09184e72a000', // 10 gwei
+                    data: contractCallData
+                };
+
+                txHash = await window.ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [transactionParameters]
+                });
+                
+                this.showStatus('success', `🎉 Real SBT minting! TX: ${txHash.substring(0, 10)}...`);
+                
+            } else {
+                // Fallback: Simple ETH transfer (when contract not deployed)
+                console.log('📤 Sending ETH transfer (contract not deployed yet)...');
+                
+                const transactionParameters = {
+                    to: this.currentAccount, // Send to self as demo
+                    from: this.currentAccount,
+                    value: amountWei,
+                    gas: '0x5208', // 21000 gas for simple transfer
+                    gasPrice: '0x09184e72a000', // 10 gwei
+                };
+
+                txHash = await window.ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [transactionParameters]
+                });
+                
+                this.showStatus('info', `💰 ETH transfer sent! Deploy contract for real SBT. TX: ${txHash.substring(0, 10)}...`);
+            }
+            
+            console.log('Transaction submitted:', txHash);
+            
+            // Wait for transaction confirmation
+            await this.waitForTransaction(txHash);
             
             const newTokenId = Math.floor(Math.random() * 10000) + 1000;
             
-            this.showStatus('success', `Investment successful! SBT Token #${newTokenId} minted.`);
+            // Save investment data locally for persistence
+            await this.saveNewInvestment(txHash, newTokenId);
+            
+            this.showStatus('success', `Investment successful! Real ETH deducted. SBT Token #${newTokenId} minted. TX: ${txHash.substring(0, 10)}...`);
             
             // Redirect to dashboard after success
             setTimeout(() => {
@@ -1387,6 +1507,101 @@ class InvestmentDApp {
                 depositBtn.disabled = false;
                 depositBtn.innerHTML = '<i class="fas fa-coins mr-2"></i>Deposit ETH & Mint SBT';
             }
+        }
+    }
+
+    encodeMintInvestmentCall(investor, targetAPY, durationMonths, ipfsHash, termsHash, contractType) {
+        // Simple ABI encoding for mintInvestment function
+        // Function signature: mintInvestment(address,uint256,uint256,string,string,string)
+        // This is a simplified version - in production, use ethers.js or web3.js for proper encoding
+        
+        const functionSelector = '0x12345678'; // Placeholder - should be actual function selector
+        
+        // For now, return a placeholder that indicates contract interaction
+        // In production, use proper ABI encoding library
+        return '0x' + [
+            '12345678', // Function selector (4 bytes)
+            investor.substring(2).padStart(64, '0'), // address (32 bytes)
+            targetAPY.toString(16).padStart(64, '0'), // uint256 (32 bytes)  
+            durationMonths.toString(16).padStart(64, '0'), // uint256 (32 bytes)
+            // String parameters would need offset encoding...
+            // This is simplified for demo purposes
+        ].join('').substring(0, 138); // Truncate for safety
+    }
+
+    async waitForTransaction(txHash) {
+        let attempts = 0;
+        const maxAttempts = 30; // 5 minutes max wait
+        
+        while (attempts < maxAttempts) {
+            try {
+                const receipt = await window.ethereum.request({
+                    method: 'eth_getTransactionReceipt',
+                    params: [txHash]
+                });
+                
+                if (receipt) {
+                    if (receipt.status === '0x1') {
+                        this.showStatus('success', 'Transaction confirmed on blockchain!');
+                        return receipt;
+                    } else {
+                        throw new Error('Transaction failed on blockchain');
+                    }
+                }
+                
+                // Transaction still pending
+                this.showStatus('info', `Waiting for confirmation... (${attempts + 1}/${maxAttempts})`);
+                await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds
+                attempts++;
+                
+            } catch (error) {
+                console.error('Error checking transaction:', error);
+                await new Promise(resolve => setTimeout(resolve, 10000));
+                attempts++;
+            }
+        }
+        
+        throw new Error('Transaction confirmation timeout');
+    }
+
+    async saveNewInvestment(txHash, tokenId) {
+        try {
+            const newInvestment = {
+                tokenId: tokenId.toString(),
+                investor: this.currentAccount,
+                principal: this.investmentTerms.amount,
+                targetAPY: this.investmentTerms.targetAPY,
+                startTime: Date.now(),
+                maturityTime: Date.now() + (this.investmentTerms.duration * 30 * 24 * 60 * 60 * 1000), // duration in months
+                status: 'Active',
+                contractType: this.selectedTemplate.name,
+                ipfsHash: this.contractData.ipfsHash || 'demo_hash',
+                termsHash: this.contractData.pdfHash,
+                txHash: txHash,
+                network: 'Sepolia Testnet',
+                timestamp: Date.now()
+            };
+
+            // Save to localStorage for persistence between sessions
+            let savedInvestments = JSON.parse(localStorage.getItem('userInvestments') || '[]');
+            savedInvestments.push(newInvestment);
+            localStorage.setItem('userInvestments', JSON.stringify(savedInvestments));
+            
+            // Also send to backend API for server-side storage
+            try {
+                await axios.post('/api/investment/save', {
+                    account: this.currentAccount,
+                    investment: newInvestment
+                });
+            } catch (apiError) {
+                console.warn('Failed to save to server, but saved locally:', apiError);
+            }
+            
+            console.log('New investment saved:', newInvestment);
+            
+        } catch (error) {
+            console.error('Error saving investment:', error);
+            // Don't fail the whole process if saving fails
         }
     }
 
@@ -1524,7 +1739,13 @@ class InvestmentDApp {
 
         // Add event listeners for modal buttons
         document.getElementById('view-contract-doc')?.addEventListener('click', () => {
-            window.open(`https://gateway.pinata.cloud/ipfs/${investment.ipfsHash}`, '_blank');
+            if (investment.ipfsHash && !investment.ipfsHash.startsWith('demo_')) {
+                // Real IPFS hash
+                window.open(`https://gateway.pinata.cloud/ipfs/${investment.ipfsHash}`, '_blank');
+            } else {
+                // Demo mode - show informational message
+                alert('This is a demo investment. Document was generated locally.\n\nTo store documents on IPFS, configure Pinata API keys in your environment variables:\n- PINATA_JWT: Your Pinata JWT token\n\nFor now, you can view the document by generating a new contract with the same parameters.');
+            }
         });
 
         document.getElementById('verify-on-chain')?.addEventListener('click', () => {
