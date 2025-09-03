@@ -347,18 +347,20 @@ app.get('/', (c) => {
 
             <!-- Connected Wallet Info -->
             <div id="wallet-info" class="hidden bg-green-600/20 backdrop-blur rounded-xl p-4 text-white border border-green-500/30">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <i class="fas fa-check-circle text-green-400 mr-2"></i>
-                        <span class="font-semibold">Connected: </span>
-                        <span id="wallet-address-short" class="font-mono text-sm ml-1"></span>
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <div class="flex items-center flex-wrap gap-2">
+                        <i class="fas fa-check-circle text-green-400"></i>
+                        <span class="font-semibold">Connected:</span>
+                        <span id="wallet-address-short" class="font-mono text-sm bg-white/20 px-2 py-1 rounded"></span>
+                        <span class="text-xs">•</span>
+                        <span id="wallet-network-display" class="text-xs bg-blue-600/30 px-2 py-1 rounded"></span>
                     </div>
                     <div class="flex gap-2">
-                        <button id="wallet-details-btn" class="text-xs bg-white/20 hover:bg-white/30 px-2 py-1 rounded transition-colors">
-                            Details
+                        <button id="wallet-details-btn" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition-colors">
+                            <i class="fas fa-info-circle mr-1"></i>Details
                         </button>
-                        <button id="disconnect-btn" class="text-xs bg-red-600/80 hover:bg-red-600 px-2 py-1 rounded transition-colors">
-                            Disconnect
+                        <button id="disconnect-btn" class="text-xs bg-red-600/80 hover:bg-red-600 px-3 py-1 rounded transition-colors">
+                            <i class="fas fa-sign-out-alt mr-1"></i>Disconnect
                         </button>
                     </div>
                 </div>

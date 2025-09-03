@@ -20,12 +20,73 @@ class InvestmentDApp {
     }
 
     async init() {
+        // Debug wallet environment
+        this.debugWalletEnvironment();
+        
         await this.loadSupportedWallets();
         await this.loadNetworks();
         await this.loadInvestmentTemplates();
         this.renderWalletCards();
         this.setupEventListeners();
         this.checkExistingConnection();
+        
+        // Add wallet detection troubleshooting
+        this.addTroubleshootingInfo();
+    }
+
+    debugWalletEnvironment() {
+        console.log('=== Wallet Environment Debug ===');
+        console.log('User Agent:', navigator.userAgent);
+        console.log('Protocol:', window.location.protocol);
+        console.log('Host:', window.location.host);
+        console.log('Ethereum Object:', window.ethereum);
+        
+        if (window.ethereum) {
+            console.log('Ethereum Properties:', {
+                isMetaMask: window.ethereum.isMetaMask,
+                isTrust: window.ethereum.isTrust,
+                isCoinbaseWallet: window.ethereum.isCoinbaseWallet,
+                providers: window.ethereum.providers,
+                chainId: window.ethereum.chainId,
+                selectedAddress: window.ethereum.selectedAddress
+            });
+            
+            if (window.ethereum.providers) {
+                console.log('Multiple Providers Detected:');
+                window.ethereum.providers.forEach((provider, index) => {
+                    console.log(`Provider ${index}:`, {
+                        isMetaMask: provider.isMetaMask,
+                        isTrust: provider.isTrust,
+                        isCoinbaseWallet: provider.isCoinbaseWallet
+                    });
+                });
+            }
+        } else {
+            console.log('No Ethereum provider detected');
+        }
+        console.log('==========================');
+    }
+
+    addTroubleshootingInfo() {
+        const walletSection = document.getElementById('wallet-section');
+        if (!walletSection || window.ethereum) return;
+
+        const troubleshootDiv = document.createElement('div');
+        troubleshootDiv.className = 'mt-4 p-4 bg-yellow-600/20 border border-yellow-500/30 rounded-lg text-yellow-200 text-sm';
+        troubleshootDiv.innerHTML = `
+            <h4 class="font-semibold mb-2">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                No Wallet Detected
+            </h4>
+            <p class="mb-2">To use this DApp, you need a Web3 wallet installed:</p>
+            <ul class="list-disc list-inside space-y-1 mb-3">
+                <li><a href="https://metamask.io" target="_blank" class="underline">Install MetaMask</a> (Recommended)</li>
+                <li><a href="https://trustwallet.com" target="_blank" class="underline">Install Trust Wallet</a></li>
+                <li><a href="https://wallet.coinbase.com" target="_blank" class="underline">Install Coinbase Wallet</a></li>
+            </ul>
+            <p class="text-xs">After installation, refresh this page and try connecting again.</p>
+        `;
+        walletSection.appendChild(troubleshootDiv);
     }
 
     async loadSupportedWallets() {
@@ -76,23 +137,69 @@ class InvestmentDApp {
         }
     }
 
+    isValidChainId(chainId) {
+        const supportedChains = ['0x1', '0x89', '0xa4b1', '0xa', '0x38'];
+        return supportedChains.includes(chainId);
+    }
+
+    getChainName(chainId) {
+        const chainNames = {
+            '0x1': 'Ethereum Mainnet',
+            '0x89': 'Polygon',
+            '0xa4b1': 'Arbitrum One',
+            '0xa': 'Optimism',
+            '0x38': 'BSC'
+        };
+        return chainNames[chainId] || `Chain ID: ${parseInt(chainId, 16)}`;
+    }
+
     renderWalletCards() {
         const container = document.querySelector('#wallet-section .grid');
         if (!container) return;
 
-        container.innerHTML = this.supportedWallets.map(wallet => `
-            <div class="wallet-card bg-white/20 backdrop-blur rounded-lg p-4 text-center text-white cursor-pointer hover:bg-white/30 transition-all"
-                 data-wallet-id="${wallet.id}">
-                <div class="text-2xl mb-2">${wallet.icon}</div>
-                <h4 class="font-semibold mb-1">${wallet.name}</h4>
-                <div class="text-xs mb-3 ${wallet.installed ? 'text-green-300' : 'text-gray-400'}">
-                    ${wallet.installed ? '✓ Available' : '⚠ Install Required'}
+        // Debug info for MetaMask detection
+        const hasEthereum = typeof window.ethereum !== 'undefined';
+        const isMetaMask = window.ethereum?.isMetaMask;
+        const hasProviders = window.ethereum?.providers?.length > 0;
+        const metaMaskInProviders = window.ethereum?.providers?.some(p => p.isMetaMask);
+
+        console.log('Wallet Detection Debug:', {
+            hasEthereum,
+            isMetaMask,
+            hasProviders,
+            metaMaskInProviders,
+            ethereumObject: window.ethereum
+        });
+
+        container.innerHTML = this.supportedWallets.map(wallet => {
+            let statusText = wallet.installed ? '✓ Available' : '⚠ Not Detected';
+            let statusClass = wallet.installed ? 'text-green-300' : 'text-yellow-400';
+            
+            // Special handling for MetaMask detection issues
+            if (wallet.id === 'metamask' && hasEthereum && !wallet.installed) {
+                statusText = '⚠ Detected (trying anyway)';
+                statusClass = 'text-yellow-300';
+            }
+
+            return `
+                <div class="wallet-card bg-white/20 backdrop-blur rounded-lg p-4 text-center text-white cursor-pointer hover:bg-white/30 transition-all"
+                     data-wallet-id="${wallet.id}">
+                    <div class="text-2xl mb-2">${wallet.icon}</div>
+                    <h4 class="font-semibold mb-1">${wallet.name}</h4>
+                    <div class="text-xs mb-3 ${statusClass}">
+                        ${statusText}
+                    </div>
+                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-3 rounded transition-colors">
+                        Connect
+                    </button>
+                    ${wallet.id === 'metamask' && hasEthereum ? `
+                        <div class="text-xs mt-2 text-gray-400">
+                            Provider: ${isMetaMask ? 'MetaMask' : 'Generic'}
+                        </div>
+                    ` : ''}
                 </div>
-                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-3 rounded transition-colors ${!wallet.installed && wallet.id !== 'walletconnect' ? 'opacity-50' : ''}">
-                    Connect
-                </button>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         container.querySelectorAll('.wallet-card').forEach(card => {
             card.addEventListener('click', () => {
@@ -130,19 +237,73 @@ class InvestmentDApp {
     }
 
     async connectMetaMask() {
-        if (!window.ethereum || !window.ethereum.isMetaMask) {
+        // Enhanced MetaMask detection
+        if (!window.ethereum) {
             if (this.isMobile()) {
                 window.open('https://metamask.app.link/dapp/' + window.location.host + window.location.pathname);
                 return;
             }
-            throw new Error('MetaMask is not installed. Please install MetaMask extension.');
+            throw new Error('MetaMask is not installed. Please install MetaMask extension from https://metamask.io');
         }
 
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        let ethereum = window.ethereum;
         
-        this.handleSuccessfulConnection('metamask', accounts[0], chainId);
-        this.setupWalletEventListeners();
+        // Handle multiple wallet providers
+        if (window.ethereum.providers?.length) {
+            // Find MetaMask among multiple providers
+            ethereum = window.ethereum.providers.find(p => p.isMetaMask) || window.ethereum;
+        } else if (!window.ethereum.isMetaMask) {
+            // Check if this might be MetaMask but not properly detected
+            console.warn('Ethereum provider detected but isMetaMask flag missing. Attempting connection...');
+        }
+
+        try {
+            // Request account access
+            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+            
+            if (!accounts || accounts.length === 0) {
+                throw new Error('No accounts returned from MetaMask. Please unlock your wallet.');
+            }
+
+            // Get current chain ID
+            const chainId = await ethereum.request({ method: 'eth_chainId' });
+            
+            // Verify we're on a supported network
+            if (!this.isValidChainId(chainId)) {
+                this.showStatus('info', 'Please switch to Ethereum Mainnet or another supported network.');
+                // Attempt to switch to Ethereum Mainnet
+                try {
+                    await ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: '0x1' }], // Ethereum Mainnet
+                    });
+                    // Get updated chainId after switch
+                    const newChainId = await ethereum.request({ method: 'eth_chainId' });
+                    this.handleSuccessfulConnection('metamask', accounts[0], newChainId);
+                } catch (switchError) {
+                    // User rejected network switch, but still connect with current network
+                    this.handleSuccessfulConnection('metamask', accounts[0], chainId);
+                }
+            } else {
+                this.handleSuccessfulConnection('metamask', accounts[0], chainId);
+            }
+            
+            this.setupWalletEventListeners();
+            
+        } catch (error) {
+            console.error('MetaMask connection error:', error);
+            
+            // Handle specific error cases
+            if (error.code === 4001) {
+                throw new Error('Connection rejected. Please approve the connection in MetaMask.');
+            } else if (error.code === -32002) {
+                throw new Error('Connection request already pending. Please check MetaMask.');
+            } else if (error.message.includes('User rejected')) {
+                throw new Error('Connection cancelled by user.');
+            } else {
+                throw new Error(`MetaMask connection failed: ${error.message}`);
+            }
+        }
     }
 
     async connectTrustWallet() {
@@ -207,6 +368,12 @@ class InvestmentDApp {
 
         if (addressShort && this.currentAccount) {
             addressShort.textContent = `${this.currentAccount.substring(0, 6)}...${this.currentAccount.substring(38)}`;
+        }
+
+        // Update network display in wallet info
+        const networkDisplay = document.getElementById('wallet-network-display');
+        if (networkDisplay && this.currentChainId) {
+            networkDisplay.textContent = this.getChainName(this.currentChainId);
         }
 
         if (walletInfo) {
