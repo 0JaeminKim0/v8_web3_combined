@@ -348,11 +348,11 @@ Original Contract (JSON) → SHA-256 Hash → Blockchain Storage
 4. **스마트 계약 배포**: `npm run contract:deploy` 실행
 5. **Etherscan에서 확인**: 실제 SBT 토큰 발행 내역 확인
 
-### **🔍 배포 후 확인 가능한 곳들:**
-- **Etherscan**: https://sepolia.etherscan.io/address/[CONTRACT_ADDRESS]
-- **OpenSea 테스트넷**: https://testnets.opensea.io/assets/sepolia/[CONTRACT_ADDRESS]/[TOKEN_ID]
-- **MetaMask**: NFT 탭에서 직접 토큰 확인
-- **웹 앱 대시보드**: "🔗 REAL" SBT로 표시
+### **🔍 실제 NFT/SBT 확인 가능한 곳들:**
+- **Etherscan**: https://sepolia.etherscan.io/address/0x925c486EA3F98BD164bA23e7221De9EdAC0869d7
+- **OpenSea 테스트넷**: https://testnets.opensea.io/assets/sepolia/0x925c486EA3F98BD164bA23e7221De9EdAC0869d7/[TOKEN_ID]
+- **MetaMask**: NFT 탭에서 직접 토큰 확인 (계약 주소: 0x925c486EA3F98BD164bA23e7221De9EdAC0869d7)
+- **웹 앱 대시보드**: "🔗 REAL" SBT로 표시 + 직접 링크 제공
 
 ## 📈 Next Steps for Full Production
 
