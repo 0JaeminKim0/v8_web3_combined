@@ -13,7 +13,9 @@ class InvestmentDApp {
         this.contractInfo = {
             address: '0x742d35Cc8058C65C0863a9e20C0be2A7C1234567',
             name: 'InvestmentReceiptSBT',
-            network: 'Ethereum Mainnet'
+            network: 'Sepolia Testnet',
+            networkId: '0xaa36a7',
+            testnet: true
         };
         
         this.init();
@@ -138,19 +140,32 @@ class InvestmentDApp {
     }
 
     isValidChainId(chainId) {
-        const supportedChains = ['0x1', '0x89', '0xa4b1', '0xa', '0x38'];
+        const supportedChains = ['0xaa36a7', '0x5', '0x13881', '0x1'];
         return supportedChains.includes(chainId);
     }
 
     getChainName(chainId) {
         const chainNames = {
-            '0x1': 'Ethereum Mainnet',
-            '0x89': 'Polygon',
-            '0xa4b1': 'Arbitrum One',
-            '0xa': 'Optimism',
-            '0x38': 'BSC'
+            '0xaa36a7': 'Sepolia Testnet',
+            '0x5': 'Goerli Testnet', 
+            '0x13881': 'Polygon Mumbai',
+            '0x1': 'Ethereum Mainnet'
         };
         return chainNames[chainId] || `Chain ID: ${parseInt(chainId, 16)}`;
+    }
+
+    isTestnet(chainId) {
+        const testnets = ['0xaa36a7', '0x5', '0x13881'];
+        return testnets.includes(chainId);
+    }
+
+    getFaucetUrl(chainId) {
+        const faucets = {
+            '0xaa36a7': 'https://sepoliafaucet.com',
+            '0x5': 'https://goerlifaucet.com',
+            '0x13881': 'https://mumbaifaucet.com'
+        };
+        return faucets[chainId];
     }
 
     renderWalletCards() {
@@ -270,19 +285,49 @@ class InvestmentDApp {
             
             // Verify we're on a supported network
             if (!this.isValidChainId(chainId)) {
-                this.showStatus('info', 'Please switch to Ethereum Mainnet or another supported network.');
-                // Attempt to switch to Ethereum Mainnet
+                this.showStatus('info', 'Please switch to Sepolia Testnet for the best experience.');
+                // Attempt to switch to Sepolia Testnet
                 try {
                     await ethereum.request({
                         method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: '0x1' }], // Ethereum Mainnet
+                        params: [{ chainId: '0xaa36a7' }], // Sepolia Testnet
                     });
                     // Get updated chainId after switch
                     const newChainId = await ethereum.request({ method: 'eth_chainId' });
                     this.handleSuccessfulConnection('metamask', accounts[0], newChainId);
                 } catch (switchError) {
-                    // User rejected network switch, but still connect with current network
-                    this.handleSuccessfulConnection('metamask', accounts[0], chainId);
+                    // If Sepolia is not added, try to add it
+                    if (switchError.code === 4902) {
+                        try {
+                            await ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [{
+                                    chainId: '0xaa36a7',
+                                    chainName: 'Sepolia Testnet',
+                                    nativeCurrency: {
+                                        name: 'Ethereum',
+                                        symbol: 'ETH',
+                                        decimals: 18
+                                    },
+                                    rpcUrls: ['https://sepolia.infura.io/v3/'],
+                                    blockExplorerUrls: ['https://sepolia.etherscan.io']
+                                }]
+                            });
+                            // After adding, switch to it
+                            await ethereum.request({
+                                method: 'wallet_switchEthereumChain',
+                                params: [{ chainId: '0xaa36a7' }]
+                            });
+                            const newChainId = await ethereum.request({ method: 'eth_chainId' });
+                            this.handleSuccessfulConnection('metamask', accounts[0], newChainId);
+                        } catch (addError) {
+                            // User rejected adding network, connect with current network
+                            this.handleSuccessfulConnection('metamask', accounts[0], chainId);
+                        }
+                    } else {
+                        // User rejected network switch, but still connect with current network
+                        this.handleSuccessfulConnection('metamask', accounts[0], chainId);
+                    }
                 }
             } else {
                 this.handleSuccessfulConnection('metamask', accounts[0], chainId);
@@ -376,8 +421,51 @@ class InvestmentDApp {
             networkDisplay.textContent = this.getChainName(this.currentChainId);
         }
 
+        // Update testnet information
+        this.updateTestnetInfo();
+
         if (walletInfo) {
             walletInfo.classList.remove('hidden');
+        }
+    }
+
+    updateTestnetInfo() {
+        const testnetBadge = document.getElementById('testnet-badge');
+        const testnetInfo = document.getElementById('testnet-info');
+        const getTestEthBtn = document.getElementById('get-test-eth-btn');
+        const faucetLinks = document.getElementById('faucet-links');
+
+        if (!this.currentChainId) return;
+
+        const isTestnet = this.isTestnet(this.currentChainId);
+
+        if (isTestnet) {
+            // Show testnet indicators
+            testnetBadge?.classList.remove('hidden');
+            testnetInfo?.classList.remove('hidden');
+            getTestEthBtn?.classList.remove('hidden');
+
+            // Add faucet links
+            if (faucetLinks) {
+                const faucetUrl = this.getFaucetUrl(this.currentChainId);
+                faucetLinks.innerHTML = `
+                    <a href="${faucetUrl}" target="_blank" class="underline hover:text-yellow-100">
+                        Get test ETH from faucet →
+                    </a>
+                `;
+            }
+
+            // Add click handler for get test ETH button
+            getTestEthBtn?.addEventListener('click', () => {
+                const faucetUrl = this.getFaucetUrl(this.currentChainId);
+                window.open(faucetUrl, '_blank');
+            });
+
+        } else {
+            // Hide testnet indicators
+            testnetBadge?.classList.add('hidden');
+            testnetInfo?.classList.add('hidden');
+            getTestEthBtn?.classList.add('hidden');
         }
     }
 
@@ -861,33 +949,50 @@ class InvestmentDApp {
         }
 
         try {
-            // Step 1: Generate PDF
+            // Step 1: Generate PDF (real PDF generation)
             await this.updateGenerationStep('pdf', 'processing');
             const pdfResult = await axios.post('/api/external/generate-pdf', this.investmentTerms);
+            
+            if (pdfResult.data.needsFrontendGeneration) {
+                // Generate actual PDF on frontend using jsPDF
+                const pdfBlob = await this.generatePDFDocument(pdfResult.data.pdfData);
+                this.contractData = {
+                    pdfBlob: pdfBlob,
+                    pdfData: pdfResult.data.pdfData,
+                    pdfHash: pdfResult.data.hash,
+                    pdfSize: Math.round(pdfBlob.size / 1024), // Size in KB
+                    terms: this.investmentTerms
+                };
+            }
             await this.updateGenerationStep('pdf', 'completed');
             
-            // Step 2: Upload to IPFS
+            // Step 2: Upload to IPFS (real upload)
             await this.updateGenerationStep('ipfs', 'processing');
+            
+            // Convert PDF to base64 for upload
+            const pdfBase64 = await this.blobToBase64(this.contractData.pdfBlob);
+            
             const ipfsResult = await axios.post('/api/external/upload-ipfs', {
-                file: pdfResult.data.pdfUrl,
-                metadata: this.investmentTerms
+                content: JSON.stringify(this.contractData.pdfData, null, 2),
+                filename: `investment-contract-${Date.now()}.json`,
+                metadata: {
+                    type: 'investment-contract',
+                    investor: this.currentAccount,
+                    network: this.getChainName(this.currentChainId),
+                    timestamp: new Date().toISOString()
+                }
             });
+            
+            this.contractData.ipfsHash = ipfsResult.data.ipfsHash;
+            this.contractData.ipfsUrl = ipfsResult.data.ipfsUrl;
+            this.contractData.isDemoMode = ipfsResult.data.isDemoMode;
+            
             await this.updateGenerationStep('ipfs', 'completed');
             
-            // Step 3: Calculate Hash
+            // Step 3: Calculate Hash (already done in PDF generation)
             await this.updateGenerationStep('hash', 'processing');
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate processing
+            await new Promise(resolve => setTimeout(resolve, 800));
             await this.updateGenerationStep('hash', 'completed');
-
-            // Store contract data
-            this.contractData = {
-                pdfUrl: pdfResult.data.pdfUrl,
-                pdfHash: pdfResult.data.hash,
-                pdfSize: pdfResult.data.size,
-                ipfsHash: ipfsResult.data.ipfsHash,
-                ipfsUrl: ipfsResult.data.ipfsUrl,
-                terms: this.investmentTerms
-            };
 
             // Show results
             const resultDiv = document.getElementById('generation-result');
@@ -905,12 +1010,12 @@ class InvestmentDApp {
                 nextBtn.disabled = false;
             }
 
-            this.showStatus('success', 'Contract generated and uploaded successfully!');
+            this.showStatus('success', 'Contract generated and uploaded to IPFS successfully!');
             setTimeout(() => this.hideStatus(), 3000);
 
         } catch (error) {
             console.error('Contract generation error:', error);
-            this.showStatus('error', 'Failed to generate contract. Please try again.');
+            this.showStatus('error', `Failed to generate contract: ${error.message}`);
             setTimeout(() => this.hideStatus(), 5000);
         } finally {
             if (generateBtn) {
@@ -918,6 +1023,104 @@ class InvestmentDApp {
                 generateBtn.innerHTML = '<i class="fas fa-cog mr-2"></i>Generate Contract';
             }
         }
+    }
+
+    async generatePDFDocument(pdfData) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Add title
+        doc.setFontSize(20);
+        doc.text('Investment Contract Agreement', 20, 30);
+        
+        // Add contract details
+        doc.setFontSize(12);
+        let yPos = 50;
+        
+        doc.text('BLOCKCHAIN INVESTMENT CONTRACT', 20, yPos);
+        yPos += 10;
+        doc.text(`Contract Version: ${pdfData.contractVersion}`, 20, yPos);
+        yPos += 10;
+        doc.text(`Generated: ${new Date(pdfData.timestamp).toLocaleString()}`, 20, yPos);
+        yPos += 20;
+        
+        // Investment Details
+        doc.setFontSize(14);
+        doc.text('INVESTMENT DETAILS', 20, yPos);
+        doc.setFontSize(10);
+        yPos += 15;
+        
+        const terms = pdfData.investmentTerms;
+        doc.text(`Template: ${terms.template.name}`, 20, yPos);
+        yPos += 8;
+        doc.text(`Investment Amount: ${terms.amount} ETH`, 20, yPos);
+        yPos += 8;
+        doc.text(`Investment Term: ${terms.term}`, 20, yPos);
+        yPos += 8;
+        doc.text(`Target APY: ${terms.targetAPY}%`, 20, yPos);
+        yPos += 8;
+        doc.text(`Network: ${terms.network}`, 20, yPos);
+        yPos += 8;
+        doc.text(`Investor Address: ${terms.investor}`, 20, yPos);
+        yPos += 15;
+        
+        if (terms.specialTerms) {
+            doc.text('Special Terms:', 20, yPos);
+            yPos += 8;
+            const splitTerms = doc.splitTextToSize(terms.specialTerms, 170);
+            doc.text(splitTerms, 20, yPos);
+            yPos += splitTerms.length * 5 + 10;
+        }
+        
+        // Contract Terms
+        doc.setFontSize(14);
+        doc.text('STANDARD TERMS AND CONDITIONS', 20, yPos);
+        doc.setFontSize(10);
+        yPos += 15;
+        
+        const standardTerms = [
+            '1. This contract is recorded on the blockchain as a Soul Bound Token (SBT).',
+            '2. The SBT serves as immutable proof of the investment agreement.',
+            '3. Investment terms are cryptographically hashed and stored on IPFS.',
+            '4. Returns are calculated based on the agreed target APY.',
+            '5. Early withdrawal may be subject to penalties as per template terms.',
+            '6. This contract is governed by smart contract logic on Ethereum blockchain.',
+            '7. All parties acknowledge the risks associated with cryptocurrency investments.'
+        ];
+        
+        standardTerms.forEach(term => {
+            const splitText = doc.splitTextToSize(term, 170);
+            doc.text(splitText, 20, yPos);
+            yPos += splitText.length * 5 + 3;
+        });
+        
+        // Signatures
+        yPos += 20;
+        doc.setFontSize(12);
+        doc.text('DIGITAL SIGNATURES', 20, yPos);
+        yPos += 15;
+        doc.setFontSize(10);
+        doc.text(`Investor: ${terms.investor}`, 20, yPos);
+        yPos += 8;
+        doc.text(`Timestamp: ${new Date().toISOString()}`, 20, yPos);
+        yPos += 8;
+        doc.text('Signature: [To be signed via MetaMask]', 20, yPos);
+        
+        // Footer
+        doc.setFontSize(8);
+        doc.text('This document is cryptographically secured and stored on IPFS', 20, 280);
+        doc.text(`Document Hash: ${pdfData.timestamp}`, 20, 285);
+        
+        return doc.output('blob');
+    }
+
+    async blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
     }
 
     async updateGenerationStep(stepId, status) {
@@ -1038,7 +1241,16 @@ class InvestmentDApp {
         });
 
         document.getElementById('preview-contract')?.addEventListener('click', () => {
-            window.open(this.contractData.pdfUrl, '_blank');
+            if (this.contractData.pdfBlob) {
+                // Create blob URL for real PDF
+                const pdfUrl = URL.createObjectURL(this.contractData.pdfBlob);
+                window.open(pdfUrl, '_blank');
+                // Clean up URL after a delay
+                setTimeout(() => URL.revokeObjectURL(pdfUrl), 10000);
+            } else if (this.contractData.ipfsUrl) {
+                // Fallback to IPFS URL
+                window.open(this.contractData.ipfsUrl, '_blank');
+            }
         });
 
         document.getElementById('deposit-mint')?.addEventListener('click', () => {

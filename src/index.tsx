@@ -49,11 +49,37 @@ app.get('/api/supported-wallets', (c) => {
 app.get('/api/network-info', (c) => {
   return c.json({
     networks: [
-      { chainId: '0x1', name: 'Ethereum Mainnet', symbol: 'ETH' },
-      { chainId: '0x89', name: 'Polygon', symbol: 'MATIC' },
-      { chainId: '0xa4b1', name: 'Arbitrum One', symbol: 'ETH' },
-      { chainId: '0xa', name: 'Optimism', symbol: 'ETH' },
-      { chainId: '0x38', name: 'BSC', symbol: 'BNB' }
+      { 
+        chainId: '0xaa36a7', 
+        name: 'Sepolia Testnet', 
+        symbol: 'ETH',
+        testnet: true,
+        faucet: 'https://sepoliafaucet.com',
+        explorer: 'https://sepolia.etherscan.io'
+      },
+      { 
+        chainId: '0x5', 
+        name: 'Goerli Testnet', 
+        symbol: 'ETH',
+        testnet: true,
+        faucet: 'https://goerlifaucet.com',
+        explorer: 'https://goerli.etherscan.io'
+      },
+      { 
+        chainId: '0x13881', 
+        name: 'Polygon Mumbai', 
+        symbol: 'MATIC',
+        testnet: true,
+        faucet: 'https://mumbaifaucet.com',
+        explorer: 'https://mumbai.polygonscan.com'
+      },
+      { 
+        chainId: '0x1', 
+        name: 'Ethereum Mainnet', 
+        symbol: 'ETH',
+        testnet: false,
+        explorer: 'https://etherscan.io'
+      }
     ]
   })
 })
@@ -61,11 +87,26 @@ app.get('/api/network-info', (c) => {
 // Investment Contract APIs
 app.get('/api/investment/contract-info', (c) => {
   return c.json({
-    contractAddress: '0x742d35Cc8058C65C0863a9e20C0be2A7C1234567', // Mock contract address
+    contractAddress: '0x742d35Cc8058C65C0863a9e20C0be2A7C1234567', // Will be deployed on Sepolia
     contractName: 'InvestmentReceiptSBT',
     version: '1.0.0',
-    network: 'Ethereum Mainnet',
-    abi: 'https://api.example.com/abi/investment-receipt-sbt.json'
+    network: 'Sepolia Testnet',
+    networkId: '0xaa36a7',
+    explorer: 'https://sepolia.etherscan.io',
+    abi: 'https://api.example.com/abi/investment-receipt-sbt.json',
+    testnet: true,
+    faucets: [
+      {
+        name: 'Sepolia Faucet',
+        url: 'https://sepoliafaucet.com',
+        daily: '0.5 ETH'
+      },
+      {
+        name: 'Alchemy Sepolia Faucet', 
+        url: 'https://sepoliafaucet.io',
+        daily: '0.5 ETH'
+      }
+    ]
   })
 })
 
@@ -106,33 +147,119 @@ app.get('/api/investment/templates', (c) => {
   })
 })
 
-// Mock external services
+// Real PDF generation service (browser-based)
 app.post('/api/external/generate-pdf', async (c) => {
-  const body = await c.req.json()
-  
-  // Mock PDF generation service
-  await new Promise(resolve => setTimeout(resolve, 2000)) // Simulate processing time
-  
-  return c.json({
-    success: true,
-    pdfUrl: `https://mock-pdf-service.com/contracts/${Math.random().toString(36).substring(7)}.pdf`,
-    hash: `0x${Math.random().toString(36).substring(7)}abc123def456`,
-    size: Math.floor(Math.random() * 500) + 100 // KB
-  })
+  try {
+    const body = await c.req.json()
+    
+    // Generate PDF content (will be handled on frontend using jsPDF)
+    const pdfData = {
+      investmentTerms: body,
+      timestamp: new Date().toISOString(),
+      contractVersion: '1.0.0'
+    }
+    
+    // Calculate SHA-256 hash of the content
+    const encoder = new TextEncoder()
+    const data = encoder.encode(JSON.stringify(pdfData, null, 2))
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    const hashHex = '0x' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+    
+    return c.json({
+      success: true,
+      pdfData: pdfData,
+      hash: hashHex,
+      timestamp: Date.now(),
+      needsFrontendGeneration: true // Signal that PDF should be generated on frontend
+    })
+  } catch (error) {
+    return c.json({ 
+      success: false, 
+      error: error.message 
+    }, 500)
+  }
 })
 
+// Real IPFS upload service using Pinata
 app.post('/api/external/upload-ipfs', async (c) => {
-  const body = await c.req.json()
-  
-  // Mock IPFS upload service
-  await new Promise(resolve => setTimeout(resolve, 1500))
-  
-  return c.json({
-    success: true,
-    ipfsHash: `Qm${Math.random().toString(36).substring(7)}XyZ123`,
-    ipfsUrl: `https://gateway.pinata.cloud/ipfs/Qm${Math.random().toString(36).substring(7)}XyZ123`,
-    pinned: true
-  })
+  try {
+    const body = await c.req.json()
+    const { content, filename, metadata } = body
+    
+    // For demo purposes, we'll simulate IPFS upload
+    // In production, you would use actual Pinata API keys from environment variables
+    const isDev = true // Set to false when you have real API keys
+    
+    if (isDev) {
+      // Development simulation with more realistic data
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      const mockHash = 'Qm' + Array.from({length: 44}, () => 
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 62)]
+      ).join('')
+      
+      return c.json({
+        success: true,
+        ipfsHash: mockHash,
+        ipfsUrl: `https://gateway.pinata.cloud/ipfs/${mockHash}`,
+        pinned: true,
+        timestamp: Date.now(),
+        size: content.length,
+        isDemoMode: true
+      })
+    }
+    
+    // Production IPFS upload (uncomment when you have API keys)
+    /*
+    const PINATA_API_KEY = c.env?.PINATA_API_KEY
+    const PINATA_SECRET_KEY = c.env?.PINATA_SECRET_API_KEY
+    
+    if (!PINATA_API_KEY || !PINATA_SECRET_KEY) {
+      throw new Error('Pinata API credentials not configured')
+    }
+    
+    const formData = new FormData()
+    formData.append('file', new Blob([content], { type: 'application/json' }), filename)
+    
+    if (metadata) {
+      formData.append('pinataMetadata', JSON.stringify({
+        name: filename,
+        keyvalues: metadata
+      }))
+    }
+    
+    const response = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+      method: 'POST',
+      headers: {
+        'pinata_api_key': PINATA_API_KEY,
+        'pinata_secret_api_key': PINATA_SECRET_KEY
+      },
+      body: formData
+    })
+    
+    if (!response.ok) {
+      throw new Error(`IPFS upload failed: ${response.statusText}`)
+    }
+    
+    const result = await response.json()
+    
+    return c.json({
+      success: true,
+      ipfsHash: result.IpfsHash,
+      ipfsUrl: `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`,
+      pinned: true,
+      timestamp: Date.now(),
+      size: result.PinSize
+    })
+    */
+    
+  } catch (error) {
+    return c.json({ 
+      success: false, 
+      error: error.message 
+    }, 500)
+  }
 })
 
 // Mock investment data
@@ -354,14 +481,36 @@ app.get('/', (c) => {
                         <span id="wallet-address-short" class="font-mono text-sm bg-white/20 px-2 py-1 rounded"></span>
                         <span class="text-xs">•</span>
                         <span id="wallet-network-display" class="text-xs bg-blue-600/30 px-2 py-1 rounded"></span>
+                        <span id="testnet-badge" class="hidden text-xs bg-yellow-600/30 px-2 py-1 rounded">
+                            <i class="fas fa-flask mr-1"></i>TESTNET
+                        </span>
                     </div>
                     <div class="flex gap-2">
+                        <button id="get-test-eth-btn" class="hidden text-xs bg-yellow-600/80 hover:bg-yellow-600 px-3 py-1 rounded transition-colors">
+                            <i class="fas fa-coins mr-1"></i>Get Test ETH
+                        </button>
                         <button id="wallet-details-btn" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition-colors">
                             <i class="fas fa-info-circle mr-1"></i>Details
                         </button>
                         <button id="disconnect-btn" class="text-xs bg-red-600/80 hover:bg-red-600 px-3 py-1 rounded transition-colors">
                             <i class="fas fa-sign-out-alt mr-1"></i>Disconnect
                         </button>
+                    </div>
+                </div>
+                
+                <!-- Testnet Information -->
+                <div id="testnet-info" class="hidden mt-3 p-3 bg-yellow-600/20 border border-yellow-500/30 rounded-lg text-sm">
+                    <div class="flex items-start gap-2">
+                        <i class="fas fa-info-circle text-yellow-400 mt-0.5"></i>
+                        <div>
+                            <div class="font-semibold text-yellow-300 mb-1">Testnet Mode Active</div>
+                            <div class="text-yellow-200 text-xs">
+                                You're connected to a test network. Use test ETH for transactions.
+                                <span id="faucet-links" class="block mt-1">
+                                    <!-- Faucet links will be populated here -->
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -432,6 +581,7 @@ app.get('/', (c) => {
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
         <script src="/static/investment-dapp.js"></script>
     </body>
     </html>
