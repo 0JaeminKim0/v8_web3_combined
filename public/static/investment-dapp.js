@@ -1582,86 +1582,67 @@ class InvestmentDApp {
 
     async callSBTContract(methodName, params, value = '0x0') {
         try {
-            // Using eth_call for read operations or eth_sendTransaction for write operations
+            if (typeof Web3 === 'undefined') {
+                throw new Error('Web3 library not loaded. Please refresh the page.');
+            }
+            
+            // Initialize Web3 with current provider
+            const web3 = new Web3(window.ethereum);
+            
+            // Create contract instance with ABI
+            const contract = new web3.eth.Contract(this.contractInfo.abi, this.contractInfo.address);
+            
             if (methodName === 'mintInvestment') {
-                // For minting, we need to send a transaction
-                const data = this.encodeMintInvestmentCall(...params);
+                // Use Web3.js contract interface for proper encoding
+                const [investor, targetAPY, durationMonths, ipfsHash, termsHash, contractType] = params;
                 
-                const txParams = {
-                    to: this.contractInfo.address,
+                const gasEstimate = await contract.methods.mintInvestment(
+                    investor, targetAPY, durationMonths, ipfsHash, termsHash, contractType
+                ).estimateGas({
+                    from: this.currentAccount,
+                    value: value
+                });
+                
+                console.log('Estimated gas:', gasEstimate);
+                
+                // Add 20% buffer to gas estimate
+                const gasLimit = Math.floor(gasEstimate * 1.2);
+                
+                const txHash = await contract.methods.mintInvestment(
+                    investor, targetAPY, durationMonths, ipfsHash, termsHash, contractType
+                ).send({
                     from: this.currentAccount,
                     value: value,
-                    data: data,
-                    gas: '0x7A120', // 500000 gas
-                    gasPrice: '0x09184e72a000' // 10 gwei
-                };
-
-                return await window.ethereum.request({
-                    method: 'eth_sendTransaction',
-                    params: [txParams]
+                    gas: gasLimit,
+                    gasPrice: await web3.eth.getGasPrice()
                 });
+                
+                return txHash;
             } else {
-                // For read operations
-                const data = this.encodeContractCall(methodName, params);
-                
-                const result = await window.ethereum.request({
-                    method: 'eth_call',
-                    params: [{
-                        to: this.contractInfo.address,
-                        data: data
-                    }, 'latest']
-                });
-                
-                return this.decodeContractResult(methodName, result);
+                // For read operations, use Web3.js call method
+                return await contract.methods[methodName](...params).call();
             }
         } catch (error) {
             console.error('Contract call error:', error);
-            throw error;
-        }
-    }
-
-    encodeMintInvestmentCall(investor, targetAPY, durationMonths, ipfsHash, termsHash, contractType) {
-        // Function selector for mintInvestment(address,uint256,uint256,string,string,string)
-        // keccak256("mintInvestment(address,uint256,uint256,string,string,string)").slice(0,8)
-        const functionSelector = '0xa1b2c3d4'; // Simplified for demo
-        
-        try {
-            // Simple parameter encoding (simplified version)
-            const encodedParams = [
-                investor.substring(2).padStart(64, '0'),
-                targetAPY.toString(16).padStart(64, '0'),
-                durationMonths.toString(16).padStart(64, '0'),
-                // String encoding is complex, using simplified version
-                this.stringToHex(ipfsHash).substring(2).padStart(64, '0'),
-                this.stringToHex(termsHash).substring(2).padStart(64, '0'),
-                this.stringToHex(contractType).substring(2).padStart(64, '0')
-            ].join('');
             
-            return functionSelector + encodedParams;
-        } catch (error) {
-            console.error('Encoding error:', error);
-            // Fallback to simple data
-            return functionSelector + '0'.repeat(128);
+            // Provide more specific error messages
+            if (error.message.includes('insufficient funds')) {
+                throw new Error('Insufficient funds for gas fees. Please add more ETH to your wallet.');
+            } else if (error.message.includes('execution reverted')) {
+                throw new Error('Transaction reverted. Please check your investment parameters.');
+            } else if (error.message.includes('gas')) {
+                throw new Error('Gas estimation failed. The transaction might fail or require more gas.');
+            } else {
+                throw error;
+            }
         }
     }
 
-    encodeMintFunction(toAddress) {
-        // Try common NFT mint function signatures:
-        // mint(address) - most common
-        // safeMint(address) - OpenZeppelin standard
-        
-        // Function selector for mint(address): 0x6a627842
-        const functionSelector = '0x6a627842';
-        const encodedAddress = toAddress.substring(2).padStart(64, '0');
-        
-        return functionSelector + encodedAddress;
-    }
+    // Legacy encoding functions removed - now using Web3.js for proper ABI encoding
 
-    stringToHex(str) {
-        return '0x' + Array.from(str).map(c => 
-            c.charCodeAt(0).toString(16).padStart(2, '0')
-        ).join('');
-    }
+
+
+
 
     async waitForTransaction(txHash) {
         let attempts = 0;
