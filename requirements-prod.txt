@@ -1,0 +1,37 @@
+# Production Dependencies for Investment SBT DApp  
+# Minimal dependencies for production deployment
+# Install with: pip install -r requirements-prod.txt
+
+# Core Web3 & Blockchain
+web3==7.13.0
+eth-account==0.13.7
+cryptography==45.0.7
+
+# HTTP & Networking
+requests==2.32.5
+aiohttp==3.12.15
+
+# Production Web Server (choose one)
+gunicorn>=21.2.0               # WSGI HTTP Server
+uvicorn[standard]>=0.23.0      # ASGI server for FastAPI
+
+# Database & Caching (if used)
+psycopg2-binary>=2.9.7         # PostgreSQL
+redis>=4.6.0                   # Redis caching
+sqlalchemy>=2.0.20             # ORM
+
+# Monitoring & Logging
+sentry-sdk>=1.32.0             # Error tracking
+structlog>=23.1.0              # Structured logging
+
+# Security
+python-jose[cryptography]>=3.3.0  # JWT handling
+bcrypt>=4.0.1                  # Password hashing
+
+# Environment & Configuration
+python-dotenv>=1.0.0           # Environment variables
+pydantic-settings>=2.0.0       # Settings management
+
+# Performance
+orjson>=3.9.0                  # Fast JSON serialization
+httpx>=0.24.0                  # High performance HTTP client
