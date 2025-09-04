@@ -89,7 +89,7 @@ app.get('/api/network-info', (c) => {
 // Investment Contract APIs
 app.get('/api/investment/contract-info', (c) => {
   return c.json({
-    contractAddress: '0x925c486EA3F98BD164bA23e7221De9EdAC0869d7', // Real deployed contract
+    contractAddress: '0x6b52101F208B8b170942605C0367eF2296Ce779c', // Real deployed contract
     contractName: 'InvestmentReceiptSBT',
     version: '1.0.0',
     network: 'Sepolia Testnet',
