@@ -1,0 +1,8 @@
+{
+  "network": "sepolia",
+  "contractAddress": "0x6b52101F208B8b170942605C0367eF2296Ce779c",
+  "contractName": "InvestmentReceiptSBT",
+  "deployerAddress": "0xbeC016ccc51b89a8c40bdf67ec461e8549B64e75",
+  "timestamp": "2025-09-04T15:31:23.800Z",
+  "etherscanUrl": "https://sepolia.etherscan.io/address/0x6b52101F208B8b170942605C0367eF2296Ce779c"
+}
