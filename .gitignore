@@ -29,5 +29,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# hardhat
+artifacts/
+cache/
+
 # misc
 .DS_Store
