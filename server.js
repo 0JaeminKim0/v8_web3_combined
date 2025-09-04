@@ -106,13 +106,13 @@ app.get('/api/network-info', (c) => {
 app.get('/api/investment/contract-info', (c) => {
   return c.json({
     contract: {
-      address: '0x925c486EA3F98BD164bA23e7221De9EdAC0869d7',
+      address: '0x6b52101F208B8b170942605C0367eF2296Ce779c',
       name: 'InvestmentReceiptSBT',
       symbol: 'IRSBT',
       network: 'Sepolia Testnet',
       networkId: '0xaa36a7',
-      etherscanUrl: 'https://sepolia.etherscan.io/address/0x925c486EA3F98BD164bA23e7221De9EdAC0869d7',
-      openseaUrl: 'https://testnets.opensea.io/assets/sepolia/0x925c486EA3F98BD164bA23e7221De9EdAC0869d7',
+      etherscanUrl: 'https://sepolia.etherscan.io/address/0x6b52101F208B8b170942605C0367eF2296Ce779c',
+      openseaUrl: 'https://testnets.opensea.io/assets/sepolia/0x6b52101F208B8b170942605C0367eF2296Ce779c',
       isTestnet: true,
       version: '1.0.0'
     }

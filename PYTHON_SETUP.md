@@ -135,7 +135,7 @@ w3 = Web3(Web3.HTTPProvider('https://sepolia.infura.io/v3/YOUR_PROJECT_ID'))
 
 # 계약 ABI와 주소
 contract_abi = [...] # 계약 ABI
-contract_address = '0x925c486EA3F98BD164bA23e7221De9EdAC0869d7'
+contract_address = '0x6b52101F208B8b170942605C0367eF2296Ce779c'
 
 # 계약 인스턴스 생성
 contract = w3.eth.contract(address=contract_address, abi=contract_abi)

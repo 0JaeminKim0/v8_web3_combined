@@ -11,14 +11,14 @@ class InvestmentDApp {
         this.currentStep = 1;
         
         this.contractInfo = {
-            address: '0x925c486EA3F98BD164bA23e7221De9EdAC0869d7', // Real OpenSea test contract on Sepolia
+            address: '0x6b52101F208B8b170942605C0367eF2296Ce779c', // Real deployed contract on Sepolia
             name: 'InvestmentReceiptSBT', 
             network: 'Sepolia Testnet',
             networkId: '0xaa36a7',
             testnet: true,
             isRealContract: true,
-            etherscanUrl: 'https://sepolia.etherscan.io/address/0x925c486EA3F98BD164bA23e7221De9EdAC0869d7',
-            openseaUrl: 'https://testnets.opensea.io/assets/sepolia/0x925c486EA3F98BD164bA23e7221De9EdAC0869d7',
+            etherscanUrl: 'https://sepolia.etherscan.io/address/0x6b52101F208B8b170942605C0367eF2296Ce779c',
+            openseaUrl: 'https://testnets.opensea.io/assets/sepolia/0x6b52101F208B8b170942605C0367eF2296Ce779c',
             abi: this.getSBTContractABI()
         };
         

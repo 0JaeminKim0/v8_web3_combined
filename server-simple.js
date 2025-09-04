@@ -89,7 +89,7 @@ app.get('/api/network-info', (c) => {
 // Investment Contract APIs
 app.get('/api/investment/contract-info', (c) => {
   return c.json({
-    contractAddress: '0x925c486EA3F98BD164bA23e7221De9EdAC0869d7', // Real deployed contract
+    contractAddress: '0x6b52101F208B8b170942605C0367eF2296Ce779c', // Real deployed contract
     contractName: 'InvestmentReceiptSBT',
     version: '1.0.0',
     network: 'Sepolia Testnet',
@@ -737,7 +737,7 @@ app.get('/', (c) => {
                 <div class="text-sm space-y-2 max-w-2xl mx-auto text-gray-300">
                     <div class="flex justify-between">
                         <span class="text-gray-400">Contract Address:</span>
-                        <span class="font-mono text-xs text-white">0x925c486EA3F98BD164bA23e7221De9EdAC0869d7</span>
+                        <span class="font-mono text-xs text-white">0x6b52101F208B8b170942605C0367eF2296Ce779c</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-400">Network:</span>
@@ -748,11 +748,11 @@ app.get('/', (c) => {
                         <span class="text-purple-400">ERC-721 Compatible SBT</span>
                     </div>
                     <div class="flex flex-wrap justify-center gap-4 mt-4">
-                        <a href="https://sepolia.etherscan.io/address/0x925c486EA3F98BD164bA23e7221De9EdAC0869d7" target="_blank" 
+                        <a href="https://sepolia.etherscan.io/address/0x6b52101F208B8b170942605C0367eF2296Ce779c" target="_blank" 
                            class="text-blue-400 hover:text-blue-300 text-xs">
                             <i class="fas fa-external-link-alt mr-1"></i>View on Etherscan
                         </a>
-                        <a href="https://testnets.opensea.io/assets/sepolia/0x925c486EA3F98BD164bA23e7221De9EdAC0869d7" target="_blank" 
+                        <a href="https://testnets.opensea.io/assets/sepolia/0x6b52101F208B8b170942605C0367eF2296Ce779c" target="_blank" 
                            class="text-purple-400 hover:text-purple-300 text-xs">
                             <i class="fas fa-external-link-alt mr-1"></i>View on OpenSea
                         </a>
@@ -784,4 +784,4 @@ serve({
 
 console.log(`✅ SBT DApp server running on http://0.0.0.0:${port}`)
 console.log(`🔗 Health check: http://0.0.0.0:${port}/health`)
-console.log(`💰 Contract Address: 0x925c486EA3F98BD164bA23e7221De9EdAC0869d7`)
+console.log(`💰 Contract Address: 0x6b52101F208B8b170942605C0367eF2296Ce779c`)
