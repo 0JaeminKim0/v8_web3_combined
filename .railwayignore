@@ -1,0 +1,57 @@
+# Railway Ignore File
+# Files and directories to ignore during Railway deployment
+
+# Development files
+.wrangler/
+web3_env/
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies (will be installed during build)
+node_modules/
+
+# Environment files (set via Railway dashboard)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build cache
+.next/
+.nuxt/
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Hardhat artifacts (not needed for Railway)
+cache/
+artifacts/
+typechain-types/
+
+# Git
+.git/
+.gitignore
+
+# PM2
+.pm2/
+ecosystem.config.cjs
+
+# Cloudflare specific files (not needed for Railway)
+wrangler.jsonc
+wrangler.json
+
+# Backup files
+*.backup
+*.bak
+*.tar.gz
+*.zip
