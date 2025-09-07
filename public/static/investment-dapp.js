@@ -85,6 +85,7 @@ class InvestmentDApp {
         await this.loadInvestmentTemplates();
         this.renderWalletCards();
         this.setupEventListeners();
+        this.setupConnectionListeners(); // Add MetaMask connection listeners
         this.checkExistingConnection();
         
         // Add wallet detection troubleshooting
@@ -1570,8 +1571,24 @@ class InvestmentDApp {
 
         } catch (error) {
             console.error('Deposit error:', error);
-            this.showStatus('error', 'Transaction failed. Please try again.');
-            setTimeout(() => this.hideStatus(), 5000);
+            
+            let errorMessage = 'Transaction failed. Please try again.';
+            
+            // Handle specific error types
+            if (error.message.includes('MetaMask') && error.message.includes('connection')) {
+                errorMessage = 'MetaMask connection lost. Please refresh the page (F5) and reconnect your wallet.';
+            } else if (error.message.includes('insufficient funds')) {
+                errorMessage = 'Insufficient ETH for gas fees. Please add more Sepolia ETH to your wallet.';
+            } else if (error.message.includes('rejected') || error.message.includes('denied')) {
+                errorMessage = 'Transaction was cancelled by user.';
+            } else if (error.message.includes('execution reverted')) {
+                errorMessage = 'Transaction failed during execution. Please check your parameters and try again.';
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            
+            this.showStatus('error', errorMessage);
+            setTimeout(() => this.hideStatus(), 8000);
         } finally {
             if (depositBtn) {
                 depositBtn.disabled = false;
@@ -1585,6 +1602,14 @@ class InvestmentDApp {
             if (typeof ethers === 'undefined') {
                 throw new Error('Ethers library not loaded. Please refresh the page.');
             }
+            
+            // Check MetaMask connection status
+            if (!window.ethereum || !window.ethereum.isConnected()) {
+                throw new Error('MetaMask is disconnected. Please reconnect your wallet.');
+            }
+            
+            // Re-establish connection if needed
+            await this.ensureWalletConnection();
             
             // Initialize ethers provider
             const provider = new ethers.BrowserProvider(window.ethereum);
@@ -1626,8 +1651,12 @@ class InvestmentDApp {
         } catch (error) {
             console.error('Contract call error:', error);
             
-            // Provide more specific error messages
-            if (error.message.includes('insufficient funds')) {
+            // Handle MetaMask-specific errors
+            if (error.message.includes('Lost connection') || error.message.includes('Disconnected from MetaMask')) {
+                throw new Error('MetaMask connection lost. Please refresh the page and reconnect your wallet.');
+            } else if (error.message.includes('MetaMask is disconnected')) {
+                throw new Error('MetaMask is disconnected. Please click the MetaMask icon and reconnect.');
+            } else if (error.message.includes('insufficient funds')) {
                 throw new Error('Insufficient funds for gas fees. Please add more ETH to your wallet.');
             } else if (error.message.includes('execution reverted')) {
                 throw new Error('Transaction reverted. Please check your investment parameters.');
@@ -1641,7 +1670,8 @@ class InvestmentDApp {
         }
     }
 
-    // Legacy encoding functions removed - now using Web3.js for proper ABI encoding
+    // MetaMask connection management functions
+    async ensureWalletConnection() {\n        try {\n            if (!window.ethereum) {\n                throw new Error('MetaMask not installed');\n            }\n            \n            // Check if already connected\n            const accounts = await window.ethereum.request({ method: 'eth_accounts' });\n            if (accounts.length === 0) {\n                // Request connection\n                await window.ethereum.request({ method: 'eth_requestAccounts' });\n            }\n            \n            // Update current account\n            const newAccounts = await window.ethereum.request({ method: 'eth_accounts' });\n            this.currentAccount = newAccounts[0];\n            \n            return true;\n        } catch (error) {\n            console.error('Connection error:', error);\n            throw new Error('Failed to connect to MetaMask. Please try reconnecting manually.');\n        }\n    }\n    \n    // Add connection event listeners\n    setupConnectionListeners() {\n        if (window.ethereum) {\n            window.ethereum.on('disconnect', (error) => {\n                console.log('MetaMask disconnected:', error);\n                this.showStatus('error', 'MetaMask disconnected. Please refresh the page and reconnect.');\n            });\n            \n            window.ethereum.on('accountsChanged', (accounts) => {\n                console.log('Accounts changed:', accounts);\n                if (accounts.length === 0) {\n                    this.showStatus('warning', 'MetaMask account disconnected. Please reconnect.');\n                } else {\n                    this.currentAccount = accounts[0];\n                    this.showStatus('success', 'Account changed successfully.');\n                }\n            });\n            \n            window.ethereum.on('chainChanged', (chainId) => {\n                console.log('Chain changed:', chainId);\n                window.location.reload(); // Reload on network change\n            });\n        }\n    }"
 
 
 
