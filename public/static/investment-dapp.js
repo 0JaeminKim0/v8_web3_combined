@@ -1475,6 +1475,14 @@ class InvestmentDApp {
         }
 
         try {
+            // Check if contract data exists (from previous generation step)
+            if (!this.contractData) {
+                this.showStatus('warning', 'Generating contract document for IPFS storage...');
+                
+                // Quick contract generation for IPFS hash
+                await this.generateContractQuick();
+            }
+            
             this.showStatus('info', 'Please confirm the transaction in your wallet...');
 
             // Use ethers.js properly to call mintInvestment function
@@ -1515,8 +1523,8 @@ class InvestmentDApp {
                 this.currentAccount, // investor
                 parseInt(this.investmentTerms.targetAPY || 10), // targetAPY
                 parseInt(this.investmentTerms.term?.replace(/[^0-9]/g, '') || 12), // durationMonths
-                'QmTestIPFSHash123456789', // ipfsHash (placeholder)
-                'terms-hash-' + Date.now(), // termsHash
+                this.contractData?.ipfsHash || 'QmDemoModeNoIPFS123456789', // Real IPFS hash or demo
+                this.contractData?.pdfHash || 'demo-terms-hash-' + Date.now(), // Real PDF hash or demo
                 this.investmentTerms.template?.id || 'fixed-term', // contractType
                 { 
                     value: amountWei,
@@ -1737,6 +1745,71 @@ class InvestmentDApp {
                 console.log('Chain changed:', chainId);
                 window.location.reload(); // Reload on network change
             });
+        }
+    }
+    
+    // Quick contract generation for minting (when user skips generation step)
+    async generateContractQuick() {
+        try {
+            console.log('📄 Quick generating contract for IPFS...');
+            
+            // Generate PDF quickly
+            const pdfData = {
+                investmentTerms: this.investmentTerms,
+                investor: this.currentAccount,
+                network: this.getChainName(this.currentChainId),
+                timestamp: new Date().toISOString(),
+                contractAddress: this.contractInfo.address
+            };
+            
+            const pdfBlob = await this.generatePDFDocument(pdfData);
+            
+            // Try IPFS upload
+            try {
+                const ipfsResult = await axios.post('/api/external/upload-ipfs', {
+                    content: JSON.stringify(pdfData, null, 2),
+                    filename: `investment-contract-${Date.now()}.json`,
+                    metadata: {
+                        type: 'investment-contract',
+                        investor: this.currentAccount,
+                        network: this.getChainName(this.currentChainId),
+                        timestamp: new Date().toISOString()
+                    }
+                });
+                
+                this.contractData = {
+                    pdfBlob: pdfBlob,
+                    pdfData: pdfData,
+                    ipfsHash: ipfsResult.data.ipfsHash || 'QmDemoQuick' + Date.now(),
+                    pdfHash: 'quick-hash-' + Date.now(),
+                    pdfSize: Math.round(pdfBlob.size / 1024),
+                    isDemoMode: ipfsResult.data.isDemoMode || true
+                };
+                
+                console.log('✅ Quick contract generated:', this.contractData.ipfsHash);
+                
+            } catch (ipfsError) {
+                console.log('⚠️ IPFS upload failed, using demo mode:', ipfsError.message);
+                
+                // Fallback to demo mode
+                this.contractData = {
+                    pdfBlob: pdfBlob,
+                    pdfData: pdfData,
+                    ipfsHash: 'QmDemoQuick' + Date.now().toString().slice(-8),
+                    pdfHash: 'quick-hash-' + Date.now(),
+                    pdfSize: Math.round(pdfBlob.size / 1024),
+                    isDemoMode: true
+                };
+            }
+            
+        } catch (error) {
+            console.error('Quick generation failed:', error);
+            // Set minimal demo data
+            this.contractData = {
+                ipfsHash: 'QmDemoFailed' + Date.now().toString().slice(-8),
+                pdfHash: 'failed-hash-' + Date.now(),
+                isDemoMode: true
+            };
         }
     }
     
