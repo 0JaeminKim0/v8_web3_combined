@@ -1500,23 +1500,8 @@ class InvestmentDApp {
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
             
-            // Create contract instance with minimal ABI (only mintInvestment function)
-            const minimalABI = [{
-                "inputs": [
-                    {"internalType": "address", "name": "investor", "type": "address"},
-                    {"internalType": "uint256", "name": "targetAPY", "type": "uint256"},
-                    {"internalType": "uint256", "name": "durationMonths", "type": "uint256"},
-                    {"internalType": "string", "name": "ipfsHash", "type": "string"},
-                    {"internalType": "string", "name": "termsHash", "type": "string"},
-                    {"internalType": "string", "name": "contractType", "type": "string"}
-                ],
-                "name": "mintInvestment",
-                "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-                "stateMutability": "payable",
-                "type": "function"
-            }];
-            
-            const contract = new ethers.Contract(this.contractInfo.address, minimalABI, signer);
+            // Use full ABI for better MetaMask function recognition
+            const contract = new ethers.Contract(this.contractInfo.address, this.contractInfo.abi, signer);
             
             // Call mintInvestment with proper parameters
             const tx = await contract.mintInvestment(

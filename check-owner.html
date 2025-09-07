@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>컨트랙트 소유자 확인</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white p-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">컨트랙트 소유자 확인</h1>
+        
+        <div class="bg-gray-800 p-6 rounded-lg mb-4">
+            <h2 class="text-xl mb-4">컨트랙트 정보</h2>
+            <p class="mb-2"><strong>주소:</strong> <span class="font-mono">0x6b52101F208B8b170942605C0367eF2296Ce779c</span></p>
+            <p class="mb-4"><strong>네트워크:</strong> Sepolia Testnet</p>
+            
+            <button onclick="checkOwner()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                소유자 확인하기
+            </button>
+        </div>
+        
+        <div id="results" class="bg-gray-800 p-6 rounded-lg">
+            <h2 class="text-xl mb-4">결과</h2>
+            <div id="ownerInfo">클릭하여 확인하세요...</div>
+        </div>
+        
+        <div class="bg-yellow-800 p-4 rounded-lg mt-4">
+            <h3 class="font-bold mb-2">👤 제공된 주소</h3>
+            <p class="font-mono text-sm">0xbeC016ccc51b89a8c40bdf67ec461e8549B64e75</p>
+            <p class="text-sm mt-2">이 주소가 실제 컨트랙트 소유자인지 확인해보겠습니다.</p>
+        </div>
+    </div>
+
+    <script>
+        const contractAddress = '0x6b52101F208B8b170942605C0367eF2296Ce779c';
+        const providedAddress = '0xbeC016ccc51b89a8c40bdf67ec461e8549B64e75';
+        
+        // owner() function selector
+        const ownerABI = [
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        async function checkOwner() {
+            const resultsDiv = document.getElementById('ownerInfo');
+            resultsDiv.innerHTML = '확인 중...';
+
+            try {
+                // Sepolia RPC endpoint
+                const provider = new ethers.providers.JsonRpcProvider('https://sepolia.infura.io/v3/84842078b09946638c03157f83405213');
+                
+                const contract = new ethers.Contract(contractAddress, ownerABI, provider);
+                
+                // Get actual owner
+                const actualOwner = await contract.owner();
+                
+                // Get contract balance
+                const balance = await provider.getBalance(contractAddress);
+                const balanceETH = ethers.utils.formatEther(balance);
+                
+                // Compare addresses
+                const isMatch = actualOwner.toLowerCase() === providedAddress.toLowerCase();
+                
+                resultsDiv.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="p-3 bg-gray-700 rounded">
+                            <strong>실제 컨트랙트 소유자:</strong><br>
+                            <span class="font-mono text-green-400">${actualOwner}</span>
+                        </div>
+                        
+                        <div class="p-3 bg-gray-700 rounded">
+                            <strong>제공된 주소:</strong><br>
+                            <span class="font-mono text-blue-400">${providedAddress}</span>
+                        </div>
+                        
+                        <div class="p-3 rounded ${isMatch ? 'bg-green-800' : 'bg-red-800'}">
+                            <strong>주소 일치 여부:</strong> ${isMatch ? '✅ 일치함' : '❌ 일치하지 않음'}
+                        </div>
+                        
+                        <div class="p-3 bg-gray-700 rounded">
+                            <strong>컨트랙트 잔고:</strong> ${balanceETH} ETH
+                        </div>
+                        
+                        ${!isMatch ? `
+                        <div class="p-3 bg-yellow-800 rounded">
+                            <strong>⚠️ 문제점:</strong><br>
+                            제공된 주소는 컨트랙트 소유자가 아닙니다.<br>
+                            실제 소유자는 <span class="font-mono">${actualOwner}</span>입니다.
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="text-red-400">
+                        <strong>오류 발생:</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
