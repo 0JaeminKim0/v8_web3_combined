@@ -194,24 +194,34 @@ app.post('/api/external/upload-ipfs', async (c) => {
     const useRealIPFS = pinataJWT && pinataJWT !== 'your-pinata-jwt-token-here'
     
     if (!useRealIPFS) {
-      // Demo mode - return local document info instead of invalid IPFS URLs
+      // Demo mode - create a temporary server-side storage with accessible URLs
       await new Promise(resolve => setTimeout(resolve, 2000))
       
       // Use a deterministic hash based on content for consistency
       const contentHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(content))
       const hashArray = Array.from(new Uint8Array(contentHash))
       const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+      const demoHash = `demo_${hashHex.substring(0, 46)}`
+      
+      // Store document temporarily in memory (you could use file system in production)
+      global.demoStorage = global.demoStorage || {}
+      global.demoStorage[demoHash] = {
+        content: content,
+        filename: filename,
+        metadata: metadata,
+        timestamp: Date.now()
+      }
       
       return c.json({
         success: true,
-        ipfsHash: `demo_${hashHex.substring(0, 46)}`, // Clearly marked as demo
-        ipfsUrl: null, // Don't provide invalid URLs
-        localDocument: true, // Indicates this is stored locally
+        ipfsHash: demoHash,
+        ipfsUrl: `/api/demo-storage/${demoHash}`, // Accessible demo URL
+        localDocument: true,
         pinned: false,
         timestamp: Date.now(),
         size: content.length,
         isDemoMode: true,
-        message: 'Document generated locally. Enable real IPFS by configuring Pinata API keys.'
+        message: 'Document stored locally in demo mode. Enable real IPFS by configuring Pinata API keys.'
       })
     }
     
@@ -370,6 +380,35 @@ app.post('/api/investment/save', async (c) => {
       error: error.message
     }, 500)
   }
+})
+
+// Demo storage access endpoint
+app.get('/api/demo-storage/:hash', (c) => {
+  const hash = c.req.param('hash')
+  
+  // Check if document exists in demo storage
+  const demoStorage = global.demoStorage || {}
+  const document = demoStorage[hash]
+  
+  if (!document) {
+    return c.json({
+      success: false,
+      error: 'Document not found in demo storage',
+      message: 'This document may have expired or does not exist.'
+    }, 404)
+  }
+  
+  // Return the stored document
+  return c.json({
+    success: true,
+    hash: hash,
+    content: JSON.parse(document.content),
+    filename: document.filename,
+    metadata: document.metadata,
+    timestamp: document.timestamp,
+    isDemoMode: true,
+    message: 'Document retrieved from demo storage successfully.'
+  })
 })
 
 // Health check
