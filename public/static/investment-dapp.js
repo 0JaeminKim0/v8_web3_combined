@@ -1671,7 +1671,54 @@ class InvestmentDApp {
     }
 
     // MetaMask connection management functions
-    async ensureWalletConnection() {\n        try {\n            if (!window.ethereum) {\n                throw new Error('MetaMask not installed');\n            }\n            \n            // Check if already connected\n            const accounts = await window.ethereum.request({ method: 'eth_accounts' });\n            if (accounts.length === 0) {\n                // Request connection\n                await window.ethereum.request({ method: 'eth_requestAccounts' });\n            }\n            \n            // Update current account\n            const newAccounts = await window.ethereum.request({ method: 'eth_accounts' });\n            this.currentAccount = newAccounts[0];\n            \n            return true;\n        } catch (error) {\n            console.error('Connection error:', error);\n            throw new Error('Failed to connect to MetaMask. Please try reconnecting manually.');\n        }\n    }\n    \n    // Add connection event listeners\n    setupConnectionListeners() {\n        if (window.ethereum) {\n            window.ethereum.on('disconnect', (error) => {\n                console.log('MetaMask disconnected:', error);\n                this.showStatus('error', 'MetaMask disconnected. Please refresh the page and reconnect.');\n            });\n            \n            window.ethereum.on('accountsChanged', (accounts) => {\n                console.log('Accounts changed:', accounts);\n                if (accounts.length === 0) {\n                    this.showStatus('warning', 'MetaMask account disconnected. Please reconnect.');\n                } else {\n                    this.currentAccount = accounts[0];\n                    this.showStatus('success', 'Account changed successfully.');\n                }\n            });\n            \n            window.ethereum.on('chainChanged', (chainId) => {\n                console.log('Chain changed:', chainId);\n                window.location.reload(); // Reload on network change\n            });\n        }\n    }"
+    async ensureWalletConnection() {
+        try {
+            if (!window.ethereum) {
+                throw new Error('MetaMask not installed');
+            }
+            
+            // Check if already connected
+            const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+            if (accounts.length === 0) {
+                // Request connection
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+            }
+            
+            // Update current account
+            const newAccounts = await window.ethereum.request({ method: 'eth_accounts' });
+            this.currentAccount = newAccounts[0];
+            
+            return true;
+        } catch (error) {
+            console.error('Connection error:', error);
+            throw new Error('Failed to connect to MetaMask. Please try reconnecting manually.');
+        }
+    }
+    
+    // Add connection event listeners
+    setupConnectionListeners() {
+        if (window.ethereum) {
+            window.ethereum.on('disconnect', (error) => {
+                console.log('MetaMask disconnected:', error);
+                this.showStatus('error', 'MetaMask disconnected. Please refresh the page and reconnect.');
+            });
+            
+            window.ethereum.on('accountsChanged', (accounts) => {
+                console.log('Accounts changed:', accounts);
+                if (accounts.length === 0) {
+                    this.showStatus('warning', 'MetaMask account disconnected. Please reconnect.');
+                } else {
+                    this.currentAccount = accounts[0];
+                    this.showStatus('success', 'Account changed successfully.');
+                }
+            });
+            
+            window.ethereum.on('chainChanged', (chainId) => {
+                console.log('Chain changed:', chainId);
+                window.location.reload(); // Reload on network change
+            });
+        }
+    }
 
 
 
