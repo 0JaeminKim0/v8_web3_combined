@@ -137,7 +137,7 @@ app.get('/api/investment/templates', (c) => {
         id: 'flexible-yield',
         name: 'Flexible Yield Pool',
         description: 'Dynamic yield farming with compound rewards',
-        minAmount: '0.1',
+        minAmount: '0.05',
         maxAmount: '50.0',
         targetAPYRange: { min: 8, max: 25 },
         durationRange: { min: 3, max: 18 },

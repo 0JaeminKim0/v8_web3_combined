@@ -119,7 +119,7 @@ app.get('/api/investment/templates', (c) => {
         id: 'fixed-term',
         name: 'Fixed Term Investment',
         description: 'Traditional fixed-term investment with guaranteed APY',
-        minAmount: '0.1',
+        minAmount: '0.05',
         maxAmount: '100',
         terms: ['3 months', '6 months', '12 months'],
         targetAPYRange: { min: 5, max: 15 },
