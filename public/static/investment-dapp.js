@@ -1476,8 +1476,8 @@ class InvestmentDApp {
         try {
             this.showStatus('info', 'Please confirm the transaction in your wallet...');
 
-            // Convert amount to Wei (ETH to Wei conversion)
-            const amountWei = '0x' + (parseFloat(this.investmentTerms.amount) * Math.pow(10, 18)).toString(16);
+            // Convert amount to Wei using ethers.js
+            const amountWei = ethers.parseEther(this.investmentTerms.amount);
 
             // Real NFT/SBT minting using OpenSea-compatible contract
             console.log('🎯 Attempting real NFT minting to contract:', this.contractInfo.address);
@@ -1582,45 +1582,46 @@ class InvestmentDApp {
 
     async callSBTContract(methodName, params, value = '0x0') {
         try {
-            if (typeof Web3 === 'undefined') {
-                throw new Error('Web3 library not loaded. Please refresh the page.');
+            if (typeof ethers === 'undefined') {
+                throw new Error('Ethers library not loaded. Please refresh the page.');
             }
             
-            // Initialize Web3 with current provider
-            const web3 = new Web3(window.ethereum);
+            // Initialize ethers provider
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
             
             // Create contract instance with ABI
-            const contract = new web3.eth.Contract(this.contractInfo.abi, this.contractInfo.address);
+            const contract = new ethers.Contract(this.contractInfo.address, this.contractInfo.abi, signer);
             
             if (methodName === 'mintInvestment') {
-                // Use Web3.js contract interface for proper encoding
+                // Use ethers.js contract interface for proper encoding
                 const [investor, targetAPY, durationMonths, ipfsHash, termsHash, contractType] = params;
                 
-                const gasEstimate = await contract.methods.mintInvestment(
-                    investor, targetAPY, durationMonths, ipfsHash, termsHash, contractType
-                ).estimateGas({
-                    from: this.currentAccount,
-                    value: value
-                });
+                // Estimate gas for the transaction
+                const gasEstimate = await contract.mintInvestment.estimateGas(
+                    investor, targetAPY, durationMonths, ipfsHash, termsHash, contractType,
+                    { value: value }
+                );
                 
-                console.log('Estimated gas:', gasEstimate);
+                console.log('Estimated gas:', gasEstimate.toString());
                 
                 // Add 20% buffer to gas estimate
-                const gasLimit = Math.floor(gasEstimate * 1.2);
+                const gasLimit = (gasEstimate * 120n) / 100n;
                 
-                const txHash = await contract.methods.mintInvestment(
-                    investor, targetAPY, durationMonths, ipfsHash, termsHash, contractType
-                ).send({
-                    from: this.currentAccount,
-                    value: value,
-                    gas: gasLimit,
-                    gasPrice: await web3.eth.getGasPrice()
-                });
+                // Send transaction
+                const tx = await contract.mintInvestment(
+                    investor, targetAPY, durationMonths, ipfsHash, termsHash, contractType,
+                    { 
+                        value: value,
+                        gasLimit: gasLimit
+                    }
+                );
                 
-                return txHash;
+                console.log('Transaction sent:', tx.hash);
+                return tx;
             } else {
-                // For read operations, use Web3.js call method
-                return await contract.methods[methodName](...params).call();
+                // For read operations, use ethers.js call method
+                return await contract[methodName](...params);
             }
         } catch (error) {
             console.error('Contract call error:', error);
@@ -1630,6 +1631,8 @@ class InvestmentDApp {
                 throw new Error('Insufficient funds for gas fees. Please add more ETH to your wallet.');
             } else if (error.message.includes('execution reverted')) {
                 throw new Error('Transaction reverted. Please check your investment parameters.');
+            } else if (error.code === 'ACTION_REJECTED') {
+                throw new Error('Transaction was rejected by user.');
             } else if (error.message.includes('gas')) {
                 throw new Error('Gas estimation failed. The transaction might fail or require more gas.');
             } else {
