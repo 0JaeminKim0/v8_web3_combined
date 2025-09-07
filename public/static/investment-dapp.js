@@ -1477,27 +1477,56 @@ class InvestmentDApp {
         try {
             this.showStatus('info', 'Please confirm the transaction in your wallet...');
 
-            // Simple ETH transfer to contract - no complex interactions
-            const amountWei = '0x' + (parseFloat(this.investmentTerms.amount) * Math.pow(10, 18)).toString(16);
+            // Use ethers.js properly to call mintInvestment function
+            const amountWei = ethers.parseEther(this.investmentTerms.amount);
             
-            console.log('💰 Sending simple ETH transfer to contract:', this.contractInfo.address);
-            console.log('Amount:', this.investmentTerms.amount, 'ETH =', amountWei, 'Wei');
-            
-            // Simple ETH transfer - most reliable method
-            const transactionParameters = {
-                to: this.contractInfo.address,
-                from: this.currentAccount,
-                value: amountWei,
-                gas: '0x5208', // 21000 gas - standard ETH transfer
-                gasPrice: '0x09184e72a000' // 10 gwei
-            };
-
-            console.log('Transaction parameters:', transactionParameters);
-
-            const txHash = await window.ethereum.request({
-                method: 'eth_sendTransaction',
-                params: [transactionParameters]
+            console.log('🎯 Calling mintInvestment function via ethers.js');
+            console.log('Parameters:', {
+                investor: this.currentAccount,
+                targetAPY: this.investmentTerms.targetAPY || 10,
+                durationMonths: parseInt(this.investmentTerms.term?.replace(/[^0-9]/g, '') || 12),
+                amount: this.investmentTerms.amount + ' ETH'
             });
+            
+            // Initialize ethers provider with minimal setup
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            
+            // Create contract instance with minimal ABI (only mintInvestment function)
+            const minimalABI = [{
+                "inputs": [
+                    {"internalType": "address", "name": "investor", "type": "address"},
+                    {"internalType": "uint256", "name": "targetAPY", "type": "uint256"},
+                    {"internalType": "uint256", "name": "durationMonths", "type": "uint256"},
+                    {"internalType": "string", "name": "ipfsHash", "type": "string"},
+                    {"internalType": "string", "name": "termsHash", "type": "string"},
+                    {"internalType": "string", "name": "contractType", "type": "string"}
+                ],
+                "name": "mintInvestment",
+                "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                "stateMutability": "payable",
+                "type": "function"
+            }];
+            
+            const contract = new ethers.Contract(this.contractInfo.address, minimalABI, signer);
+            
+            // Call mintInvestment with proper parameters
+            const tx = await contract.mintInvestment(
+                this.currentAccount, // investor
+                parseInt(this.investmentTerms.targetAPY || 10), // targetAPY
+                parseInt(this.investmentTerms.term?.replace(/[^0-9]/g, '') || 12), // durationMonths
+                'QmTestIPFSHash123456789', // ipfsHash (placeholder)
+                'terms-hash-' + Date.now(), // termsHash
+                this.investmentTerms.template?.id || 'fixed-term', // contractType
+                { 
+                    value: amountWei,
+                    gasLimit: 2000000 // 2M gas limit
+                }
+            );
+            
+            const txHash = tx.hash;
+
+            console.log('✅ mintInvestment transaction sent:', txHash);
             
             console.log('✅ Transaction submitted:', txHash);
             
