@@ -1700,16 +1700,25 @@ class InvestmentDApp {
         if (window.ethereum) {
             window.ethereum.on('disconnect', (error) => {
                 console.log('MetaMask disconnected:', error);
-                this.showStatus('error', 'MetaMask disconnected. Please refresh the page and reconnect.');
+                this.showStatus('info', 'MetaMask disconnected. Refreshing page in 3 seconds...');
+                
+                // Auto-reload page after 3 seconds
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
             });
             
             window.ethereum.on('accountsChanged', (accounts) => {
                 console.log('Accounts changed:', accounts);
                 if (accounts.length === 0) {
-                    this.showStatus('warning', 'MetaMask account disconnected. Please reconnect.');
+                    this.showStatus('warning', 'MetaMask account disconnected. Refreshing page...');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
                 } else {
                     this.currentAccount = accounts[0];
                     this.showStatus('success', 'Account changed successfully.');
+                    this.updateConnectionStatus(true);
                 }
             });
             
@@ -1718,6 +1727,20 @@ class InvestmentDApp {
                 window.location.reload(); // Reload on network change
             });
         }
+    }
+    
+    // Update connection status indicator
+    updateConnectionStatus(isConnected) {
+        const statusElements = document.querySelectorAll('.connection-status');
+        statusElements.forEach(element => {
+            if (isConnected) {
+                element.innerHTML = '<i class="fas fa-circle text-green-400 mr-1"></i>Connected';
+                element.className = 'connection-status text-green-400';
+            } else {
+                element.innerHTML = '<i class="fas fa-circle text-red-400 mr-1"></i>Disconnected';  
+                element.className = 'connection-status text-red-400';
+            }
+        });
     }
 
 
