@@ -770,6 +770,27 @@ app.get('/', (c) => {
   `)
 })
 
+// Owner Panel Route
+app.get('/owner-panel.html', async (c) => {
+  try {
+    const fs = await import('fs')
+    const path = await import('path')
+    
+    const filePath = path.join(process.cwd(), 'owner-panel.html')
+    const html = fs.readFileSync(filePath, 'utf8')
+    return c.html(html)
+  } catch (error) {
+    return c.html(`
+      <!DOCTYPE html>
+      <html><body>
+      <h1>Owner Panel Not Found</h1>
+      <p>Error: ${error.message}</p>
+      <p>Please ensure owner-panel.html exists in the project root.</p>
+      </body></html>
+    `)
+  }
+})
+
 // Start server
 const port = parseInt(process.env.PORT) || 3000
 

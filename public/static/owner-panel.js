@@ -23,7 +23,8 @@ class ContractOwnerPanel {
 
     async init() {
         if (typeof window.ethereum !== 'undefined') {
-            this.provider = new ethers.providers.Web3Provider(window.ethereum);
+            // ethers v6 syntax
+            this.provider = new ethers.BrowserProvider(window.ethereum);
             this.contract = new ethers.Contract(this.contractAddress, this.contractABI, this.provider);
         }
     }
@@ -31,7 +32,7 @@ class ContractOwnerPanel {
     async connectWallet() {
         try {
             await window.ethereum.request({ method: 'eth_requestAccounts' });
-            this.signer = this.provider.getSigner();
+            this.signer = await this.provider.getSigner();
             this.signedContract = this.contract.connect(this.signer);
             
             const address = await this.signer.getAddress();
@@ -53,13 +54,13 @@ class ContractOwnerPanel {
         try {
             // Get contract ETH balance
             const balance = await this.provider.getBalance(this.contractAddress);
-            const balanceETH = ethers.utils.formatEther(balance);
+            const balanceETH = ethers.formatEther(balance);
             document.getElementById('contractBalance').textContent = balanceETH + ' ETH';
             
             // Get owner wallet balance
             const owner = await this.contract.owner();
             const ownerBalance = await this.provider.getBalance(owner);
-            const ownerBalanceETH = ethers.utils.formatEther(ownerBalance);
+            const ownerBalanceETH = ethers.formatEther(ownerBalance);
             document.getElementById('ownerBalance').textContent = ownerBalanceETH + ' ETH';
             
         } catch (error) {
