@@ -10,6 +10,67 @@ app.use('/api/*', cors())
 // Serve static files from public directory
 app.use('/static/*', serveStatic({ root: './public' }))
 
+// Investment platform project data
+const projects = [
+  {
+    id: 'ptf',
+    title: 'PTF — Potato Tokenized Finance',
+    sector: 'Agriculture',
+    region: 'Thailand',
+    issuer: 'Agritech SPV',
+    apy: '14.8%',
+    totalRaised: '150000',
+    targetAmount: '3000000',
+    currency: 'USDT',
+    minInvestment: '10000',
+    tenor: '12 months',
+    riskLevel: 'Medium',
+    description: 'Seed potato cultivation and processing in Northern Thailand with indexed offtake contracts.',
+    keyFeatures: ['Multi-site Weather Protection', 'Indexed Offtake Contracts', '3M+ Operating Reserve'],
+    investors: '3',
+    distributionFreq: 'Monthly',
+    tokenStandard: 'ERC-3643'
+  },
+  {
+    id: 'scn',
+    title: 'SCN — Stem Cell Therapy Clinic',
+    sector: 'Healthcare',
+    region: 'Thailand',
+    issuer: 'Bangkok Medical Innovation',
+    apy: '18.2%',
+    totalRaised: '700000',
+    targetAmount: '14000000',
+    currency: 'USDT',
+    minInvestment: '25000',
+    tenor: '24-36 months',
+    riskLevel: 'High',
+    description: 'Licensed regenerative medicine clinic in Bangkok specializing in stem cell therapy.',
+    keyFeatures: ['FDA‑Equivalent Licensing', 'Medical Tourism Focus', 'KOL Partnerships'],
+    investors: '2',
+    distributionFreq: 'Monthly',
+    tokenStandard: 'ERC-3643'
+  },
+  {
+    id: 'reh',
+    title: 'REH — Renewable Energy Hub',
+    sector: 'Infrastructure',
+    region: 'Thailand',
+    issuer: 'Southeast Asia Energy Partners',
+    apy: '15.2%',
+    totalRaised: '1000000',
+    targetAmount: '20000000',
+    currency: 'USDT',
+    minInvestment: '50000',
+    tenor: '36 months',
+    riskLevel: 'Medium',
+    description: 'Large‑scale solar and wind energy installation with government PPA contracts.',
+    keyFeatures: ['Government PPAs', 'Industrial Off‑takers', 'Insurance Coverage'],
+    investors: '1',
+    distributionFreq: 'Monthly',
+    tokenStandard: 'ERC-3643'
+  }
+]
+
 // API routes for wallet operations
 app.get('/api/supported-wallets', (c) => {
   return c.json({
@@ -371,7 +432,7 @@ app.post('/api/investment/save', async (c) => {
 })
 
 // Investment Contract DApp page
-app.get('/', (c) => {
+app.get('/invest', (c) => {
   return c.html(`
     <!DOCTYPE html>
     <html lang="en">
@@ -713,6 +774,434 @@ app.get('/', (c) => {
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
         <script src="/static/investment-dapp.js"></script>
+    </body>
+    </html>
+  `)
+})
+
+// New Investment Platform Homepage (v8 style)
+app.get('/', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Infinity Ventures - Next-Gen Real World Asset Investment Platform</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+        <style>
+            .step-circle { 
+                @apply w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-semibold;
+            }
+            .step-circle.active { 
+                @apply bg-blue-600 border-blue-600 text-white;
+            }
+            .step-circle:not(.active) { 
+                @apply border-gray-300 text-gray-400;
+            }
+        </style>
+    </head>
+    <body class="min-h-screen bg-gray-50">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <h1 class="text-xl font-bold text-gray-900">
+                                <i class="ri-rocket-line mr-2 text-blue-600"></i>
+                                Infinity Ventures
+                            </h1>
+                        </div>
+                        <nav class="hidden md:ml-8 md:flex space-x-8">
+                            <a href="/" class="text-blue-600 font-medium px-3 py-2">Home</a>
+                            <a href="/portfolio" class="text-gray-600 hover:text-blue-600 px-3 py-2">Portfolio</a>
+                            <a href="/how-it-works" class="text-gray-600 hover:text-blue-600 px-3 py-2">How It Works</a>
+                            <a href="/invest" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="ri-coins-line mr-2"></i>
+                                Start Investing
+                            </a>
+                        </nav>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button id="connectWalletBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all">
+                            <i class="ri-wallet-line mr-2"></i>
+                            Connect Wallet
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <div class="relative bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-900/95 to-purple-900/95"></div>
+            
+            <div class="relative px-4 sm:px-6 py-16 sm:py-24 max-w-7xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                    <!-- Left Content -->
+                    <div>
+                        <div class="inline-flex items-center space-x-2 bg-blue-800/30 backdrop-blur-sm text-blue-200 px-4 py-2 rounded-full text-sm mb-6">
+                            <i class="ri-shield-check-line text-sm"></i>
+                            <span>SEC Compliant • KYC Verified • Blockchain Secured</span>
+                        </div>
+                        
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                            Next-Gen <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-300">Real World Asset</span> Investment Platform
+                        </h1>
+                        
+                        <p class="text-lg lg:text-xl text-blue-100 mb-8 leading-relaxed">
+                            Invest in institutional-grade real-world assets with blockchain verification. 
+                            Experience monthly USDT distributions, KYC authentication, and innovative DeFi technology.
+                        </p>
+
+                        <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                            <a href="/invest" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all text-lg text-center">
+                                <i class="ri-play-circle-line mr-2"></i>
+                                Start Investing in 3 Minutes
+                            </a>
+                            <a href="/portfolio" class="bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-xl font-semibold hover:bg-white/20 transition-all text-lg border border-white/20 text-center">
+                                <i class="ri-eye-line mr-2"></i>
+                                Explore Opportunities
+                            </a>
+                        </div>
+
+                        <!-- Live Stats -->
+                        <div class="grid grid-cols-3 gap-6">
+                            <div class="text-center">
+                                <div class="text-2xl lg:text-3xl font-bold text-white mb-1">$5.0M+</div>
+                                <div class="text-sm text-blue-200">Total Investments</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl lg:text-3xl font-bold text-white mb-1">14</div>
+                                <div class="text-sm text-blue-200">Early Investors</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl lg:text-3xl font-bold text-white mb-1">15.8%</div>
+                                <div class="text-sm text-blue-200">Average Returns</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right - Quick Investment Calculator -->
+                    <div class="lg:pl-8">
+                        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20">
+                            <h3 class="text-2xl font-bold text-white mb-6">Quick Investment Calculator</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-blue-200 mb-2">Investment Amount (USDT)</label>
+                                    <input 
+                                        type="number" 
+                                        id="investmentAmount"
+                                        value="10000"
+                                        placeholder="10,000" 
+                                        class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-white placeholder-blue-200 text-lg"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-blue-200 mb-2">Expected Returns</label>
+                                    <select id="riskProfile" class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-white">
+                                        <option value="12.4" class="text-gray-900">Conservative (12.4% APY)</option>
+                                        <option value="15.8" class="text-gray-900" selected>Balanced (15.8% APY)</option>
+                                        <option value="19.2" class="text-gray-900">Aggressive (19.2% APY)</option>
+                                    </select>
+                                </div>
+
+                                <div class="bg-white/10 rounded-lg p-4 mt-6">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-blue-200 text-sm">Monthly Expected Return</span>
+                                        <span id="monthlyReturn" class="text-white font-bold text-lg">$131 USDT</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-blue-200 text-sm">Annual Expected Return</span>
+                                        <span id="annualReturn" class="text-green-400 font-bold text-xl">$1,580 USDT</span>
+                                    </div>
+                                </div>
+
+                                <a href="/invest" class="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-blue-600 transition-all block text-center">
+                                    <i class="ri-user-check-line mr-2"></i>
+                                    Start Investment Process
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investment Opportunities -->
+        <div class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-16">
+                    <div class="inline-flex items-center space-x-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-sm mb-4">
+                        <i class="ri-award-line"></i>
+                        <span>Curated Investment Opportunities</span>
+                    </div>
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Real-World Asset Investments</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        Institutional-grade investments verified through regulatory compliance with blockchain transparency
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    ${projects.map(project => `
+                        <div class="bg-white rounded-2xl border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden group">
+                            <div class="p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="inline-block w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></span>
+                                        <span class="text-sm text-gray-600">${project.sector}</span>
+                                    </div>
+                                    <span class="text-2xl font-bold text-green-600">${project.apy}</span>
+                                </div>
+                                
+                                <h3 class="text-xl font-bold text-gray-900 mb-3">${project.title}</h3>
+                                <p class="text-gray-600 mb-4 text-sm leading-relaxed">${project.description}</p>
+                                
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Min Investment</span>
+                                        <span class="font-medium">$${parseInt(project.minInvestment).toLocaleString()} ${project.currency}</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Investment Period</span>
+                                        <span class="font-medium">${project.tenor}</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Risk Level</span>
+                                        <span class="font-medium text-${project.riskLevel === 'Low' ? 'green' : project.riskLevel === 'Medium' ? 'yellow' : 'red'}-600">${project.riskLevel}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Progress Bar -->
+                                <div class="mb-4">
+                                    <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                        <span>Progress</span>
+                                        <span>${Math.round((parseInt(project.totalRaised) / parseInt(project.targetAmount)) * 100)}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style="width: ${Math.round((parseInt(project.totalRaised) / parseInt(project.targetAmount)) * 100)}%"></div>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>$${parseInt(project.totalRaised).toLocaleString()}</span>
+                                        <span>$${parseInt(project.targetAmount).toLocaleString()}</span>
+                                    </div>
+                                </div>
+
+                                <a href="/invest?project=${project.id}" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all text-center block group-hover:from-blue-700 group-hover:to-purple-700">
+                                    <i class="ri-arrow-right-line mr-2"></i>
+                                    Invest Now
+                                </a>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="text-center mt-12">
+                    <a href="/portfolio" class="inline-flex items-center space-x-2 bg-gray-900 text-white px-8 py-4 rounded-xl font-semibold hover:bg-gray-800 transition-colors">
+                        <span>View All Investment Opportunities</span>
+                        <i class="ri-arrow-right-line"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Platform Features -->
+        <div class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Why Choose Infinity Ventures?</h2>
+                    <p class="text-xl text-gray-600">Built with institutional standards and blockchain innovation</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-all">
+                        <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                            <i class="ri-shield-check-line text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Full Regulatory Compliance</h3>
+                        <p class="text-gray-600 mb-4">ERC-3643 permissioned tokens with built-in KYC/AML verification and transfer restrictions for complete regulatory compliance.</p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-all">
+                        <div class="w-16 h-16 bg-purple-600 rounded-2xl flex items-center justify-center mb-6">
+                            <i class="ri-line-chart-line text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Transparent Performance</h3>
+                        <p class="text-gray-600 mb-4">Real-time proof of reserves with automated monitoring and transparent performance tracking through blockchain oracles.</p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-all">
+                        <div class="w-16 h-16 bg-green-600 rounded-2xl flex items-center justify-center mb-6">
+                            <i class="ri-coin-line text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Monthly USDT Distributions</h3>
+                        <p class="text-gray-600 mb-4">Automated monthly USDT payments with verification systems and shareholder registry synchronization.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 text-white relative overflow-hidden">
+            <div class="absolute inset-0 bg-black/20"></div>
+            <div class="relative max-w-5xl mx-auto px-4 sm:px-6 text-center">
+                <h2 class="text-4xl lg:text-5xl font-bold mb-6">Ready to Start Investing?</h2>
+                <p class="text-xl text-blue-100 mb-10">
+                    Join early investors in institutional-grade real-world asset opportunities
+                </p>
+                
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+                    <a href="/invest" class="bg-white text-blue-600 px-10 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg">
+                        <i class="ri-play-circle-line mr-2"></i>
+                        Start Investing Now
+                    </a>
+                    <a href="/portfolio" class="bg-white/10 backdrop-blur-sm text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-white/20 transition-all border-2 border-white/30">
+                        <i class="ri-search-line mr-2"></i>
+                        Explore Opportunities
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-gray-100 py-8">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-6">
+                    <p class="text-sm text-gray-600 mb-4 leading-relaxed">
+                        <strong>Important:</strong> This service involves investment risks. All investments carry risk of principal loss. 
+                        Regional qualification requirements vary and KYC verification is required.
+                    </p>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-6 text-xs text-gray-500">
+                        <a href="/legal/terms" class="hover:text-gray-700">Terms of Service</a>
+                        <a href="/legal/privacy" class="hover:text-gray-700">Privacy Policy</a>
+                        <a href="/legal/risk" class="hover:text-gray-700">Risk Disclosure</a>
+                    </div>
+                    
+                    <div class="text-xs text-gray-500">
+                        © 2024 Infinity Ventures. All rights reserved.
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script>
+            // Investment Calculator
+            function updateCalculator() {
+                const amount = parseFloat(document.getElementById('investmentAmount').value) || 10000;
+                const apy = parseFloat(document.getElementById('riskProfile').value) || 15.8;
+                
+                const monthlyReturn = (amount * apy / 100) / 12;
+                const annualReturn = amount * apy / 100;
+                
+                document.getElementById('monthlyReturn').textContent = '$' + Math.round(monthlyReturn).toLocaleString() + ' USDT';
+                document.getElementById('annualReturn').textContent = '$' + Math.round(annualReturn).toLocaleString() + ' USDT';
+            }
+            
+            document.getElementById('investmentAmount').addEventListener('input', updateCalculator);
+            document.getElementById('riskProfile').addEventListener('change', updateCalculator);
+            
+            // Wallet Connection (basic)
+            document.getElementById('connectWalletBtn').addEventListener('click', function() {
+                window.location.href = '/invest';
+            });
+            
+            // Initialize calculator
+            updateCalculator();
+        </script>
+    </body>
+    </html>
+  `)
+})
+
+// Portfolio page
+app.get('/portfolio', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Investment Portfolio - Infinity Ventures</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    </head>
+    <body class="min-h-screen bg-gray-50">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <a href="/" class="flex-shrink-0">
+                            <h1 class="text-xl font-bold text-gray-900">
+                                <i class="ri-rocket-line mr-2 text-blue-600"></i>
+                                Infinity Ventures
+                            </h1>
+                        </a>
+                        <nav class="hidden md:ml-8 md:flex space-x-8">
+                            <a href="/" class="text-gray-600 hover:text-blue-600 px-3 py-2">Home</a>
+                            <a href="/portfolio" class="text-blue-600 font-medium px-3 py-2">Portfolio</a>
+                            <a href="/how-it-works" class="text-gray-600 hover:text-blue-600 px-3 py-2">How It Works</a>
+                            <a href="/invest" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="ri-coins-line mr-2"></i>
+                                Start Investing
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Portfolio Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">Investment Opportunities</h1>
+                <p class="text-lg text-gray-600">Explore our curated selection of real-world asset investments</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                ${projects.map(project => `
+                    <div class="bg-white rounded-2xl border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">${project.sector}</span>
+                                <span class="text-2xl font-bold text-green-600">${project.apy}</span>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-gray-900 mb-3">${project.title}</h3>
+                            <p class="text-gray-600 mb-4">${project.description}</p>
+                            
+                            <div class="space-y-2 mb-4">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">Min Investment</span>
+                                    <span class="font-medium">$${parseInt(project.minInvestment).toLocaleString()}</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">Period</span>
+                                    <span class="font-medium">${project.tenor}</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">Risk Level</span>
+                                    <span class="font-medium">${project.riskLevel}</span>
+                                </div>
+                            </div>
+
+                            <a href="/invest?project=${project.id}" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-center block">
+                                <i class="ri-arrow-right-line mr-2"></i>
+                                Invest Now
+                            </a>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
     </body>
     </html>
   `)
