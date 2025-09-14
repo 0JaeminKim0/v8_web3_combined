@@ -1579,7 +1579,109 @@ app.get('/', (c) => {
 
                 <!-- Dynamic Projects Grid -->
                 <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Projects will be dynamically loaded here -->
+                    <!-- Fallback static projects for demo -->
+                    ${projects.map(project => {
+                      const progressPercentage = (parseFloat(project.totalRaised) / parseFloat(project.targetAmount)) * 100
+                      const getRiskColor = (risk) => {
+                        switch (risk.toLowerCase()) {
+                          case 'low': return 'bg-green-100 text-green-800'
+                          case 'medium': return 'bg-yellow-100 text-yellow-800'  
+                          case 'high': return 'bg-red-100 text-red-800'
+                          default: return 'bg-gray-100 text-gray-800'
+                        }
+                      }
+                      const getSectorIcon = (sector) => {
+                        switch (sector.toLowerCase()) {
+                          case 'agriculture': return 'ri-plant-line'
+                          case 'healthcare': return 'ri-hospital-line'
+                          case 'infrastructure': return 'ri-building-line'
+                          default: return 'ri-briefcase-line'
+                        }
+                      }
+                      return `
+                        <div class="bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 group">
+                          <div class="relative h-48 overflow-hidden">
+                            <img 
+                              src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=250&fit=crop"
+                              alt="${project.title}"
+                              class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                            />
+                            <div class="absolute top-3 left-3">
+                              <div class="${getRiskColor(project.riskLevel)} px-2 py-1 rounded-full text-xs font-medium">
+                                ${project.riskLevel} Risk
+                              </div>
+                            </div>
+                            <div class="absolute top-3 right-3">
+                              <div class="bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium text-gray-700">
+                                ${project.tokenStandard || 'ERC-1155'}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div class="p-6">
+                            <div class="flex items-start justify-between mb-3">
+                              <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                  <i class="${getSectorIcon(project.sector)} text-blue-600"></i>
+                                </div>
+                                <div>
+                                  <div class="text-xs text-gray-500">${project.sector}</div>
+                                  <div class="text-xs text-gray-400">${project.region}</div>
+                                </div>
+                              </div>
+                              <div class="text-right">
+                                <div class="text-2xl font-bold text-green-600">${project.apy}</div>
+                                <div class="text-xs text-gray-500">Target APY</div>
+                              </div>
+                            </div>
+                            
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">${project.title}</h3>
+                            <p class="text-gray-600 text-sm mb-4">${project.description}</p>
+                            
+                            <div class="mb-4">
+                              <div class="flex flex-wrap gap-1">
+                                ${project.keyFeatures.slice(0, 2).map(feature => `
+                                  <span class="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded">${feature}</span>
+                                `).join('')}
+                                ${project.keyFeatures.length > 2 ? `<span class="text-xs text-gray-500">+${project.keyFeatures.length - 2} more</span>` : ''}
+                              </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                              <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-600">Raised: ${project.currency} ${parseInt(project.totalRaised).toLocaleString()}</span>
+                                <span class="text-gray-600">Target: ${project.currency} ${parseInt(project.targetAmount).toLocaleString()}</span>
+                              </div>
+                              <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: ${Math.min(progressPercentage, 100)}%"></div>
+                              </div>
+                              <div class="text-xs text-gray-500 mt-1">${progressPercentage.toFixed(1)}% funded</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                              <div>
+                                <div class="text-gray-500">Min Investment</div>
+                                <div class="font-medium">${project.currency} ${parseInt(project.minInvestment).toLocaleString()}</div>
+                              </div>
+                              <div>
+                                <div class="text-gray-500">Tenor</div>
+                                <div class="font-medium">${project.tenor}</div>
+                              </div>
+                            </div>
+                            
+                            <div class="flex space-x-3">
+                              <a href="/project/${project.id}" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 px-4 rounded-lg transition-colors text-sm font-medium text-center">
+                                View Details
+                              </a>
+                              <a href="/invest?project=${project.id}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors text-sm font-medium text-center">
+                                <i class="ri-coins-line mr-1"></i>
+                                Invest Now
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      `
+                    }).join('')}
                 </div>
                 
                 <div class="text-center mt-12">
