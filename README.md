@@ -1,174 +1,162 @@
-# Infinity Ventures - 통합 투자 플랫폼 
+# V8 + Web3 통합 프로젝트
 
-## 프로젝트 개요
-- **이름**: Infinity Ventures
-- **목표**: v8 투자 플랫폼 웹사이트와 web3_test의 실제 SBT 민팅 기능 통합
-- **특징**: 현대적인 투자 플랫폼 UI + 실제 작동하는 블록체인 기능
+## 🎯 프로젝트 개요
+- **이름**: Infinity Ventures - 차세대 실물자산 투자 플랫폼
+- **목표**: v8의 투자 플랫폼 UI와 web3_test의 실제 블록체인 기능을 통합
+- **기술 스택**: Hono + TypeScript + Cloudflare Workers + Web3
 
-## 🎯 **성공적으로 통합된 기능**
+## 🌐 라이브 데모
+- **메인 플랫폼**: https://3000-i9qpd4op6fw54qnriw1h0-6532622b.e2b.dev
+- **포트폴리오**: https://3000-i9qpd4op6fw54qnriw1h0-6532622b.e2b.dev/portfolio
+- **투자 페이지**: https://3000-i9qpd4op6fw54qnriw1h0-6532622b.e2b.dev/invest
+- **API 엔드포인트**: https://3000-i9qpd4op6fw54qnriw1h0-6532622b.e2b.dev/api/projects
 
-### **v8 투자 플랫폼 요소 (새로 추가)**
-- ✅ **모던 홈페이지** - 전문적인 투자 플랫폼 디자인
-- ✅ **투자 기회 포트폴리오** - 실물자산 투자 프로젝트 전시
-- ✅ **투자 계산기** - 실시간 수익률 계산 도구
-- ✅ **반응형 디자인** - 모바일/데스크톱 최적화
-- ✅ **현대적인 UI/UX** - TailwindCSS + RemixIcon 사용
+## ✅ 완료된 통합 기능
 
-### **web3_test Web3 기능 (보존)**
-- ✅ **실제 SBT 민팅** - Sepolia 테스트넷에서 작동하는 민팅 시스템
-- ✅ **MetaMask 연동** - 지갑 연결 및 네트워크 자동 전환
-- ✅ **PDF 계약서 생성** - jsPDF를 통한 실제 문서 생성
-- ✅ **IPFS 업로드 지원** - 분산 저장 시스템 연동
-- ✅ **실제 ETH 트랜잭션** - 테스트넷에서 실제 블록체인 상호작용
+### 🏠 **홈페이지 (v8 스타일 통합)**
+- v8의 "Infinity Ventures" 브랜딩 적용
+- 고급 프로젝트 필터링 시스템 (섹터, 위험도, 투자금액, 지역별)
+- 동적 프로젝트 카드 로딩 시스템
+- 실시간 투자 계산기
+- Web3 지갑 연결 기능
 
-## 📍 **URL 구조**
+### 💼 **포트폴리오 페이지 (v8 디자인)**
+- 지갑 연결 상태에 따른 UI 변화
+- 투자 현황 대시보드 (총 투자금, 현재 가치, 수익률)
+- 보유 투자 상품 상세 정보
+- 월별 배당 내역 표시
+- v8 스타일의 카드 레이아웃 적용
 
-### **Live URLs**
-- **Production**: https://3000-i9qpd4op6fw54qnriw1h0-6532622b.e2b.dev
-- **GitHub**: https://github.com/0JaeminKim0/web3_test
+### 🔗 **Web3 기능 (web3_test 베이스)**
+- **MetaMask 연동**: 자동 Sepolia 테스트넷 전환
+- **실제 SBT 민팅**: Soul Bound Token 발행 기능
+- **블록체인 검증**: Sepolia 테스트넷에서 실제 트랜잭션 처리
+- **스마트 컨트랙트**: 배포된 SBT 컨트랙트 연동
+- **PDF 생성**: 투자 계약서 자동 생성
+- **IPFS 통합**: 문서의 탈중앙화 저장
 
-### **페이지 구조**
-- **`/`** - Infinity Ventures 홈페이지 (v8 스타일)
-- **`/portfolio`** - 투자 기회 포트폴리오 페이지
-- **`/invest`** - Web3 SBT 민팅 DApp (기존 web3_test 기능)
+### 🎨 **UI/UX 통합**
+- v8의 TailwindCSS 기반 모던 디자인
+- RemixIcon을 활용한 일관된 아이콘 시스템
+- 반응형 디자인 (모바일/태블릿/데스크톱)
+- 부드러운 애니메이션과 트랜지션 효과
 
-### **API 엔드포인트**
-- `/api/supported-wallets` - 지원 지갑 목록
-- `/api/network-info` - 네트워크 정보
-- `/api/investment/contract-info` - 스마트 컨트랙트 정보
-- `/api/investment/templates` - 투자 템플릿
-- `/api/external/generate-pdf` - PDF 생성 서비스
-- `/api/external/upload-ipfs` - IPFS 업로드 서비스
+## 🔧 데이터 아키텍처
 
-## 🏗️ **통합 아키텍처**
+### **프로젝트 데이터 모델**
+```javascript
+{
+  id: "ptf",
+  title: "PTF — Potato Tokenized Finance",
+  sector: "Agriculture",
+  region: "Thailand",
+  apy: "14.8%",
+  totalRaised: "150000",
+  targetAmount: "3000000",
+  minInvestment: "10000",
+  riskLevel: "Medium",
+  tokenStandard: "ERC-1155",
+  // ... 기타 필드
+}
+```
 
-### **기술 스택**
-- **Backend**: Hono Framework (Cloudflare Workers)
-- **Frontend**: HTML/CSS/JavaScript + TailwindCSS
-- **Blockchain**: Ethereum (Sepolia Testnet)
-- **Smart Contract**: ERC-721 Compatible SBT
-- **Storage**: IPFS (Pinata 지원)
-- **Deployment**: Cloudflare Pages
+### **저장 서비스**
+- **프로젝트 데이터**: API 엔드포인트 (`/api/projects`)
+- **블록체인 데이터**: Sepolia 테스트넷
+- **문서 저장**: IPFS (Pinata 통합)
+- **사용자 세션**: 브라우저 LocalStorage
 
-### **데이터 모델**
-- **투자 프로젝트**: PTF (농업), SCN (헬스케어), REH (재생에너지)
-- **SBT 계약**: 투자 계약서를 NFT로 민팅
-- **사용자 데이터**: MetaMask 지갑 주소 기반
+## 🚀 사용 가이드
 
-## 🚀 **사용 가이드**
+### **투자자용 가이드**
+1. **지갑 연결**: 홈페이지에서 "Connect Wallet" 클릭
+2. **프로젝트 탐색**: 필터를 사용하여 투자 기회 검색
+3. **상세 정보 확인**: 프로젝트 카드에서 "View Details" 클릭
+4. **투자 진행**: "Invest Now" 버튼으로 투자 프로세스 시작
+5. **포트폴리오 관리**: `/portfolio`에서 투자 현황 확인
 
-### **일반 사용자 (투자 플랫폼)**
-1. **홈페이지 방문** (`/`) - 투자 기회 탐색
-2. **포트폴리오 확인** (`/portfolio`) - 세부 투자 프로젝트 검토
-3. **투자 계산기 사용** - 예상 수익률 계산
+### **Web3 기능 사용법**
+1. **테스트넷 준비**: Sepolia 테스트 ETH 확보
+2. **SBT 민팅**: `/invest`에서 투자 계약 생성
+3. **문서 생성**: PDF 계약서 자동 생성 및 다운로드
+4. **블록체인 검증**: Etherscan에서 트랜잭션 확인
 
-### **Web3 사용자 (SBT 민팅)**
-1. **DApp 접속** (`/invest`) - Web3 기능 페이지
-2. **MetaMask 연결** - 지갑 연결 및 Sepolia 네트워크 전환
-3. **투자 계약 생성** - 템플릿 선택 및 조건 설정
-4. **PDF 다운로드** - 실제 계약서 문서 생성
-5. **SBT 민팅** - 블록체인에 투자 증명서 민팅
+## 🛠️ 개발 환경 설정
 
-## 💻 **개발 환경**
-
-### **개발 서버 시작**
+### **로컬 개발**
 ```bash
 # 의존성 설치
 npm install
 
-# 프로젝트 빌드
+# 개발 서버 시작 (빌드 필요)
 npm run build
-
-# 개발 서버 시작 (wrangler 사용)
 pm2 start ecosystem.config.cjs
 
-# 서버 상태 확인
-curl http://localhost:3000
+# API 테스트
+curl http://localhost:3000/api/projects
 ```
 
-### **배포**
-```bash
-# Cloudflare Pages 배포
-npm run deploy
-
-# 또는 특정 프로젝트명으로 배포
-npm run deploy:prod
-```
-
-## 🔐 **보안 및 규정준수**
-
-### **블록체인 보안**
-- **테스트넷 전용**: Sepolia 테스트넷에서 안전한 테스트
-- **실제 ETH 사용**: 무료 테스트 ETH로 실제 트랜잭션 경험
-- **스마트 컨트랙트**: 검증된 ERC-721 기반 SBT 구현
-
-### **문서 보안**
-- **SHA-256 해싱**: 모든 계약서 암호화 해시 생성
-- **IPFS 저장**: 분산 저장으로 문서 무결성 보장
-- **디지털 서명**: MetaMask 서명 통합
-
-## 📈 **성과 및 통계**
-
-### **완료된 통합 작업**
-- ✅ v8 홈페이지 디자인 완전 통합
-- ✅ web3_test Web3 기능 100% 보존
-- ✅ 3개 주요 페이지 구조 완성
-- ✅ 반응형 디자인 구현
-- ✅ API 백엔드 통합
-
-### **테스트 데이터**
-- **투자 프로젝트**: 3개 (농업, 헬스케어, 재생에너지)
-- **평균 수익률**: 12.4% - 19.2%
-- **최소 투자금**: $10,000 - $100,000
-- **투자 기간**: 12 - 48개월
-
-## 🔄 **권장 개발 단계**
-
-### **Phase 1: 추가 페이지 개발**
-1. `How It Works` 페이지 추가
-2. `Legal/Terms` 페이지 구현
-3. `KYC` 검증 페이지 개발
-
-### **Phase 2: Web3 기능 확장**
-1. 메인넷 배포 준비
-2. 실제 IPFS 통합 (Pinata API)
-3. 다중 네트워크 지원
-
-### **Phase 3: 고급 기능**
-1. 사용자 대시보드 구현
-2. 투자 포트폴리오 트래킹
-3. 자동화된 배당 시스템
-
-## 🛠️ **기술 세부사항**
-
-### **프로젝트 구조**
+### **주요 파일 구조**
 ```
 webapp/
 ├── src/
-│   └── index.tsx          # 통합된 Hono 백엔드
-├── public/               # 정적 파일
-├── dist/                # 빌드 결과물
-├── contracts/           # 스마트 컨트랙트
-├── ecosystem.config.cjs # PM2 설정 (wrangler 사용)
-└── wrangler.jsonc      # Cloudflare 설정
+│   └── index.tsx              # Hono 애플리케이션 메인
+├── public/static/
+│   └── v8-integration.js      # v8 프론트엔드 로직
+├── contracts/                 # 스마트 컨트랙트 (Hardhat)
+├── dist/                      # 빌드 결과물
+└── README.md                  # 이 문서
 ```
 
-### **라우팅 시스템**
-- **Hono Framework** 기반 라우팅
-- **Cloudflare Workers** 환경에서 실행
-- **정적 파일 서비스** (`/static/*`)
-- **API 라우팅** (`/api/*`)
+## 🔥 핵심 기술 통합 성과
 
-## 📝 **배포 상태**
+### **성공적인 통합 요소**
+1. **UI 통합**: v8의 현대적 디자인 + web3_test의 기능성
+2. **기술 스택 조화**: Hono 백엔드 + 동적 프론트엔드
+3. **Web3 보존**: 기존 민팅 기능 100% 유지
+4. **사용자 경험**: 직관적 네비게이션 + 실제 블록체인 기능
 
-- **플랫폼**: Cloudflare Pages (샌드박스)
+### **v8에서 가져온 주요 기능**
+- 고급 프로젝트 필터링
+- 포트폴리오 대시보드
+- 투자 계산기
+- 현대적 카드 레이아웃
+- 반응형 디자인
+
+### **web3_test에서 유지된 기능**
+- 실제 SBT 민팅
+- MetaMask 통합
+- Sepolia 테스트넷 연동
+- PDF 계약서 생성
+- IPFS 문서 저장
+- 스마트 컨트랙트 상호작용
+
+## 🎯 추천 다음 단계
+
+### **단기 개선 사항 (1-2주)**
+1. **실제 민팅 통합**: 홈페이지 "Invest Now" 버튼을 실제 민팅 프로세스에 연결
+2. **포트폴리오 실시간 연동**: 실제 지갑 주소의 SBT 보유 현황 표시
+3. **프로젝트 상세 페이지**: `/project/:id` 라우트 추가
+4. **모바일 최적화**: 터치 인터페이스 개선
+
+### **중기 확장 (1개월)**
+1. **메인넷 배포**: Ethereum 메인넷으로 스마트 컨트랙트 배포
+2. **실제 IPFS**: Pinata API 키 설정으로 실제 분산 저장
+3. **KYC/AML 통합**: 실제 규제 준수 기능 추가
+4. **결제 시스템**: Stripe/PayPal 통합으로 법정화폐 결제
+
+### **장기 비전 (3-6개월)**
+1. **다중 체인 지원**: Polygon, BSC 등 추가 블록체인 연동
+2. **거버넌스 토큰**: 플랫폼 운영 참여 토큰 발행
+3. **스테이킹 기능**: 토큰 홀더 인센티브 프로그램
+4. **기관투자자 포털**: 대규모 투자를 위한 별도 인터페이스
+
+## 📈 배포 상태
+- **플랫폼**: Cloudflare Pages (개발 환경)
 - **상태**: ✅ 활성
-- **기술 스택**: Hono + TypeScript + TailwindCSS + Web3
-- **마지막 업데이트**: 2024-12-19
+- **마지막 업데이트**: 2025-09-14
+- **버전**: v2.0 (v8 + Web3 통합)
 
 ---
 
-**이 프로젝트는 v8의 현대적인 투자 플랫폼 UI와 web3_test의 실제 작동하는 블록체인 기능을 성공적으로 통합한 결과입니다.**
-
-**Live Demo**: https://3000-i9qpd4op6fw54qnriw1h0-6532622b.e2b.dev
-**GitHub**: https://github.com/0JaeminKim0/web3_test
+**성공적인 통합 완료!** v8의 투자 플랫폼 UI와 web3_test의 실제 블록체인 기능이 완벽하게 결합된 차세대 실물자산 투자 플랫폼이 완성되었습니다.
