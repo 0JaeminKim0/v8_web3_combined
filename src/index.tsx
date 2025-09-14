@@ -15,6 +15,572 @@ app.get('/api/projects', (c) => {
   return c.json({ projects })
 })
 
+// Project detail page
+app.get('/project/:id', (c) => {
+  const projectId = c.req.param('id')
+  const project = projects.find(p => p.id === projectId)
+  
+  if (!project) {
+    return c.html(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Project Not Found - Infinity Ventures</title>
+          <script src="https://cdn.tailwindcss.com"></script>
+          <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+      </head>
+      <body class="min-h-screen bg-gray-50">
+          <div class="flex items-center justify-center py-20 px-4">
+              <div class="text-center">
+                  <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <i class="ri-error-warning-line text-gray-400 text-2xl"></i>
+                  </div>
+                  <h2 class="text-xl font-semibold text-gray-900 mb-2">Project Not Found</h2>
+                  <p class="text-gray-600 mb-4">The requested investment project could not be found.</p>
+                  <a href="/" class="text-blue-600 hover:text-blue-700">Return to Projects</a>
+              </div>
+          </div>
+      </body>
+      </html>
+    `)
+  }
+
+  const progressPercentage = (parseFloat(project.totalRaised) / parseFloat(project.targetAmount)) * 100
+  const remainingCapacity = parseFloat(project.targetAmount) - parseFloat(project.totalRaised)
+  
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${project.title} - Infinity Ventures</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+            .tab-active {
+                @apply border-blue-500 text-blue-600 bg-blue-50;
+            }
+            .tab-inactive {
+                @apply border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300;
+            }
+        </style>
+    </head>
+    <body class="min-h-screen bg-gray-50">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <a href="/" class="text-xl font-bold text-gray-900">
+                                <i class="ri-rocket-line mr-2 text-blue-600"></i>
+                                Infinity Ventures
+                            </a>
+                        </div>
+                        <nav class="hidden md:ml-8 md:flex space-x-8">
+                            <a href="/" class="text-gray-600 hover:text-blue-600 px-3 py-2">Home</a>
+                            <a href="/portfolio" class="text-gray-600 hover:text-blue-600 px-3 py-2">Portfolio</a>
+                            <a href="/how-it-works" class="text-gray-600 hover:text-blue-600 px-3 py-2">How It Works</a>
+                            <a href="/invest" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="ri-coins-line mr-2"></i>
+                                Start Investing
+                            </a>
+                        </nav>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button id="connectWalletBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all">
+                            <i class="ri-wallet-line mr-2"></i>
+                            Connect Wallet
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Project Hero Section -->
+        <div class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Project Info -->
+                    <div class="lg:col-span-2">
+                        <div class="flex items-center space-x-2 text-blue-200 mb-4">
+                            <i class="ri-building-line"></i>
+                            <span>${project.sector}</span>
+                            <span>•</span>
+                            <span>${project.region}</span>
+                            <span>•</span>
+                            <span class="px-2 py-1 bg-blue-800/30 rounded text-sm">${project.riskLevel} Risk</span>
+                        </div>
+                        
+                        <h1 class="text-3xl lg:text-4xl font-bold text-white mb-4">${project.title}</h1>
+                        <p class="text-lg text-blue-100 mb-6">${project.description}</p>
+                        
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            ${project.keyFeatures.map(feature => `
+                                <span class="bg-blue-800/30 text-blue-200 px-3 py-1 rounded-full text-sm">${feature}</span>
+                            `).join('')}
+                        </div>
+
+                        <!-- Key Metrics -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                                <div class="text-2xl font-bold text-white">${project.apy}</div>
+                                <div class="text-sm text-blue-200">Target APY</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                                <div class="text-2xl font-bold text-white">${project.tenor}</div>
+                                <div class="text-sm text-blue-200">Investment Term</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                                <div class="text-2xl font-bold text-white">${parseInt(project.minInvestment).toLocaleString()}</div>
+                                <div class="text-sm text-blue-200">Min Investment (${project.currency})</div>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                                <div class="text-2xl font-bold text-white">${project.distributionFreq || 'Monthly'}</div>
+                                <div class="text-sm text-blue-200">Distribution Freq</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investment Panel -->
+                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                        <h3 class="text-xl font-bold text-white mb-4">Investment Overview</h3>
+                        
+                        <!-- Progress Bar -->
+                        <div class="mb-6">
+                            <div class="flex justify-between text-sm text-blue-200 mb-2">
+                                <span>Raised: $${parseInt(project.totalRaised).toLocaleString()}</span>
+                                <span>Target: $${parseInt(project.targetAmount).toLocaleString()}</span>
+                            </div>
+                            <div class="w-full bg-white/20 rounded-full h-3">
+                                <div class="bg-gradient-to-r from-green-400 to-blue-500 h-3 rounded-full transition-all" style="width: ${Math.min(progressPercentage, 100)}%"></div>
+                            </div>
+                            <div class="text-center text-white font-bold mt-2">${progressPercentage.toFixed(1)}% Funded</div>
+                        </div>
+
+                        <!-- Remaining Capacity -->
+                        <div class="bg-white/10 rounded-lg p-4 mb-6">
+                            <div class="text-sm text-blue-200 mb-1">Remaining Capacity</div>
+                            <div class="text-2xl font-bold text-white">$${remainingCapacity.toLocaleString()}</div>
+                        </div>
+
+                        <!-- Investment Button -->
+                        <button 
+                            onclick="openInvestModal()" 
+                            class="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-blue-600 transition-all text-center"
+                        >
+                            <i class="ri-coins-line mr-2"></i>
+                            Invest in ${project.title.split(' —')[0]}
+                        </button>
+                        
+                        <div class="text-xs text-blue-200 mt-3 text-center">
+                            Minimum investment: $${parseInt(project.minInvestment).toLocaleString()} ${project.currency}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Details Tabs -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                <!-- Tab Navigation -->
+                <div class="border-b border-gray-200">
+                    <nav class="flex space-x-8 px-6 py-4">
+                        <button onclick="switchTab('overview')" id="tab-overview" class="tab-active border-b-2 py-2 px-1 text-sm font-medium">
+                            Overview
+                        </button>
+                        <button onclick="switchTab('financials')" id="tab-financials" class="tab-inactive border-b-2 py-2 px-1 text-sm font-medium">
+                            Financials
+                        </button>
+                        <button onclick="switchTab('documents')" id="tab-documents" class="tab-inactive border-b-2 py-2 px-1 text-sm font-medium">
+                            Documents
+                        </button>
+                        <button onclick="switchTab('updates')" id="tab-updates" class="tab-inactive border-b-2 py-2 px-1 text-sm font-medium">
+                            Updates
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="p-6">
+                    <!-- Overview Tab -->
+                    <div id="content-overview" class="tab-content">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Investment Highlights</h3>
+                                <div class="space-y-3 text-gray-700">
+                                    ${project.keyFeatures.map(feature => `
+                                        <div class="flex items-start space-x-2">
+                                            <i class="ri-check-line text-green-600 mt-0.5"></i>
+                                            <span>${feature}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                
+                                <h3 class="text-lg font-semibold text-gray-900 mt-8 mb-4">Investment Structure</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Asset Class</span>
+                                        <span class="font-medium">${project.sector} Investment</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Token Standard</span>
+                                        <span class="font-medium">${project.tokenStandard || 'ERC-1155'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Distribution Method</span>
+                                        <span class="font-medium">Monthly USDT Payments</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Lock-up Period</span>
+                                        <span class="font-medium">${project.tenor}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Risk Assessment</h3>
+                                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-sm text-gray-600">Risk Level</span>
+                                        <span class="px-3 py-1 bg-${project.riskLevel === 'Low' ? 'green' : project.riskLevel === 'Medium' ? 'yellow' : 'red'}-100 text-${project.riskLevel === 'Low' ? 'green' : project.riskLevel === 'Medium' ? 'yellow' : 'red'}-800 rounded-full text-sm font-medium">
+                                            ${project.riskLevel} Risk
+                                        </span>
+                                    </div>
+                                    <div class="text-sm text-gray-700 mb-2">
+                                        This investment carries ${project.riskLevel.toLowerCase()} risk due to the nature of ${project.sector.toLowerCase()} investments in ${project.region}.
+                                    </div>
+                                </div>
+
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Issuer Information</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Issuing Entity</span>
+                                        <span class="font-medium">${project.issuer}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Jurisdiction</span>
+                                        <span class="font-medium">${project.region}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Current Investors</span>
+                                        <span class="font-medium">${project.investors} Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Financials Tab -->
+                    <div id="content-financials" class="tab-content hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-blue-50 rounded-lg p-6">
+                                <div class="text-sm text-blue-600 mb-1">Target APY</div>
+                                <div class="text-3xl font-bold text-blue-900">${project.apy}</div>
+                            </div>
+                            <div class="bg-green-50 rounded-lg p-6">
+                                <div class="text-sm text-green-600 mb-1">Total Raised</div>
+                                <div class="text-3xl font-bold text-green-900">$${parseInt(project.totalRaised).toLocaleString()}</div>
+                            </div>
+                            <div class="bg-purple-50 rounded-lg p-6">
+                                <div class="text-sm text-purple-600 mb-1">Target Amount</div>
+                                <div class="text-3xl font-bold text-purple-900">$${parseInt(project.targetAmount).toLocaleString()}</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Investment Terms</h3>
+                                <div class="space-y-4">
+                                    <div class="border rounded-lg p-4">
+                                        <div class="font-medium text-gray-900 mb-2">Distribution Schedule</div>
+                                        <div class="text-gray-600 text-sm">Monthly distributions in USDT based on project performance and cash flow generation.</div>
+                                    </div>
+                                    <div class="border rounded-lg p-4">
+                                        <div class="font-medium text-gray-900 mb-2">Exit Strategy</div>
+                                        <div class="text-gray-600 text-sm">Token holders can exit after the minimum ${project.tenor} holding period through secondary market trading.</div>
+                                    </div>
+                                    <div class="border rounded-lg p-4">
+                                        <div class="font-medium text-gray-900 mb-2">Fee Structure</div>
+                                        <div class="text-gray-600 text-sm">Management fee: 1.5% annually. Performance fee: 20% above target returns.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Historical Performance</h3>
+                                <div class="bg-gray-50 rounded-lg p-4 text-center">
+                                    <i class="ri-bar-chart-line text-4xl text-gray-400 mb-2"></i>
+                                    <div class="text-gray-600">Performance data will be available after the first distribution cycle.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documents Tab -->
+                    <div id="content-documents" class="tab-content hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Investment Documents</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-4 border rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <i class="ri-file-text-line text-blue-600 text-xl"></i>
+                                            <div>
+                                                <div class="font-medium">Investment Summary</div>
+                                                <div class="text-sm text-gray-600">PDF • 2.3 MB</div>
+                                            </div>
+                                        </div>
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="ri-download-line text-xl"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between p-4 border rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <i class="ri-file-text-line text-blue-600 text-xl"></i>
+                                            <div>
+                                                <div class="font-medium">Terms & Conditions</div>
+                                                <div class="text-sm text-gray-600">PDF • 1.8 MB</div>
+                                            </div>
+                                        </div>
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="ri-download-line text-xl"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between p-4 border rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <i class="ri-file-text-line text-blue-600 text-xl"></i>
+                                            <div>
+                                                <div class="font-medium">Risk Disclosure</div>
+                                                <div class="text-sm text-gray-600">PDF • 0.9 MB</div>
+                                            </div>
+                                        </div>
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="ri-download-line text-xl"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Regulatory Documents</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-4 border rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <i class="ri-shield-check-line text-green-600 text-xl"></i>
+                                            <div>
+                                                <div class="font-medium">Compliance Certificate</div>
+                                                <div class="text-sm text-gray-600">PDF • 1.2 MB</div>
+                                            </div>
+                                        </div>
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="ri-download-line text-xl"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between p-4 border rounded-lg">
+                                        <div class="flex items-center space-x-3">
+                                            <i class="ri-shield-check-line text-green-600 text-xl"></i>
+                                            <div>
+                                                <div class="font-medium">Audit Report</div>
+                                                <div class="text-sm text-gray-600">PDF • 3.1 MB</div>
+                                            </div>
+                                        </div>
+                                        <button class="text-blue-600 hover:text-blue-700">
+                                            <i class="ri-download-line text-xl"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Updates Tab -->
+                    <div id="content-updates" class="tab-content hidden">
+                        <div class="space-y-6">
+                            <div class="border-l-4 border-blue-500 pl-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="font-medium text-gray-900">Project Launch Successful</div>
+                                    <div class="text-sm text-gray-500">2 days ago</div>
+                                </div>
+                                <div class="text-gray-600">The project has successfully launched and started accepting investments. Initial response has been positive with strong interest from institutional investors.</div>
+                            </div>
+                            
+                            <div class="border-l-4 border-green-500 pl-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="font-medium text-gray-900">Regulatory Approval Received</div>
+                                    <div class="text-sm text-gray-500">1 week ago</div>
+                                </div>
+                                <div class="text-gray-600">All necessary regulatory approvals have been obtained, allowing us to proceed with the investment offering as planned.</div>
+                            </div>
+
+                            <div class="border-l-4 border-purple-500 pl-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="font-medium text-gray-900">Due Diligence Completed</div>
+                                    <div class="text-sm text-gray-500">2 weeks ago</div>
+                                </div>
+                                <div class="text-gray-600">Comprehensive due diligence process has been completed with positive findings across all key areas of evaluation.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investment Modal -->
+        <div id="investModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold">Invest in ${project.title.split(' —')[0]}</h3>
+                    <button onclick="closeInvestModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="ri-close-line text-2xl"></i>
+                    </button>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Investment Amount (${project.currency})</label>
+                    <input 
+                        type="number" 
+                        id="investmentAmount"
+                        placeholder="Enter amount"
+                        min="${project.minInvestment}"
+                        max="${remainingCapacity}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                    <div class="text-xs text-gray-500 mt-1">
+                        Min: $${parseInt(project.minInvestment).toLocaleString()} • Available: $${remainingCapacity.toLocaleString()}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    ${[parseInt(project.minInvestment), parseInt(project.minInvestment) * 2, parseInt(project.minInvestment) * 5, parseInt(project.minInvestment) * 10].map(amount => `
+                        <button 
+                            onclick="setInvestmentAmount(${amount})"
+                            class="px-4 py-2 border border-gray-300 rounded-lg hover:border-blue-500 hover:text-blue-600 text-sm font-medium"
+                        >
+                            $${amount.toLocaleString()}
+                        </button>
+                    `).join('')}
+                </div>
+
+                <div class="mb-6">
+                    <label class="flex items-start space-x-3">
+                        <input type="checkbox" id="acceptTerms" class="mt-1">
+                        <span class="text-sm text-gray-600">
+                            I accept the <a href="#" class="text-blue-600 hover:underline">Terms & Conditions</a> 
+                            and have read the <a href="#" class="text-blue-600 hover:underline">Risk Disclosure</a>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button 
+                        onclick="closeInvestModal()"
+                        class="flex-1 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        onclick="processInvestment()"
+                        class="flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        <i class="ri-coins-line mr-2"></i>
+                        Invest Now
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts -->
+        <script src="/static/v8-integration.js"></script>
+        <script>
+            // Tab Management
+            function switchTab(tabName) {
+                // Hide all content
+                const contents = document.querySelectorAll('.tab-content');
+                contents.forEach(content => content.classList.add('hidden'));
+                
+                // Remove active class from all tabs
+                const tabs = document.querySelectorAll('[id^="tab-"]');
+                tabs.forEach(tab => {
+                    tab.className = tab.className.replace('tab-active', 'tab-inactive');
+                });
+                
+                // Show selected content and activate tab
+                document.getElementById('content-' + tabName).classList.remove('hidden');
+                document.getElementById('tab-' + tabName).className = document.getElementById('tab-' + tabName).className.replace('tab-inactive', 'tab-active');
+            }
+
+            // Investment Modal Management
+            function openInvestModal() {
+                // Check wallet connection first
+                if (typeof window.ethereum === 'undefined') {
+                    window.V8Integration.showNotification('Please install MetaMask to invest', 'warning');
+                    return;
+                }
+
+                window.ethereum.request({ method: 'eth_accounts' })
+                    .then(accounts => {
+                        if (accounts.length === 0) {
+                            // Connect wallet first
+                            window.V8Integration.connectWallet().then(() => {
+                                document.getElementById('investModal').classList.remove('hidden');
+                                document.getElementById('investModal').classList.add('flex');
+                            });
+                        } else {
+                            // Wallet already connected
+                            document.getElementById('investModal').classList.remove('hidden');
+                            document.getElementById('investModal').classList.add('flex');
+                        }
+                    });
+            }
+
+            function closeInvestModal() {
+                document.getElementById('investModal').classList.add('hidden');
+                document.getElementById('investModal').classList.remove('flex');
+            }
+
+            function setInvestmentAmount(amount) {
+                document.getElementById('investmentAmount').value = amount;
+            }
+
+            function processInvestment() {
+                const amount = document.getElementById('investmentAmount').value;
+                const acceptedTerms = document.getElementById('acceptTerms').checked;
+                
+                if (!acceptedTerms) {
+                    window.V8Integration.showNotification('Please accept the terms and conditions', 'warning');
+                    return;
+                }
+
+                if (!amount || parseFloat(amount) < ${project.minInvestment}) {
+                    window.V8Integration.showNotification('Please enter a valid investment amount', 'warning');
+                    return;
+                }
+
+                if (parseFloat(amount) > ${remainingCapacity}) {
+                    window.V8Integration.showNotification('Investment amount exceeds remaining capacity', 'warning');
+                    return;
+                }
+
+                // Redirect to actual investment flow
+                window.location.href = '/invest?project=${project.id}&amount=' + amount;
+            }
+
+            // Initialize
+            document.addEventListener('DOMContentLoaded', function() {
+                switchTab('overview');
+            });
+        </script>
+    </body>
+    </html>
+  `)
+})
+
 
 
 // Investment platform project data (enhanced from v8)

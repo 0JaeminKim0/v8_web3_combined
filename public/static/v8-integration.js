@@ -395,7 +395,7 @@ function setupProjectCardListeners() {
 function viewProjectDetails(projectId) {
     const project = allProjects.find(p => p.id === projectId);
     if (project) {
-        // Navigate to project detail page or open modal
+        // Navigate to project detail page
         window.location.href = `/project/${projectId}`;
     }
 }
