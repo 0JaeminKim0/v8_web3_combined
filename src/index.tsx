@@ -10,7 +10,14 @@ app.use('/api/*', cors())
 // Serve static files from public directory
 app.use('/static/*', serveStatic({ root: './public' }))
 
-// Investment platform project data
+// API route to serve projects data
+app.get('/api/projects', (c) => {
+  return c.json({ projects })
+})
+
+
+
+// Investment platform project data (enhanced from v8)
 const projects = [
   {
     id: 'ptf',
@@ -946,58 +953,67 @@ app.get('/', (c) => {
                     </p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    ${projects.map(project => `
-                        <div class="bg-white rounded-2xl border border-gray-200 hover:shadow-xl transition-all duration-300 overflow-hidden group">
-                            <div class="p-6">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="flex items-center space-x-2">
-                                        <span class="inline-block w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></span>
-                                        <span class="text-sm text-gray-600">${project.sector}</span>
-                                    </div>
-                                    <span class="text-2xl font-bold text-green-600">${project.apy}</span>
-                                </div>
-                                
-                                <h3 class="text-xl font-bold text-gray-900 mb-3">${project.title}</h3>
-                                <p class="text-gray-600 mb-4 text-sm leading-relaxed">${project.description}</p>
-                                
-                                <div class="space-y-2 mb-4">
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-500">Min Investment</span>
-                                        <span class="font-medium">$${parseInt(project.minInvestment).toLocaleString()} ${project.currency}</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-500">Investment Period</span>
-                                        <span class="font-medium">${project.tenor}</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-500">Risk Level</span>
-                                        <span class="font-medium text-${project.riskLevel === 'Low' ? 'green' : project.riskLevel === 'Medium' ? 'yellow' : 'red'}-600">${project.riskLevel}</span>
-                                    </div>
-                                </div>
+                <!-- Advanced Filtering System from V8 -->
+                <div class="bg-white rounded-xl p-6 mb-8 border border-gray-200 shadow-sm">
+                    <div class="flex flex-col lg:flex-row lg:items-center gap-6">
+                        <div class="flex items-center space-x-2">
+                            <i class="ri-filter-line text-gray-600"></i>
+                            <span class="font-medium text-gray-900">Filter Opportunities:</span>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-4 flex-1">
+                            <!-- Sector Filter -->
+                            <div class="flex-1">
+                                <label class="block text-sm text-gray-600 mb-2">Sector</label>
+                                <select id="sectorFilter" class="w-full px-4 py-2 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white cursor-pointer">
+                                    <option value="all">All Sectors</option>
+                                    <option value="Agriculture">Agriculture</option>
+                                    <option value="Healthcare">Healthcare</option>
+                                    <option value="Infrastructure">Infrastructure</option>
+                                    <option value="Real Estate">Real Estate</option>
+                                </select>
+                            </div>
 
-                                <!-- Progress Bar -->
-                                <div class="mb-4">
-                                    <div class="flex justify-between text-xs text-gray-500 mb-1">
-                                        <span>Progress</span>
-                                        <span>${Math.round((parseInt(project.totalRaised) / parseInt(project.targetAmount)) * 100)}%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style="width: ${Math.round((parseInt(project.totalRaised) / parseInt(project.targetAmount)) * 100)}%"></div>
-                                    </div>
-                                    <div class="flex justify-between text-xs text-gray-500 mt-1">
-                                        <span>$${parseInt(project.totalRaised).toLocaleString()}</span>
-                                        <span>$${parseInt(project.targetAmount).toLocaleString()}</span>
-                                    </div>
-                                </div>
+                            <!-- Risk Level Filter -->
+                            <div class="flex-1">
+                                <label class="block text-sm text-gray-600 mb-2">Risk Level</label>
+                                <select id="riskFilter" class="w-full px-4 py-2 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white cursor-pointer">
+                                    <option value="all">All Risk Levels</option>
+                                    <option value="Low">Low Risk</option>
+                                    <option value="Medium">Medium Risk</option>
+                                    <option value="High">High Risk</option>
+                                </select>
+                            </div>
 
-                                <a href="/invest?project=${project.id}" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all text-center block group-hover:from-blue-700 group-hover:to-purple-700">
-                                    <i class="ri-arrow-right-line mr-2"></i>
-                                    Invest Now
-                                </a>
+                            <!-- Min Investment Filter -->
+                            <div class="flex-1">
+                                <label class="block text-sm text-gray-600 mb-2">Max Min Investment</label>
+                                <select id="minInvestmentFilter" class="w-full px-4 py-2 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white cursor-pointer">
+                                    <option value="all">Any Amount</option>
+                                    <option value="10000">Up to $10K</option>
+                                    <option value="25000">Up to $25K</option>
+                                    <option value="50000">Up to $50K</option>
+                                    <option value="100000">Up to $100K</option>
+                                </select>
+                            </div>
+
+                            <!-- Region Filter -->
+                            <div class="flex-1">
+                                <label class="block text-sm text-gray-600 mb-2">Region</label>
+                                <select id="regionFilter" class="w-full px-4 py-2 pr-8 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white cursor-pointer">
+                                    <option value="all">All Regions</option>
+                                    <option value="Thailand">Thailand</option>
+                                    <option value="Southeast Asia">Southeast Asia</option>
+                                    <option value="Global">Global</option>
+                                </select>
                             </div>
                         </div>
-                    `).join('')}
+                    </div>
+                </div>
+
+                <!-- Dynamic Projects Grid -->
+                <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Projects will be dynamically loaded here -->
                 </div>
                 
                 <div class="text-center mt-12">
@@ -1202,6 +1218,34 @@ app.get('/portfolio', (c) => {
                 `).join('')}
             </div>
         </div>
+
+        <!-- V8 Integration Scripts -->
+        <script src="/static/v8-integration.js"></script>
+        
+        <!-- Quick Calculator Logic -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const amountInput = document.getElementById('investmentAmount');
+                const riskSelect = document.getElementById('riskProfile');
+                const monthlyReturn = document.getElementById('monthlyReturn');
+                const annualReturn = document.getElementById('annualReturn');
+
+                function updateCalculations() {
+                    const amount = parseFloat(amountInput.value) || 10000;
+                    const apy = parseFloat(riskSelect.value) || 15.8;
+                    
+                    const monthly = (amount * apy / 100 / 12);
+                    const annual = (amount * apy / 100);
+                    
+                    monthlyReturn.textContent = '$' + monthly.toFixed(0) + ' USDT';
+                    annualReturn.textContent = '$' + annual.toFixed(0) + ' USDT';
+                }
+
+                amountInput.addEventListener('input', updateCalculations);
+                riskSelect.addEventListener('change', updateCalculations);
+                updateCalculations();
+            });
+        </script>
     </body>
     </html>
   `)
