@@ -169,13 +169,13 @@ app.get('/project/:id', (c) => {
                         </div>
 
                         <!-- Investment Button -->
-                        <button 
-                            onclick="openInvestModal()" 
-                            class="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-blue-600 transition-all text-center"
+                        <a 
+                            href="/invest?project=${project.id}" 
+                            class="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-blue-600 transition-all text-center block"
                         >
                             <i class="ri-coins-line mr-2"></i>
                             Invest in ${project.title.split(' —')[0]}
-                        </button>
+                        </a>
                         
                         <div class="text-xs text-blue-200 mt-3 text-center">
                             Minimum investment: $${parseInt(project.minInvestment).toLocaleString()} ${project.currency}
