@@ -748,34 +748,46 @@ app.get('/api/investment/templates', (c) => {
   return c.json({
     templates: [
       {
-        id: 'fixed-term',
-        name: 'Fixed Term Investment',
-        description: 'Traditional fixed-term investment with guaranteed APY',
-        minAmount: '0.1',
-        maxAmount: '100',
-        terms: ['3 months', '6 months', '12 months'],
-        targetAPYRange: { min: 5, max: 15 },
-        features: ['Fixed APY', 'Principal Protected', 'Early Exit Penalty']
+        id: 'ptf',
+        name: 'PTF — Potato Tokenized Finance',
+        description: 'Seed potato cultivation and processing in Northern Thailand with indexed offtake contracts',
+        minAmount: '10.0',
+        maxAmount: '100.0',
+        terms: ['12 months'],
+        targetAPYRange: { min: 14.8, max: 14.8 },
+        features: ['Multi-site Weather Protection', 'Indexed Offtake Contracts', '3M+ Operating Reserve'],
+        sector: 'Agriculture',
+        region: 'Thailand',
+        riskLevel: 'Medium',
+        currency: 'USDT'
       },
       {
-        id: 'variable-yield',
-        name: 'Variable Yield Investment', 
-        description: 'Market-linked investment with variable returns',
-        minAmount: '0.5',
-        maxAmount: '1000',
-        terms: ['6 months', '12 months', '24 months'],
-        targetAPYRange: { min: 8, max: 25 },
-        features: ['Variable APY', 'Market Exposure', 'Flexible Exit']
+        id: 'scn',
+        name: 'SCN — Stem Cell Therapy Clinic', 
+        description: 'Licensed regenerative medicine clinic in Bangkok specializing in stem cell therapy',
+        minAmount: '25.0',
+        maxAmount: '200.0',
+        terms: ['24 months', '36 months'],
+        targetAPYRange: { min: 18.2, max: 18.2 },
+        features: ['FDA‑Equivalent Licensing', 'Medical Tourism Focus', 'KOL Partnerships'],
+        sector: 'Healthcare',
+        region: 'Thailand',
+        riskLevel: 'High',
+        currency: 'USDT'
       },
       {
-        id: 'defi-strategy',
-        name: 'DeFi Strategy Pool',
-        description: 'Automated DeFi yield farming strategy',
-        minAmount: '1',
-        maxAmount: '500',
-        terms: ['1 month', '3 months', '6 months'],
-        targetAPYRange: { min: 12, max: 40 },
-        features: ['DeFi Protocols', 'Auto-Compound', 'High Yield']
+        id: 'reh',
+        name: 'REH — Renewable Energy Hub',
+        description: 'Large‑scale solar and wind energy installation with government PPA contracts',
+        minAmount: '50.0',
+        maxAmount: '500.0',
+        terms: ['36 months'],
+        targetAPYRange: { min: 15.2, max: 15.2 },
+        features: ['Government PPAs', 'Industrial Off‑takers', 'Insurance Coverage'],
+        sector: 'Infrastructure',
+        region: 'Thailand',
+        riskLevel: 'Medium',
+        currency: 'USDT'
       }
     ]
   })
@@ -937,31 +949,35 @@ app.post('/api/external/upload-ipfs', async (c) => {
 app.get('/api/investment/user-investments/:address', (c) => {
   const address = c.req.param('address')
   
-  // Mock user investments data
+  // Mock user investments data (updated with real project data)
   const mockInvestments = [
     {
       tokenId: '1',
       investor: address,
-      principal: '5.5',
-      targetAPY: 12.5,
+      principal: '50.0',
+      targetAPY: 14.8,
       startTime: Date.now() - (30 * 24 * 60 * 60 * 1000), // 30 days ago
       maturityTime: Date.now() + (335 * 24 * 60 * 60 * 1000), // 335 days from now  
       status: 'Active',
-      contractType: 'Fixed Term Investment',
+      contractType: 'PTF — Potato Tokenized Finance',
       ipfsHash: 'QmAbC123dEf456GhI789jKl012MnO345pQr678StU901vWx234',
-      termsHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890'
+      termsHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
+      sector: 'Agriculture',
+      region: 'Thailand'
     },
     {
       tokenId: '2', 
       investor: address,
-      principal: '2.0',
-      targetAPY: 18.0,
+      principal: '25.0',
+      targetAPY: 18.2,
       startTime: Date.now() - (7 * 24 * 60 * 60 * 1000), // 7 days ago
       maturityTime: Date.now() + (358 * 24 * 60 * 60 * 1000), // 358 days from now
       status: 'Active',
-      contractType: 'DeFi Strategy Pool',
+      contractType: 'SCN — Stem Cell Therapy Clinic',
       ipfsHash: 'QmXyZ789aBc012DeF345gHi678JkL901mNo234PqR567sT890',
-      termsHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
+      termsHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+      sector: 'Healthcare',
+      region: 'Thailand'
     }
   ]
   
