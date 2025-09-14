@@ -11,7 +11,7 @@ app.use('/api/*', cors())
 
 // Serve static files from public directory - Railway compatible
 app.use('/static/*', serveStatic({ 
-  root: './public',
+  root: './public/static',
   rewriteRequestPath: (path) => path.replace(/^\/static/, '')
 }))
 
@@ -649,6 +649,49 @@ app.get('/invest', (c) => {
                 transform: translateY(-5px);
                 box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             }
+            .pulse-animation {
+                animation: pulse 2s infinite;
+            }
+            .step-circle {
+                width: 2rem;
+                height: 2rem;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(255,255,255,0.2);
+                font-weight: bold;
+                transition: all 0.3s ease;
+            }
+            .step-circle.active {
+                background: #10b981;
+                color: white;
+            }
+            .step-circle.completed {
+                background: #059669;
+                color: white;
+            }
+            .investment-card {
+                transition: all 0.3s ease;
+                border-left: 4px solid transparent;
+            }
+            .investment-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                border-left-color: #10b981;
+            }
+            .status-active {
+                color: #10b981;
+                background: rgba(16, 185, 129, 0.1);
+            }
+            .status-pending {
+                color: #f59e0b;
+                background: rgba(245, 158, 11, 0.1);
+            }
+            .status-completed {
+                color: #6b7280;
+                background: rgba(107, 114, 128, 0.1);
+            }
         </style>
     </head>
     <body class="gradient-bg min-h-screen flex items-center justify-center p-4">
@@ -702,9 +745,209 @@ app.get('/invest', (c) => {
                         Create New Investment Contract
                     </h2>
                     
+                    <!-- Step indicators -->
+                    <div class="flex justify-between mb-8">
+                        <div class="flex items-center text-sm">
+                            <div class="step-circle active" data-step="1">1</div>
+                            <span class="ml-2">Choose Template</span>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <div class="step-circle" data-step="2">2</div>
+                            <span class="ml-2">Set Terms</span>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <div class="step-circle" data-step="3">3</div>
+                            <span class="ml-2">Generate Contract</span>
+                        </div>
+                        <div class="flex items-center text-sm">
+                            <div class="step-circle" data-step="4">4</div>
+                            <span class="ml-2">Deposit & Mint</span>
+                        </div>
+                    </div>
+
                     <!-- Investment creation form -->
                     <div id="investment-form">
                         <!-- Form content will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connection Status -->
+            <div id="connection-status" class="hidden mb-6 p-4 rounded-lg border-l-4">
+                <div class="flex items-center">
+                    <div id="status-icon" class="mr-3 text-2xl"></div>
+                    <div>
+                        <div id="status-title" class="font-semibold"></div>
+                        <div id="status-message" class="text-sm"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallet Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Wallet cards will be populated here -->
+            </div>
+
+            <!-- Connected Wallet Info -->
+            <div id="wallet-info" class="hidden bg-green-600/20 backdrop-blur rounded-xl p-4 text-white border border-green-500/30">
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <div class="flex items-center flex-wrap gap-2">
+                        <i class="fas fa-check-circle text-green-400"></i>
+                        <span class="font-semibold">Connected:</span>
+                        <span id="wallet-address-short" class="font-mono text-sm bg-white/20 px-2 py-1 rounded"></span>
+                        <span class="text-xs">•</span>
+                        <span id="wallet-network-display" class="text-xs bg-blue-600/30 px-2 py-1 rounded"></span>
+                        <span id="testnet-badge" class="hidden text-xs bg-yellow-600/30 px-2 py-1 rounded">
+                            <i class="fas fa-flask mr-1"></i>TESTNET
+                        </span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="get-test-eth-btn" class="hidden text-xs bg-yellow-600/80 hover:bg-yellow-600 px-3 py-1 rounded transition-colors">
+                            <i class="fas fa-coins mr-1"></i>Get Test ETH
+                        </button>
+                        <button id="wallet-details-btn" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition-colors">
+                            <i class="fas fa-info-circle mr-1"></i>Details
+                        </button>
+                        <button id="disconnect-btn" class="text-xs bg-red-600/80 hover:bg-red-600 px-3 py-1 rounded transition-colors">
+                            <i class="fas fa-sign-out-alt mr-1"></i>Disconnect
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Testnet Information -->
+                <div id="testnet-info" class="hidden mt-3 p-3 bg-yellow-600/20 border border-yellow-500/30 rounded-lg text-sm">
+                    <div class="flex items-start gap-2">
+                        <i class="fas fa-info-circle text-yellow-400 mt-0.5"></i>
+                        <div class="flex-1">
+                            <div class="font-semibold text-yellow-300 mb-1">Testnet Mode Active</div>
+                            <div class="text-yellow-200 text-xs">
+                                You're connected to a test network. Use test ETH for transactions.
+                                <span id="faucet-links" class="block mt-1">
+                                    <!-- Faucet links will be populated here -->
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Non-Sepolia Network Warning -->
+                <div id="network-warning" class="hidden mt-3 p-3 bg-orange-600/20 border border-orange-500/30 rounded-lg text-sm">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-start gap-2">
+                            <i class="fas fa-exclamation-triangle text-orange-400 mt-0.5"></i>
+                            <div>
+                                <div class="font-semibold text-orange-300 mb-1">Not on Sepolia Testnet</div>
+                                <div class="text-orange-200 text-xs">
+                                    For the best experience, switch to Sepolia Testnet for free test ETH and optimized features.
+                                </div>
+                            </div>
+                        </div>
+                        <button id="switch-to-sepolia-btn" class="bg-orange-600 hover:bg-orange-700 text-white text-xs px-3 py-1 rounded transition-colors whitespace-nowrap">
+                            Switch to Sepolia
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Setup Guide -->
+            <div id="setup-guide" class="mt-8 bg-blue-600/20 backdrop-blur rounded-xl p-6 text-white">
+                <h3 class="text-xl font-semibold mb-4">
+                    <i class="fas fa-rocket mr-2"></i>
+                    Quick Setup Guide
+                </h3>
+                <div class="grid md:grid-cols-3 gap-6 text-sm">
+                    <div class="space-y-2">
+                        <div class="font-semibold text-blue-300">
+                            <span class="bg-blue-600 text-white rounded-full w-6 h-6 inline-flex items-center justify-center text-xs mr-2">1</span>
+                            Install MetaMask
+                        </div>
+                        <p class="text-gray-200 ml-8">
+                            Download MetaMask browser extension from 
+                            <a href="https://metamask.io" target="_blank" class="underline text-blue-300">metamask.io</a>
+                        </p>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="font-semibold text-blue-300">
+                            <span class="bg-blue-600 text-white rounded-full w-6 h-6 inline-flex items-center justify-center text-xs mr-2">2</span>
+                            Get Test ETH
+                        </div>
+                        <p class="text-gray-200 ml-8">
+                            Visit <a href="https://sepoliafaucet.com" target="_blank" class="underline text-blue-300">Sepolia Faucet</a> 
+                            to get free test ETH (0.5 ETH daily)
+                        </p>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="font-semibold text-blue-300">
+                            <span class="bg-blue-600 text-white rounded-full w-6 h-6 inline-flex items-center justify-center text-xs mr-2">3</span>
+                            Connect & Switch
+                        </div>
+                        <p class="text-gray-200 ml-8">
+                            Connect your wallet and switch to Sepolia Testnet when prompted
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="mt-8 grid md:grid-cols-3 gap-6 text-center text-white">
+                <div class="bg-white/10 backdrop-blur rounded-xl p-6">
+                    <div class="text-3xl mb-3">🧪</div>
+                    <h3 class="font-semibold mb-2">Testnet Ready</h3>
+                    <p class="text-sm text-gray-200">Experience full functionality with free test ETH on Sepolia Testnet.</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur rounded-xl p-6">
+                    <div class="text-3xl mb-3">📄</div>
+                    <h3 class="font-semibold mb-2">Real PDF Contracts</h3>
+                    <p class="text-sm text-gray-200">Generate and download actual PDF investment contracts with cryptographic verification.</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur rounded-xl p-6">
+                    <div class="text-3xl mb-3">🌐</div>
+                    <h3 class="font-semibold mb-2">IPFS Storage</h3>
+                    <p class="text-sm text-gray-200">Documents stored permanently on IPFS with immutable hash verification.</p>
+                </div>
+            </div>
+
+            <!-- Network Selection Modal -->
+            <div id="network-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                <div class="bg-white rounded-xl max-w-md w-full p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold">Select Network</h3>
+                        <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div id="networks-list" class="space-y-2">
+                        <!-- Networks will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investment Details Modal -->
+            <div id="investment-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                <div class="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold">Investment Contract Details</h3>
+                        <button id="close-investment-modal" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div id="investment-details">
+                        <!-- Investment details will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallet Details Modal -->
+            <div id="wallet-details-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                <div class="bg-white rounded-xl max-w-md w-full p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold">Wallet Details</h3>
+                        <button id="close-wallet-details-modal" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div id="wallet-details-content">
+                        <!-- Wallet details will be populated here -->
                     </div>
                 </div>
             </div>
