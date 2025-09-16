@@ -982,6 +982,387 @@ app.post('/api/external/upload-ipfs', async (c) => {
   }
 })
 
+// How It Works page
+app.get('/how-it-works', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>How It Works - Infinity Ventures</title>
+        <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="icon" href="https://static.readdy.ai/image/c483d55ff3c225024a0b7b0f840649bf/5fe2cffe304dc1f8b4b322d2ad07103b.webp">
+        <style>
+            body { font-family: 'Inter', sans-serif; }
+        </style>
+    </head>
+    <body class="bg-gray-50">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-lg relative z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="flex justify-between h-20">
+                    <div class="flex items-center">
+                        <a href="/" class="flex items-center space-x-3">
+                            <img alt="Infinity Ventures" class="w-10 h-10 object-contain" src="https://static.readdy.ai/image/c483d55ff3c225024a0b7b0f840649bf/5fe2cffe304dc1f8b4b322d2ad07103b.webp">
+                            <div>
+                                <div class="text-xl font-bold text-gray-900">Infinity Ventures</div>
+                                <div class="text-xs text-gray-500 -mt-1">Real-World Asset Investment Platform</div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="flex items-center">
+                        <nav class="hidden md:ml-8 md:flex space-x-8">
+                            <a href="/" class="text-gray-600 hover:text-blue-600 px-3 py-2">Home</a>
+                            <a href="/portfolio" class="text-gray-600 hover:text-blue-600 px-3 py-2">Portfolio</a>
+                            <a href="/how-it-works" class="text-blue-600 font-medium px-3 py-2 border-b-2 border-blue-600">How It Works</a>
+                            <a href="/invest" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="ri-coins-line mr-2"></i>
+                                Start Investing
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="bg-gradient-to-br from-blue-900 via-blue-800 to-purple-800 text-white py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 text-center">
+                <h1 class="text-4xl sm:text-5xl font-bold mb-6">How Infinity Ventures Works</h1>
+                <p class="text-xl text-blue-100 max-w-3xl mx-auto">
+                    Discover how we're revolutionizing real-world asset investments through blockchain technology, 
+                    transparent processes, and institutional-grade due diligence.
+                </p>
+            </div>
+        </div>
+
+        <!-- Process Steps -->
+        <div class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Investment Process</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Our streamlined process makes real-world asset investment accessible and secure
+                    </p>
+                </div>
+
+                <div class="relative">
+                    <!-- Process Line -->
+                    <div class="hidden md:block absolute left-1/2 transform -translate-x-px h-full w-0.5 bg-blue-200"></div>
+                    
+                    <!-- Steps -->
+                    <div class="space-y-16">
+                        <!-- Step 1 -->
+                        <div class="relative flex items-center">
+                            <div class="flex-1 md:pr-8 text-right">
+                                <div class="bg-blue-50 rounded-xl p-6 md:mr-8">
+                                    <h3 class="text-xl font-bold text-gray-900 mb-3">
+                                        <i class="ri-user-add-line text-blue-600 mr-2"></i>
+                                        Complete KYC Verification
+                                    </h3>
+                                    <p class="text-gray-600">
+                                        Secure identity verification process ensures compliance with regulations 
+                                        and protects all investors in our ecosystem.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-12 h-12 bg-blue-600 rounded-full items-center justify-center text-white font-bold text-lg z-10">
+                                1
+                            </div>
+                            <div class="flex-1 md:pl-8"></div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="relative flex items-center">
+                            <div class="flex-1 md:pr-8"></div>
+                            <div class="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-12 h-12 bg-blue-600 rounded-full items-center justify-center text-white font-bold text-lg z-10">
+                                2
+                            </div>
+                            <div class="flex-1 md:pl-8">
+                                <div class="bg-green-50 rounded-xl p-6 md:ml-8">
+                                    <h3 class="text-xl font-bold text-gray-900 mb-3">
+                                        <i class="ri-search-eye-line text-green-600 mr-2"></i>
+                                        Browse Investment Opportunities
+                                    </h3>
+                                    <p class="text-gray-600">
+                                        Explore curated real-world assets including agricultural commodities, 
+                                        renewable energy projects, and supply chain financing opportunities.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="relative flex items-center">
+                            <div class="flex-1 md:pr-8 text-right">
+                                <div class="bg-purple-50 rounded-xl p-6 md:mr-8">
+                                    <h3 class="text-xl font-bold text-gray-900 mb-3">
+                                        <i class="ri-file-list-3-line text-purple-600 mr-2"></i>
+                                        Review Investment Terms
+                                    </h3>
+                                    <p class="text-gray-600">
+                                        Comprehensive due diligence reports, financial projections, 
+                                        and risk assessments for informed investment decisions.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-12 h-12 bg-blue-600 rounded-full items-center justify-center text-white font-bold text-lg z-10">
+                                3
+                            </div>
+                            <div class="flex-1 md:pl-8"></div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="relative flex items-center">
+                            <div class="flex-1 md:pr-8"></div>
+                            <div class="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-12 h-12 bg-blue-600 rounded-full items-center justify-center text-white font-bold text-lg z-10">
+                                4
+                            </div>
+                            <div class="flex-1 md:pl-8">
+                                <div class="bg-orange-50 rounded-xl p-6 md:ml-8">
+                                    <h3 class="text-xl font-bold text-gray-900 mb-3">
+                                        <i class="ri-coins-line text-orange-600 mr-2"></i>
+                                        Invest with USDT
+                                    </h3>
+                                    <p class="text-gray-600">
+                                        Make secure investments using USDT stablecoin, with transparent 
+                                        on-chain tracking and institutional-grade custody solutions.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="relative flex items-center">
+                            <div class="flex-1 md:pr-8 text-right">
+                                <div class="bg-indigo-50 rounded-xl p-6 md:mr-8">
+                                    <h3 class="text-xl font-bold text-gray-900 mb-3">
+                                        <i class="ri-calendar-line text-indigo-600 mr-2"></i>
+                                        Receive Monthly Returns
+                                    </h3>
+                                    <p class="text-gray-600">
+                                        Enjoy regular USDT distributions from asset performance, 
+                                        with transparent reporting and blockchain-verified transactions.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-12 h-12 bg-blue-600 rounded-full items-center justify-center text-white font-bold text-lg z-10">
+                                5
+                            </div>
+                            <div class="flex-1 md:pl-8"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Features -->
+        <div class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Why Choose Infinity Ventures</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Advanced technology meets institutional expertise
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-xl p-8 text-center shadow-lg">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="ri-shield-check-line text-2xl text-blue-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Institutional Security</h3>
+                        <p class="text-gray-600">
+                            Bank-grade security protocols, multi-signature wallets, and regulatory compliance 
+                            ensure your investments are protected.
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-8 text-center shadow-lg">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="ri-bar-chart-line text-2xl text-green-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Transparent Reporting</h3>
+                        <p class="text-gray-600">
+                            Real-time performance tracking, detailed financial reports, and blockchain-verified 
+                            transaction history for complete transparency.
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-8 text-center shadow-lg">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="ri-team-line text-2xl text-purple-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">Expert Management</h3>
+                        <p class="text-gray-600">
+                            Experienced asset managers and industry specialists ensure optimal 
+                            performance and risk management for all investments.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Stack -->
+        <div class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Built on Cutting-Edge Technology</h2>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Leveraging blockchain, DeFi protocols, and institutional infrastructure
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="ri-links-line text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Blockchain Infrastructure</h3>
+                                <p class="text-gray-600">Ethereum-based smart contracts ensure transparent, immutable investment records</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="ri-secure-payment-line text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">USDT Stablecoin</h3>
+                                <p class="text-gray-600">Price-stable cryptocurrency minimizes volatility and simplifies accounting</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="ri-cloud-line text-purple-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Institutional Custody</h3>
+                                <p class="text-gray-600">Enterprise-grade asset custody with multi-signature security protocols</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="ri-line-chart-line text-orange-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Real-Time Analytics</h3>
+                                <p class="text-gray-600">Advanced data analytics and machine learning for investment optimization</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6">Investment Performance</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Average Annual Return</span>
+                                <span class="text-2xl font-bold text-green-600">15.8%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Assets Under Management</span>
+                                <span class="text-xl font-bold text-blue-600">$5.0M+</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Active Investors</span>
+                                <span class="text-xl font-bold text-purple-600">140+</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Investment Projects</span>
+                                <span class="text-xl font-bold text-orange-600">12</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="py-20 bg-gradient-to-br from-blue-900 via-blue-800 to-purple-800 text-white">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+                <h2 class="text-3xl font-bold mb-6">Ready to Start Investing?</h2>
+                <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                    Join institutional investors and individuals in accessing high-quality real-world assets 
+                    through our secure blockchain platform.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/invest" class="bg-white text-blue-900 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-colors text-lg">
+                        <i class="ri-arrow-right-line mr-2"></i>
+                        Start Investing Now
+                    </a>
+                    <a href="/portfolio" class="border border-white/30 text-white px-8 py-4 rounded-xl font-semibold hover:bg-white/10 transition-colors text-lg">
+                        <i class="ri-folder-line mr-2"></i>
+                        View Portfolio
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <div class="grid md:grid-cols-4 gap-8">
+                    <div class="col-span-2">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <img alt="Infinity Ventures" class="w-8 h-8 object-contain" src="https://static.readdy.ai/image/c483d55ff3c225024a0b7b0f840649bf/5fe2cffe304dc1f8b4b322d2ad07103b.webp">
+                            <div class="text-xl font-bold">Infinity Ventures</div>
+                        </div>
+                        <p class="text-gray-400 mb-4 max-w-md">
+                            Revolutionizing real-world asset investments through blockchain technology 
+                            and institutional expertise.
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-gray-400 hover:text-white"><i class="ri-twitter-line text-xl"></i></a>
+                            <a href="#" class="text-gray-400 hover:text-white"><i class="ri-linkedin-line text-xl"></i></a>
+                            <a href="#" class="text-gray-400 hover:text-white"><i class="ri-github-line text-xl"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-4">Platform</h4>
+                        <div class="space-y-2">
+                            <a href="/" class="block text-gray-400 hover:text-white">Home</a>
+                            <a href="/portfolio" class="block text-gray-400 hover:text-white">Portfolio</a>
+                            <a href="/invest" class="block text-gray-400 hover:text-white">Invest</a>
+                            <a href="/how-it-works" class="block text-gray-400 hover:text-white">How It Works</a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-4">Legal</h4>
+                        <div class="space-y-2">
+                            <a href="#" class="block text-gray-400 hover:text-white">Terms of Service</a>
+                            <a href="#" class="block text-gray-400 hover:text-white">Privacy Policy</a>
+                            <a href="#" class="block text-gray-400 hover:text-white">Risk Disclosure</a>
+                            <a href="#" class="block text-gray-400 hover:text-white">Compliance</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr class="border-gray-800 my-8">
+                
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-400 text-sm">
+                        © 2024 Infinity Ventures. All rights reserved.
+                    </p>
+                    <p class="text-gray-400 text-sm mt-4 md:mt-0">
+                        Regulated by financial authorities • Member SIPC
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </body>
+    </html>
+  `)
+})
+
 // Investment Contract DApp page (COMPLETE ORIGINAL VERSION)
 app.get('/invest', (c) => {
   return c.html(`
@@ -1220,63 +1601,7 @@ app.get('/invest', (c) => {
                 </div>
             </div>
 
-            <!-- Quick Setup Guide -->
-            <div id="setup-guide" class="mt-8 bg-blue-600/20 backdrop-blur rounded-xl p-6 text-white">
-                <h3 class="text-xl font-semibold mb-4">
-                    <i class="fas fa-rocket mr-2"></i>
-                    Quick Setup Guide
-                </h3>
-                <div class="grid md:grid-cols-3 gap-6 text-sm">
-                    <div class="space-y-2">
-                        <div class="font-semibold text-blue-300">
-                            <span class="bg-blue-600 text-white rounded-full w-6 h-6 inline-flex items-center justify-center text-xs mr-2">1</span>
-                            Install MetaMask
-                        </div>
-                        <p class="text-gray-200 ml-8">
-                            Download MetaMask browser extension from 
-                            <a href="https://metamask.io" target="_blank" class="underline text-blue-300">metamask.io</a>
-                        </p>
-                    </div>
-                    <div class="space-y-2">
-                        <div class="font-semibold text-blue-300">
-                            <span class="bg-blue-600 text-white rounded-full w-6 h-6 inline-flex items-center justify-center text-xs mr-2">2</span>
-                            Get Test ETH
-                        </div>
-                        <p class="text-gray-200 ml-8">
-                            Visit <a href="https://sepoliafaucet.com" target="_blank" class="underline text-blue-300">Sepolia Faucet</a> 
-                            to get free test ETH (0.5 ETH daily)
-                        </p>
-                    </div>
-                    <div class="space-y-2">
-                        <div class="font-semibold text-blue-300">
-                            <span class="bg-blue-600 text-white rounded-full w-6 h-6 inline-flex items-center justify-center text-xs mr-2">3</span>
-                            Connect & Switch
-                        </div>
-                        <p class="text-gray-200 ml-8">
-                            Connect your wallet and switch to Sepolia Testnet when prompted
-                        </p>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Features -->
-            <div class="mt-8 grid md:grid-cols-3 gap-6 text-center text-white">
-                <div class="bg-white/10 backdrop-blur rounded-xl p-6">
-                    <div class="text-3xl mb-3">🧪</div>
-                    <h3 class="font-semibold mb-2">Testnet Ready</h3>
-                    <p class="text-sm text-gray-200">Experience full functionality with free test ETH on Sepolia Testnet.</p>
-                </div>
-                <div class="bg-white/10 backdrop-blur rounded-xl p-6">
-                    <div class="text-3xl mb-3">📄</div>
-                    <h3 class="font-semibold mb-2">Real PDF Contracts</h3>
-                    <p class="text-sm text-gray-200">Generate and download actual PDF investment contracts with cryptographic verification.</p>
-                </div>
-                <div class="bg-white/10 backdrop-blur rounded-xl p-6">
-                    <div class="text-3xl mb-3">🌐</div>
-                    <h3 class="font-semibold mb-2">IPFS Storage</h3>
-                    <p class="text-sm text-gray-200">Documents stored permanently on IPFS with immutable hash verification.</p>
-                </div>
-            </div>
 
             <!-- Network Selection Modal -->
             <div id="network-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
