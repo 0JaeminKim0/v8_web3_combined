@@ -353,35 +353,48 @@ app.get('/project/:id', (c) => {
                                 </div>
                             </div>
 
-                            <!-- Financial Covenants & Automated Protections -->
+                            <!-- Financial Covenants -->
                             <div class="mb-8">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Financial Covenants & Automated Protections</h3>
-                                <div class="bg-red-50 rounded-lg p-6 border border-red-200">
-                                    <h4 class="font-semibold text-red-800 mb-3">
-                                        <i class="ri-alert-line mr-2"></i>
-                                        Auto-Pause Trigger
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Financial Covenants</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <h4 class="font-semibold text-gray-900">Min DSCR</h4>
+                                            <span class="text-lg font-bold text-blue-600">1.15x</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600">Debt Service Coverage Ratio must maintain 15% buffer</p>
+                                    </div>
+                                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <h4 class="font-semibold text-gray-900">Buyer Concentration</h4>
+                                            <span class="text-lg font-bold text-orange-600">≤30%</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600">No single buyer can represent more than 30% of sales</p>
+                                    </div>
+                                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <h4 class="font-semibold text-gray-900">Insurance Coverage</h4>
+                                            <span class="text-lg font-bold text-green-600">Maintained</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600">Weather and operational insurance must remain active</p>
+                                    </div>
+                                    <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <h4 class="font-semibold text-gray-900">Auto-Pause Trigger</h4>
+                                            <span class="text-lg font-bold text-red-600">Oracle Monitoring</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600">Automatic suspension if covenants are breached</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-6 bg-red-50 rounded-lg p-6 border border-red-200">
+                                    <h4 class="font-semibold text-red-800 mb-2">
+                                        <i class="ri-shield-check-line mr-2"></i>
+                                        Automated Protection
                                     </h4>
-                                    <p class="text-sm text-red-700 mb-4">
+                                    <p class="text-sm text-red-700">
                                         Oracle monitoring automatically pauses new investments and distributions if any financial covenant is breached, protecting investor capital until issues are resolved.
                                     </p>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <h5 class="font-medium text-gray-900 mb-2">DSCR Buffer</h5>
-                                            <p class="text-sm text-gray-700">Debt Service Coverage Ratio must maintain 15% buffer</p>
-                                        </div>
-                                        <div>
-                                            <h5 class="font-medium text-gray-900 mb-2">Buyer Concentration</h5>
-                                            <p class="text-sm text-gray-700">No single buyer can represent more than 30% of sales</p>
-                                        </div>
-                                        <div>
-                                            <h5 class="font-medium text-gray-900 mb-2">Insurance Coverage</h5>
-                                            <p class="text-sm text-gray-700">Weather and operational insurance must remain active</p>
-                                        </div>
-                                        <div>
-                                            <h5 class="font-medium text-gray-900 mb-2">Oracle Monitoring</h5>
-                                            <p class="text-sm text-gray-700">Automated protection via continuous monitoring</p>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 
