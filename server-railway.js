@@ -115,6 +115,7 @@ app.get('/project/:id', (c) => {
 
   const progressPercentage = (parseFloat(project.totalRaised) / parseFloat(project.targetAmount)) * 100
   const remainingCapacity = parseFloat(project.targetAmount) - parseFloat(project.totalRaised)
+  const targetAPY = parseFloat(project.apy.replace('%', ''))
   
   return c.html(`
     <!DOCTYPE html>
@@ -125,13 +126,27 @@ app.get('/project/:id', (c) => {
         <title>${project.title} - Infinity Ventures</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <style>
-            .tab-active {
-                @apply border-blue-500 text-blue-600 bg-blue-50;
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            'crypto-blue': '#1e40af',
+                            'crypto-purple': '#7c3aed',
+                            'crypto-orange': '#ea580c'
+                        }
+                    }
+                }
             }
-            .tab-inactive {
-                @apply border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300;
+        </script>
+        <style>
+            .def-term {
+                cursor: help;
+                border-bottom: 1px dotted #2563eb;
+                color: #2563eb;
+            }
+            .def-term:hover {
+                color: #1d4ed8;
             }
         </style>
     </head>
@@ -167,230 +182,468 @@ app.get('/project/:id', (c) => {
             </div>
         </header>
 
-        <!-- Project Hero Section -->
-        <div class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Project Info -->
+        
+        <div class="py-4 md:py-8">
+            <div class="px-4 sm:px-6 max-w-7xl mx-auto">
+                <!-- Breadcrumb -->
+                <div class="flex items-center space-x-2 text-sm text-gray-600 mb-6 md:mb-8">
+                    <a href="/" class="hover:text-gray-900 cursor-pointer">Thailand RWA Platform</a>
+                    <i class="ri-arrow-right-s-line"></i>
+                    <span class="text-gray-900">${project.title}</span>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+                    <!-- Main Content -->
                     <div class="lg:col-span-2">
-                        <div class="flex items-center space-x-2 text-blue-200 mb-4">
-                            <i class="ri-building-line"></i>
-                            <span>${project.sector}</span>
-                            <span>•</span>
-                            <span>${project.region}</span>
-                            <span>•</span>
-                            <span class="px-2 py-1 bg-blue-800/30 rounded text-sm">${project.riskLevel} Risk</span>
-                        </div>
-                        
-                        <h1 class="text-3xl lg:text-4xl font-bold text-white mb-4">${project.title}</h1>
-                        <p class="text-lg text-blue-100 mb-6">${project.description}</p>
-                        
-                        <div class="flex flex-wrap gap-2 mb-6">
-                            ${project.keyFeatures.map(feature => `
-                                <span class="bg-blue-800/30 text-blue-200 px-3 py-1 rounded-full text-sm">${feature}</span>
-                            `).join('')}
+                        <!-- Hero Image -->
+                        <div class="bg-white rounded-xl overflow-hidden mb-6 md:mb-8">
+                            <img 
+                                src="https://readdy.ai/api/search-image?query=Professional%20potato%20farming%20operation%20in%20northern%20Thailand%20with%20systematic%20cultivation%20rows%2C%20modern%20agricultural%20facility%20showing%20organized%20potato%20fields%20with%20irrigation%20systems%20and%20farming%20equipment%2C%20commercial%20scale%20seed%20potato%20production%20with%20mountain%20landscape%20background&width=800&height=400&seq=${project.id}_detail_main&orientation=landscape"
+                                alt="${project.title}"
+                                class="w-full h-48 md:h-64 object-cover object-top"
+                            />
                         </div>
 
-                        <!-- Key Metrics -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                                <div class="text-2xl font-bold text-white">${project.apy}</div>
-                                <div class="text-sm text-blue-200">Target APY</div>
+                        <!-- Project Overview -->
+                        <div class="bg-white rounded-xl p-6 md:p-8 mb-6 md:mb-8">
+                            <div class="flex flex-col md:flex-row md:items-start justify-between mb-6">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-3">
+                                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                            <i class="ri-plant-line text-green-600 text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm text-gray-500">${project.sector} • ${project.region}</div>
+                                            <div class="text-lg font-semibold text-gray-900">${project.issuer}</div>
+                                        </div>
+                                    </div>
+                                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">${project.title}</h1>
+                                </div>
+                                <div class="px-4 py-2 rounded-full text-sm font-medium ${project.riskLevel === 'Low' ? 'bg-green-100 text-green-800' : project.riskLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'} mt-4 md:mt-0 md:ml-4 whitespace-nowrap self-start">
+                                    ${project.riskLevel} Risk
+                                </div>
                             </div>
-                            <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                                <div class="text-2xl font-bold text-white">${project.tenor}</div>
-                                <div class="text-sm text-blue-200">Investment Term</div>
+
+                            <!-- Investment Overview -->
+                            <div class="mb-8">
+                                <h2 class="text-xl font-bold text-gray-900 mb-4">Investment Overview</h2>
+                                <div class="prose prose-gray max-w-none">
+                                    <p class="text-lg leading-relaxed text-gray-700">
+                                        Target <span class="def-term">APY</span> ${targetAPY}% per year, paid monthly in <span class="def-term">USDT</span>, 
+                                        for ${project.tenor}. Minimum ${parseInt(project.minInvestment).toLocaleString()} USDT. ${project.riskLevel} risk. 
+                                        What you fund: seed‑potato growing and processing. How you earn: sales under <span class="def-term">offtake</span> with <span class="def-term">indexed pricing</span>. 
+                                        Payouts after first harvest ramp. Built on <span class="def-term">ERC‑3643</span> and <span class="def-term">Base L2</span> with <span class="def-term">KYC</span>/<span class="def-term">SBT</span>.
+                                    </p>
+                                </div>
                             </div>
-                            <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                                <div class="text-2xl font-bold text-white">${parseInt(project.minInvestment).toLocaleString()}</div>
-                                <div class="text-sm text-blue-200">Min Investment (${project.currency})</div>
+
+                            <!-- Key Facts Grid -->
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                                <div class="text-center">
+                                    <div class="text-2xl md:text-3xl font-bold text-green-600">${targetAPY}%</div>
+                                    <div class="text-sm text-gray-500">Target APY</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl md:text-3xl font-bold text-blue-600">${project.tenor}</div>
+                                    <div class="text-sm text-gray-500">Investment Term</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl md:text-3xl font-bold text-purple-600">${(parseInt(project.minInvestment)/1000)}K</div>
+                                    <div class="text-sm text-gray-500">Min Investment</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl md:text-3xl font-bold text-orange-600">${project.distributionFreq || 'Monthly'}</div>
+                                    <div class="text-sm text-gray-500">After 12 months</div>
+                                </div>
                             </div>
-                            <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                                <div class="text-2xl font-bold text-white">${project.distributionFreq || 'Monthly'}</div>
-                                <div class="text-sm text-blue-200">Distribution Freq</div>
+
+                            <!-- Funding Progress -->
+                            <div class="mb-8">
+                                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                                    <span>Funding Progress</span>
+                                    <span>Last updated: ${new Date().toLocaleDateString()}</span>
+                                </div>
+                                <div class="flex justify-between text-lg font-semibold text-gray-900 mb-3">
+                                    <span>$${(parseInt(project.totalRaised)/1000000).toFixed(1)}M raised</span>
+                                    <span>$${(parseInt(project.targetAmount)/1000000).toFixed(1)}M target</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-4">
+                                    <div 
+                                        class="bg-gradient-to-r from-green-500 to-blue-500 h-4 rounded-full transition-all duration-500"
+                                        style="width: ${Math.min(progressPercentage, 100)}%"
+                                    ></div>
+                                </div>
+                                <div class="text-sm text-gray-500 mt-2">
+                                    ${Math.round(progressPercentage)}% funded • ${project.investors} investors
+                                </div>
+                            </div>
+
+                            <!-- Structure -->
+                            <div class="mb-8">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Investment Structure</h3>
+                                <div class="bg-blue-50 rounded-lg p-6">
+                                    <p class="text-gray-700">
+                                        Senior revenue‑share note with pay‑as‑you‑earn structure. Monthly <span class="def-term">USDT</span> distributions 
+                                        based on actual potato sales revenue under contracted <span class="def-term">offtake agreements</span>.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- KPI Tracking -->
+                            <div class="mb-8">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                                    Monthly KPIs <span class="text-sm font-normal text-gray-500">(attested via <span class="def-term">EAS</span>)</span>
+                                </h3>
+                                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                                    <div class="bg-white border border-gray-200 rounded-lg p-4 text-center">
+                                        <div class="w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 bg-green-100">
+                                            <i class="ri-seedling-line text-green-600"></i>
+                                        </div>
+                                        <div class="font-bold text-gray-900">145</div>
+                                        <div class="text-xs text-gray-500">Land Prepared</div>
+                                        <div class="text-xs text-gray-400">acres</div>
+                                    </div>
+                                    <div class="bg-white border border-gray-200 rounded-lg p-4 text-center">
+                                        <div class="w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 bg-blue-100">
+                                            <i class="ri-plant-line text-blue-600"></i>
+                                        </div>
+                                        <div class="font-bold text-gray-900">12.8</div>
+                                        <div class="text-xs text-gray-500">Seed Planted</div>
+                                        <div class="text-xs text-gray-400">tons</div>
+                                    </div>
+                                    <div class="bg-white border border-gray-200 rounded-lg p-4 text-center">
+                                        <div class="w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 bg-purple-100">
+                                            <i class="ri-handshake-line text-purple-600"></i>
+                                        </div>
+                                        <div class="font-bold text-gray-900">85%</div>
+                                        <div class="text-xs text-gray-500">Contract Secured</div>
+                                        <div class="text-xs text-gray-400">%</div>
+                                    </div>
+                                    <div class="bg-white border border-gray-200 rounded-lg p-4 text-center">
+                                        <div class="w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 bg-orange-100">
+                                            <i class="ri-truck-line text-orange-600"></i>
+                                        </div>
+                                        <div class="font-bold text-gray-900">7/9</div>
+                                        <div class="text-xs text-gray-500">Equipment Ready</div>
+                                        <div class="text-xs text-gray-400">units</div>
+                                    </div>
+                                    <div class="bg-white border border-gray-200 rounded-lg p-4 text-center">
+                                        <div class="w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 bg-teal-100">
+                                            <i class="ri-money-dollar-circle-line text-teal-600"></i>
+                                        </div>
+                                        <div class="font-bold text-gray-900">430K</div>
+                                        <div class="text-xs text-gray-500">Working Capital</div>
+                                        <div class="text-xs text-gray-400">USDT</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Investment Panel -->
-                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-                        <h3 class="text-xl font-bold text-white mb-4">Investment Overview</h3>
-                        
-                        <!-- Progress Bar -->
-                        <div class="mb-6">
-                            <div class="flex justify-between text-sm text-blue-200 mb-2">
-                                <span>Raised: $${parseInt(project.totalRaised).toLocaleString()}</span>
-                                <span>Target: $${parseInt(project.targetAmount).toLocaleString()}</span>
+                    <!-- Sidebar -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white rounded-xl p-6 sticky top-24">
+                            <div class="mb-6">
+                                <div class="text-sm text-gray-500 mb-1">Target Monthly Return</div>
+                                <div class="text-3xl font-bold text-green-600 mb-4">${(targetAPY/12).toFixed(1)}%</div>
+                                
+                                <div class="space-y-3 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Min Investment</span>
+                                        <span class="font-medium">${(parseInt(project.minInvestment)/1000)}K ${project.currency}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Investment Term</span>
+                                        <span class="font-medium">${project.tenor}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Remaining Capacity</span>
+                                        <span class="font-medium">$${(remainingCapacity/1000000).toFixed(1)}M</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Distribution</span>
+                                        <span class="font-medium">${project.distributionFreq || 'Monthly'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">Token Standard</span>
+                                        <span class="font-medium">${project.tokenStandard}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="w-full bg-white/20 rounded-full h-3">
-                                <div class="bg-gradient-to-r from-green-400 to-blue-500 h-3 rounded-full transition-all" style="width: ${Math.min(progressPercentage, 100)}%"></div>
+
+                            <button 
+                                onclick="showInvestModal()"
+                                class="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 rounded-lg font-semibold hover:from-green-700 hover:to-blue-700 transition-all mb-4 cursor-pointer whitespace-nowrap"
+                            >
+                                <span id="invest-button-text">Connect Wallet to Invest</span>
+                            </button>
+
+                            <div class="text-xs text-gray-500 text-center">
+                                <p class="mb-2">
+                                    <i class="ri-shield-check-line text-green-600"></i> SEC Regulated • <span class="def-term">KYC</span> Verified
+                                </p>
+                                <p>Built on Base L2 with secure compliance. Monthly ${project.currency} distributions to your wallet.</p>
                             </div>
-                            <div class="text-center text-white font-bold mt-2">${progressPercentage.toFixed(1)}% Funded</div>
-                        </div>
-
-                        <!-- Remaining Capacity -->
-                        <div class="bg-white/10 rounded-lg p-4 mb-6">
-                            <div class="text-sm text-blue-200 mb-1">Remaining Capacity</div>
-                            <div class="text-2xl font-bold text-white">$${remainingCapacity.toLocaleString()}</div>
-                        </div>
-
-                        <!-- Investment Button -->
-                        <a 
-                            href="/invest?project=${project.id}" 
-                            class="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-3 rounded-lg font-semibold hover:from-green-600 hover:to-blue-600 transition-all text-center block"
-                        >
-                            <i class="ri-coins-line mr-2"></i>
-                            Invest in ${project.title.split(' —')[0]}
-                        </a>
-                        
-                        <div class="text-xs text-blue-200 mt-3 text-center">
-                            Minimum investment: $${parseInt(project.minInvestment).toLocaleString()} ${project.currency}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Project Details Tabs -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                <!-- Tab Navigation -->
-                <div class="border-b border-gray-200">
-                    <nav class="flex space-x-8 px-6 py-4">
-                        <button onclick="switchTab('overview')" id="tab-overview" class="tab-active border-b-2 py-2 px-1 text-sm font-medium">
-                            Overview
-                        </button>
-                        <button onclick="switchTab('financials')" id="tab-financials" class="tab-inactive border-b-2 py-2 px-1 text-sm font-medium">
-                            Financials
-                        </button>
-                        <button onclick="switchTab('documents')" id="tab-documents" class="tab-inactive border-b-2 py-2 px-1 text-sm font-medium">
-                            Documents
-                        </button>
-                        <button onclick="switchTab('updates')" id="tab-updates" class="tab-inactive border-b-2 py-2 px-1 text-sm font-medium">
-                            Updates
-                        </button>
-                    </nav>
+        <!-- Investment Modal -->
+        <div id="investment-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-xl p-6 md:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl md:text-2xl font-bold">Invest in PTF</h2>
+                    <button 
+                        onclick="closeInvestModal()"
+                        class="text-gray-400 hover:text-gray-600 cursor-pointer p-1"
+                    >
+                        <i class="ri-close-line text-xl"></i>
+                    </button>
                 </div>
 
-                <!-- Tab Content -->
-                <div class="p-6">
-                    <!-- Overview Tab -->
-                    <div id="content-overview" class="tab-content">
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Investment Highlights</h3>
-                                <div class="space-y-3 text-gray-700">
-                                    ${project.keyFeatures.map(feature => `
-                                        <div class="flex items-start space-x-2">
-                                            <i class="ri-check-line text-green-600 mt-0.5"></i>
-                                            <span>${feature}</span>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                                
-                                <h3 class="text-lg font-semibold text-gray-900 mt-8 mb-4">Investment Structure</h3>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Asset Class</span>
-                                        <span class="font-medium">${project.sector} Investment</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Token Standard</span>
-                                        <span class="font-medium">${project.tokenStandard || 'ERC-1155'}</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Distribution Method</span>
-                                        <span class="font-medium">Monthly USDT Payments</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Lock-up Period</span>
-                                        <span class="font-medium">${project.tenor}</span>
-                                    </div>
-                                </div>
+                <div class="space-y-6">
+                    <!-- Preset Investment Amounts -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                            Quick Investment Options (${project.currency})
+                        </label>
+                        <div class="grid grid-cols-2 gap-3" id="preset-amounts">
+                            <button
+                                onclick="selectPreset(10000)"
+                                class="preset-btn p-3 border rounded-lg text-center transition-all cursor-pointer border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                            >
+                                <div class="font-semibold">10,000</div>
+                                <div class="text-xs text-gray-500">Minimum</div>
+                            </button>
+                            <button
+                                onclick="selectPreset(25000)"
+                                class="preset-btn p-3 border rounded-lg text-center transition-all cursor-pointer border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                            >
+                                <div class="font-semibold">25,000</div>
+                                <div class="text-xs text-gray-500">2.5x Min</div>
+                            </button>
+                            <button
+                                onclick="selectPreset(50000)"
+                                class="preset-btn p-3 border rounded-lg text-center transition-all cursor-pointer border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                            >
+                                <div class="font-semibold">50,000</div>
+                                <div class="text-xs text-gray-500">5x Min</div>
+                            </button>
+                            <button
+                                onclick="selectPreset(100000)"
+                                class="preset-btn p-3 border rounded-lg text-center transition-all cursor-pointer border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                            >
+                                <div class="font-semibold">100,000</div>
+                                <div class="text-xs text-gray-500">10x Min</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Custom Investment Amount -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Or Enter Custom Amount (${project.currency})
+                        </label>
+                        <input
+                            type="number"
+                            id="investment-amount"
+                            value="10000"
+                            placeholder="${parseInt(project.minInvestment).toLocaleString()}"
+                            min="${project.minInvestment}"
+                            max="${remainingCapacity}"
+                            onchange="updateCustomAmount()"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        />
+                        <div class="text-xs text-gray-500 mt-1">
+                            Min: ${parseInt(project.minInvestment).toLocaleString()} ${project.currency} • Available: ${remainingCapacity.toLocaleString()} ${project.currency}
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span>Investment Amount</span>
+                            <span id="display-amount">10,000 ${project.currency}</span>
+                        </div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span>Platform Fee (0.5%)</span>
+                            <span id="display-fee">50 ${project.currency}</span>
+                        </div>
+                        <div class="border-t pt-2 flex justify-between font-medium">
+                            <span>Total Required</span>
+                            <span id="display-total">10,050 ${project.currency}</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <div class="text-sm text-green-800">
+                            <div class="font-medium mb-2">Expected Monthly Distribution:</div>
+                            <div class="text-2xl font-bold text-green-600" id="monthly-return">
+                                $${((10000 * targetAPY / 100) / 12).toFixed(0)} USDT
                             </div>
-
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Risk Assessment</h3>
-                                <div class="bg-gray-50 rounded-lg p-4 mb-6">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <span class="text-sm text-gray-600">Risk Level</span>
-                                        <span class="px-3 py-1 bg-${project.riskLevel === 'Low' ? 'green' : project.riskLevel === 'Medium' ? 'yellow' : 'red'}-100 text-${project.riskLevel === 'Low' ? 'green' : project.riskLevel === 'Medium' ? 'yellow' : 'red'}-800 rounded-full text-sm font-medium">
-                                            ${project.riskLevel} Risk
-                                        </span>
-                                    </div>
-                                    <div class="text-sm text-gray-700 mb-2">
-                                        This investment carries ${project.riskLevel.toLowerCase()} risk due to the nature of ${project.sector.toLowerCase()} investments in ${project.region}.
-                                    </div>
-                                </div>
-
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Issuer Information</h3>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Issuing Entity</span>
-                                        <span class="font-medium">${project.issuer}</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Jurisdiction</span>
-                                        <span class="font-medium">${project.region}</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">Current Investors</span>
-                                        <span class="font-medium">${project.investors} Active</span>
-                                    </div>
-                                </div>
-                            </div>
+                            <div class="text-xs text-green-700 mt-1">Starting after harvest ramp (est. 3-4 months)</div>
                         </div>
                     </div>
 
-                    <!-- Other tabs content would go here (Financials, Documents, Updates) -->
-                    <div id="content-financials" class="tab-content hidden">
-                        <div class="text-center py-12">
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">Financial Information</h3>
-                            <p class="text-gray-600">Detailed financial data and performance metrics.</p>
+                    <div class="flex items-start space-x-2">
+                        <input 
+                            type="checkbox" 
+                            id="accept-terms"
+                            class="mt-1" 
+                        />
+                        <div class="text-xs text-gray-600">
+                            I acknowledge that I have read and agree to the 
+                            <span class="text-blue-600 cursor-pointer"> Terms of Service</span>, 
+                            <span class="text-blue-600 cursor-pointer"> Risk Disclosure</span>, and confirm <span class="def-term">KYC</span> compliance
                         </div>
                     </div>
 
-                    <div id="content-documents" class="tab-content hidden">
-                        <div class="text-center py-12">
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">Investment Documents</h3>
-                            <p class="text-gray-600">Access to legal documents, terms, and disclosures.</p>
-                        </div>
-                    </div>
-
-                    <div id="content-updates" class="tab-content hidden">
-                        <div class="text-center py-12">
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">Project Updates</h3>
-                            <p class="text-gray-600">Latest news and developments from the project.</p>
-                        </div>
-                    </div>
+                    <button 
+                        onclick="processInvestment()"
+                        id="confirm-invest-btn"
+                        disabled
+                        class="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:from-green-700 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap"
+                    >
+                        Confirm Investment
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- Scripts -->
-        <script src="/static/v8-integration.js"></script>
         <script>
-            // Tab Management
-            function switchTab(tabName) {
-                // Hide all content
-                const contents = document.querySelectorAll('.tab-content');
-                contents.forEach(content => content.classList.add('hidden'));
+            // Global variables
+            window.projectPageWalletConnected = false;
+            window.currentAmount = 10000;
+            window.selectedPreset = '10000';
+            
+            // Wallet connection
+            async function connectWallet() {
+                try {
+                    if (typeof window.ethereum !== 'undefined') {
+                        await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        window.projectPageWalletConnected = true;
+                        document.getElementById('wallet-text').textContent = 'Wallet Connected';
+                        document.getElementById('invest-button-text').textContent = 'Invest Now';
+                        showNotification('Wallet connected successfully!', 'success');
+                    } else {
+                        showNotification('Please install MetaMask wallet', 'error');
+                    }
+                } catch (error) {
+                    showNotification('Failed to connect wallet', 'error');
+                }
+            }
+            
+            // Investment modal functions
+            function showInvestModal() {
+                if (!window.projectPageWalletConnected) {
+                    connectWallet();
+                    return;
+                }
+                document.getElementById('investment-modal').classList.remove('hidden');
+            }
+            
+            function closeInvestModal() {
+                document.getElementById('investment-modal').classList.add('hidden');
+            }
+            
+            function selectPreset(amount) {
+                window.currentAmount = amount;
+                document.getElementById('investment-amount').value = amount;
                 
-                // Remove active class from all tabs
-                const tabs = document.querySelectorAll('[id^="tab-"]');
-                tabs.forEach(tab => {
-                    tab.className = tab.className.replace('tab-active', 'tab-inactive');
+                // Update preset button styles
+                document.querySelectorAll('.preset-btn').forEach(btn => {
+                    btn.className = 'preset-btn p-3 border rounded-lg text-center transition-all cursor-pointer border-gray-300 hover:border-gray-400 hover:bg-gray-50';
+                });
+                event.target.closest('.preset-btn').className = 'preset-btn p-3 border rounded-lg text-center transition-all cursor-pointer border-green-500 bg-green-50 text-green-700';
+                
+                updateDisplayAmounts();
+            }
+            
+            function updateCustomAmount() {
+                const input = document.getElementById('investment-amount');
+                window.currentAmount = parseFloat(input.value) || 0;
+                
+                // Reset preset button styles
+                document.querySelectorAll('.preset-btn').forEach(btn => {
+                    btn.className = 'preset-btn p-3 border rounded-lg text-center transition-all cursor-pointer border-gray-300 hover:border-gray-400 hover:bg-gray-50';
                 });
                 
-                // Show selected content and activate tab
-                document.getElementById('content-' + tabName).classList.remove('hidden');
-                document.getElementById('tab-' + tabName).className = document.getElementById('tab-' + tabName).className.replace('tab-inactive', 'tab-active');
+                updateDisplayAmounts();
             }
-
-            // Initialize
+            
+            function updateDisplayAmounts() {
+                const fee = window.currentAmount * 0.005;
+                const total = window.currentAmount * 1.005;
+                const monthlyReturn = (window.currentAmount * ${targetAPY} / 100) / 12;
+                
+                document.getElementById('display-amount').textContent = window.currentAmount.toLocaleString() + ' ${project.currency}';
+                document.getElementById('display-fee').textContent = fee.toLocaleString() + ' ${project.currency}';
+                document.getElementById('display-total').textContent = total.toLocaleString() + ' ${project.currency}';
+                document.getElementById('monthly-return').textContent = '$' + monthlyReturn.toFixed(0) + ' USDT';
+                
+                // Enable/disable confirm button
+                const termsAccepted = document.getElementById('accept-terms').checked;
+                const validAmount = window.currentAmount >= ${project.minInvestment} && window.currentAmount <= ${remainingCapacity};
+                document.getElementById('confirm-invest-btn').disabled = !(termsAccepted && validAmount);
+            }
+            
+            // Terms checkbox handler
             document.addEventListener('DOMContentLoaded', function() {
-                switchTab('overview');
+                document.getElementById('accept-terms').addEventListener('change', updateDisplayAmounts);
             });
+            
+            async function processInvestment() {
+                const termsAccepted = document.getElementById('accept-terms').checked;
+                if (!termsAccepted) {
+                    showNotification('Please accept the terms and conditions to proceed.', 'error');
+                    return;
+                }
+                
+                if (window.currentAmount < ${project.minInvestment}) {
+                    showNotification('Minimum investment amount is ${parseInt(project.minInvestment).toLocaleString()} ${project.currency}', 'error');
+                    return;
+                }
+                
+                if (window.currentAmount > ${remainingCapacity}) {
+                    showNotification('Investment amount exceeds remaining capacity of ${remainingCapacity.toLocaleString()} ${project.currency}', 'error');
+                    return;
+                }
+                
+                try {
+                    showNotification('Investment processed successfully! You will receive ERC-3643 tokens and monthly distributions.', 'success');
+                    closeInvestModal();
+                    // Reset form
+                    window.currentAmount = 10000;
+                    document.getElementById('investment-amount').value = 10000;
+                    document.getElementById('accept-terms').checked = false;
+                    updateDisplayAmounts();
+                } catch (error) {
+                    showNotification('Investment processing failed. Please try again.', 'error');
+                }
+            }
+            
+            function showNotification(message, type) {
+                const bgColor = type === 'success' ? '#10b981' : '#dc2626';
+                const icon = type === 'success' ? '✅' : '⚠️';
+                
+                const alertDiv = document.createElement('div');
+                alertDiv.innerHTML = \`
+                    <div style="position: fixed; top: 20px; right: 20px; background: \` + bgColor + \`; color: white; padding: 16px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; max-width: 400px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="font-size: 18px;">\` + icon + \`</div>
+                            <div>\` + message + \`</div>
+                        </div>
+                    </div>
+                \`;
+                document.body.appendChild(alertDiv);
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.parentNode.removeChild(alertDiv);
+                    }
+                }, 4000);
+            }
         </script>
     </body>
     </html>
