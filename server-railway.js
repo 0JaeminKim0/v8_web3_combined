@@ -52,7 +52,7 @@ const projects = [
     riskLevel: 'Medium',
     description: 'SCN 5M Seed — Licensed regenerative medicine clinic in Bangkok. Early development stage with company registration and base design completed. 12-month build, distributions after 12 months.',
     keyFeatures: ['Company Registration Complete', 'Base Design Approved', 'Legal DD Cleared', 'Medical Tourism Focus', 'Staged Capital'],
-    image: 'https://readdy.ai/api/search-image?query=Modern%20medical%20laboratory%20with%20stem%20cell%20research%20equipment%20and%20sterile%20environment%2C%20professional%20healthcare%20facility%20in%20Bangkok%20with%20advanced%20biotechnology%20equipment%2C%20clean%20white%20laboratory%20with%20microscopes%20and%20cell%20culture%20equipment%20for%20regenerative%20medicine&width=600&height=300&seq=scn_improved_v2&orientation=landscape',
+    image: 'https://public.readdy.ai/ai/img_res/d635a5f00480f245ffd1f4959b52b21d.jpg',
     investors: '2',
     distributionFreq: 'Monthly',
     tokenStandard: 'ERC-3643'
@@ -72,7 +72,7 @@ const projects = [
     riskLevel: 'Low',
     description: 'Import and distribution of medical devices across Thailand with receivables‑backed cashflows. Revolving facility with first‑loss reserve protection and established buyer network. Distributions after first 3 months.',
     keyFeatures: ['Revolving Facility', 'First‑Loss Reserve', 'PO Assignments', 'Established Buyers'],
-    image: 'https://readdy.ai/api/search-image?query=Professional%20medical%20device%20warehouse%20with%20organized%20inventory%20of%20healthcare%20equipment%2C%20distribution%20center%20showing%20medical%20devices%20on%20shelves%2C%20logistics%20facility%20with%20medical%20technology%20products%20and%20professional%20staff%20managing%20inventory&width=600&height=300&seq=mdd_improved_v2&orientation=landscape',
+    image: 'https://public.readdy.ai/ai/img_res/5d74f04e84425568eaf790e53fedf315.jpg',
     investors: '4',
     distributionFreq: 'Monthly',
     tokenStandard: 'ERC-3643'
