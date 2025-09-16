@@ -189,9 +189,12 @@ app.get('/project/:id', (c) => {
                 <div class="flex justify-between items-center h-16">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <a href="/" class="text-xl font-bold text-gray-900">
-                                <i class="ri-rocket-line mr-2 text-blue-600"></i>
-                                Infinity Ventures
+                            <a href="/" class="flex items-center group">
+                                <div class="relative">
+                                    <img alt="Infinity Ventures" class="w-8 h-8 sm:w-10 sm:h-10 object-contain group-hover:scale-110 transition-transform" src="https://static.readdy.ai/image/c483d55ff3c225024a0b7b0f840649bf/5fe2cffe304dc1f8b4b322d2ad07103b.webp">
+                                    <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                                </div>
+                                <span class="ml-3 text-xl font-bold text-gray-900">Infinity Ventures</span>
                             </a>
                         </div>
                         <nav class="hidden md:ml-8 md:flex space-x-8">
@@ -1357,10 +1360,13 @@ app.get('/', (c) => {
                 <div class="flex justify-between items-center h-16">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <h1 class="text-xl font-bold text-gray-900">
-                                <i class="ri-rocket-line mr-2 text-blue-600"></i>
-                                Infinity Ventures
-                            </h1>
+                            <a href="/" class="flex items-center group">
+                                <div class="relative">
+                                    <img alt="Infinity Ventures" class="w-8 h-8 sm:w-10 sm:h-10 object-contain group-hover:scale-110 transition-transform" src="https://static.readdy.ai/image/c483d55ff3c225024a0b7b0f840649bf/5fe2cffe304dc1f8b4b322d2ad07103b.webp">
+                                    <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                                </div>
+                                <span class="ml-3 text-xl font-bold text-gray-900">Infinity Ventures</span>
+                            </a>
                         </div>
                         <nav class="hidden md:ml-8 md:flex space-x-8">
                             <a href="/" class="text-blue-600 font-medium px-3 py-2">Home</a>
@@ -1799,11 +1805,12 @@ app.get('/portfolio', (c) => {
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
                     <div class="flex items-center">
-                        <a href="/" class="flex-shrink-0">
-                            <h1 class="text-xl font-bold text-gray-900">
-                                <i class="ri-rocket-line mr-2 text-blue-600"></i>
-                                Infinity Ventures
-                            </h1>
+                        <a href="/" class="flex items-center group flex-shrink-0">
+                            <div class="relative">
+                                <img alt="Infinity Ventures" class="w-8 h-8 sm:w-10 sm:h-10 object-contain group-hover:scale-110 transition-transform" src="https://static.readdy.ai/image/c483d55ff3c225024a0b7b0f840649bf/5fe2cffe304dc1f8b4b322d2ad07103b.webp">
+                                <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                            </div>
+                            <span class="ml-3 text-xl font-bold text-gray-900">Infinity Ventures</span>
                         </a>
                         <nav class="hidden md:ml-8 md:flex space-x-8">
                             <a href="/" class="text-gray-600 hover:text-blue-600 px-3 py-2">Home</a>
