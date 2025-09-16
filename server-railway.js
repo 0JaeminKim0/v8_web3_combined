@@ -292,30 +292,146 @@ app.get('/project/:id', (c) => {
                             <!-- Scenario Explorer -->
                             <div class="mb-8">
                                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Scenario Explorer: Monthly Distributions per 10K USDT</h3>
-                                <div class="bg-blue-50 rounded-lg p-6">
-                                    <div class="mb-4">
-                                        <h4 class="font-semibold text-gray-900 mb-2">Expected Distribution Timeline (12 months)</h4>
-                                        <div class="space-y-2 text-sm">
-                                            <div class="flex justify-between">
-                                                <span class="text-gray-600">Months 1-3: Ramp-up</span>
-                                                <span class="font-medium">0 USDT/month (0% distributions)</span>
+                                
+                                <!-- Scenario Selector -->
+                                <div class="flex bg-gray-100 rounded-lg p-1 mb-6">
+                                    <button 
+                                        class="scenario-btn flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors" 
+                                        data-scenario="bear"
+                                        onclick="selectScenario('bear')"
+                                    >
+                                        <span class="text-red-600">📉</span> Bear Case
+                                    </button>
+                                    <button 
+                                        class="scenario-btn flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors bg-blue-600 text-white" 
+                                        data-scenario="base"
+                                        onclick="selectScenario('base')"
+                                    >
+                                        <span class="text-blue-200">📊</span> Base Case
+                                    </button>
+                                    <button 
+                                        class="scenario-btn flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors" 
+                                        data-scenario="bull"
+                                        onclick="selectScenario('bull')"
+                                    >
+                                        <span class="text-green-600">📈</span> Bull Case
+                                    </button>
+                                </div>
+
+                                <!-- Dynamic Scenario Content -->
+                                <div id="scenario-content" class="bg-blue-50 rounded-lg p-6">
+                                    <!-- Base Case (Default) -->
+                                    <div class="scenario-data" data-scenario="base">
+                                        <div class="mb-4">
+                                            <h4 class="font-semibold text-gray-900 mb-2">Expected Distribution Timeline (18 months)</h4>
+                                            <div class="space-y-2 text-sm">
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600">Months 1-3: Ramp-up</span>
+                                                    <span class="font-medium">0 USDT/month (0% distributions)</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600">Months 4-18: Full distributions</span>
+                                                    <span class="font-medium">123 USDT/month</span>
+                                                </div>
                                             </div>
-                                            <div class="flex justify-between">
-                                                <span class="text-gray-600">Months 4-12: Full distributions</span>
-                                                <span class="font-medium">123 USDT/month</span>
+                                        </div>
+                                        <div class="border-t pt-4">
+                                            <div class="flex justify-between items-center">
+                                                <span class="font-semibold text-gray-900">Total Value (18mo)</span>
+                                                <div class="text-right">
+                                                    <div class="text-lg font-bold text-green-600">11,845 USDT</div>
+                                                    <div class="text-sm text-gray-500">Principal + Returns (18.45% APY)</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="border-t pt-4">
-                                        <div class="flex justify-between items-center">
-                                            <span class="font-semibold text-gray-900">Total Value (12mo)</span>
-                                            <div class="text-right">
-                                                <div class="text-lg font-bold text-green-600">11,107 USDT</div>
-                                                <div class="text-sm text-gray-500">Principal + Returns</div>
+
+                                    <!-- Bear Case -->
+                                    <div class="scenario-data hidden" data-scenario="bear">
+                                        <div class="mb-4">
+                                            <h4 class="font-semibold text-gray-900 mb-2">Conservative Distribution Timeline (18 months)</h4>
+                                            <div class="space-y-2 text-sm">
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600">Months 1-4: Extended ramp-up</span>
+                                                    <span class="font-medium">0 USDT/month (0% distributions)</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600">Months 5-18: Reduced distributions</span>
+                                                    <span class="font-medium">95 USDT/month</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="border-t pt-4">
+                                            <div class="flex justify-between items-center">
+                                                <span class="font-semibold text-gray-900">Total Value (18mo)</span>
+                                                <div class="text-right">
+                                                    <div class="text-lg font-bold text-orange-600">11,330 USDT</div>
+                                                    <div class="text-sm text-gray-500">Principal + Returns (13.3% APY)</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Bull Case -->
+                                    <div class="scenario-data hidden" data-scenario="bull">
+                                        <div class="mb-4">
+                                            <h4 class="font-semibold text-gray-900 mb-2">Optimized Distribution Timeline (18 months)</h4>
+                                            <div class="space-y-2 text-sm">
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600">Months 1-2: Fast ramp-up</span>
+                                                    <span class="font-medium">0 USDT/month (0% distributions)</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600">Months 3-18: Enhanced distributions</span>
+                                                    <span class="font-medium">155 USDT/month</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="border-t pt-4">
+                                            <div class="flex justify-between items-center">
+                                                <span class="font-semibold text-gray-900">Total Value (18mo)</span>
+                                                <div class="text-right">
+                                                    <div class="text-lg font-bold text-green-600">12,480 USDT</div>
+                                                    <div class="text-sm text-gray-500">Principal + Returns (24.8% APY)</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
+                                <script>
+                                    // Scenario Explorer functionality (avoiding conflicts with existing scripts)
+                                    if (!window.ptfScenarioExplorer) {
+                                        window.ptfScenarioExplorer = {
+                                            selectScenario: function(scenario) {
+                                                // Update button states
+                                                document.querySelectorAll('.scenario-btn').forEach(btn => {
+                                                    btn.classList.remove('bg-blue-600', 'text-white');
+                                                    btn.classList.add('text-gray-700');
+                                                });
+                                                
+                                                document.querySelector(\`[data-scenario="\${scenario}"]\`).classList.add('bg-blue-600', 'text-white');
+                                                document.querySelector(\`[data-scenario="\${scenario}"]\`).classList.remove('text-gray-700');
+                                                
+                                                // Update content
+                                                document.querySelectorAll('.scenario-data').forEach(content => {
+                                                    content.classList.add('hidden');
+                                                });
+                                                
+                                                document.querySelector(\`.scenario-data[data-scenario="\${scenario}"]\`).classList.remove('hidden');
+                                                
+                                                // Update background color based on scenario
+                                                const scenarioContent = document.getElementById('scenario-content');
+                                                scenarioContent.className = 'rounded-lg p-6 ' + 
+                                                    (scenario === 'bear' ? 'bg-red-50' : 
+                                                     scenario === 'bull' ? 'bg-green-50' : 'bg-blue-50');
+                                            }
+                                        };
+                                        
+                                        // Make function globally available
+                                        window.selectScenario = window.ptfScenarioExplorer.selectScenario;
+                                    }
+                                </script>
                             </div>
 
                             <!-- Security & Reserves -->
