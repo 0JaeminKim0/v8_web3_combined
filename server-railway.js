@@ -1067,8 +1067,10 @@ app.get('/invest', (c) => {
         <div class="max-w-4xl w-full">
             <!-- Header -->
             <div class="text-center mb-8">
-                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                    <i class="fas fa-coins mr-3"></i>
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 flex items-center justify-center">
+                    <img src="https://static.readdy.ai/image/c483d55ff3c225024a0b7b0f840649bf/5fe2cffe304dc1f8b4b322d2ad07103b.webp" 
+                         alt="Bedge Logo" 
+                         class="w-12 h-12 md:w-16 md:h-16 object-contain mr-4">
                     Invest in Infinity Ventures
                 </h1>
                 <p class="text-xl text-gray-200 max-w-2xl mx-auto">
