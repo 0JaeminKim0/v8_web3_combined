@@ -1256,67 +1256,312 @@ app.get('/invest', (c) => {
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Features -->
-            <div class="mt-8 grid md:grid-cols-3 gap-6 text-center text-white">
-                <div class="bg-white/10 backdrop-blur rounded-xl p-6">
-                    <div class="text-3xl mb-3">🧪</div>
-                    <h3 class="font-semibold mb-2">Testnet Ready</h3>
-                    <p class="text-sm text-gray-200">Experience full functionality with free test ETH on Sepolia Testnet.</p>
+        <!-- Professional RWA Investment Process Section -->
+        <div class="bg-white py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Professional RWA Investment Process</h2>
+                    <p class="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
+                        Complete institutional-grade investment in under 3 minutes with secure compliance, wallet verification, and automated monthly USDT distributions
+                    </p>
+                    <div class="flex justify-center items-center space-x-8">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600">P50 < 3min</div>
+                            <div class="text-sm text-gray-500">Investment Time</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-green-600">SEC Regulated</div>
+                            <div class="text-sm text-gray-500">Compliance Standard</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-white/10 backdrop-blur rounded-xl p-6">
-                    <div class="text-3xl mb-3">📄</div>
-                    <h3 class="font-semibold mb-2">Real PDF Contracts</h3>
-                    <p class="text-sm text-gray-200">Generate and download actual PDF investment contracts with cryptographic verification.</p>
+
+                <!-- 5-Step Professional Investment Flow -->
+                <div class="mb-16">
+                    <h3 class="text-2xl font-bold text-gray-900 text-center mb-12">5-Step Professional Investment Flow</h3>
+                    <p class="text-center text-gray-600 mb-12">Institutional standards with DeFi efficiency - from wallet connection to portfolio management</p>
+                    
+                    <div class="space-y-16">
+                        <!-- Step 1 -->
+                        <div class="flex flex-col lg:flex-row items-center gap-8">
+                            <div class="lg:w-1/2">
+                                <div class="flex items-center mb-4">
+                                    <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4">1</span>
+                                    <h4 class="text-xl font-bold text-gray-900">Connect Wallet & Account Setup</h4>
+                                </div>
+                                <p class="text-gray-600 mb-4">
+                                    Connect your MetaMask, Trust Wallet, or compatible wallet. Our platform supports optimal L2 fee management for seamless transactions on Base network.
+                                </p>
+                                <ul class="text-sm text-gray-500 space-y-2">
+                                    <li>• MetaMask, Trust Wallet, or other Web3 wallets</li>
+                                    <li>• Base L2 network for optimal fees</li>
+                                    <li>• Instant connection and verification</li>
+                                </ul>
+                            </div>
+                            <div class="lg:w-1/2">
+                                <img src="https://public.readdy.ai/ai/img_res/2b80661b9c572829257dc00bbf208ab8.jpg" 
+                                     alt="Wallet Connection Process" 
+                                     class="w-full h-64 object-cover rounded-lg shadow-lg">
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="flex flex-col lg:flex-row-reverse items-center gap-8">
+                            <div class="lg:w-1/2">
+                                <div class="flex items-center mb-4">
+                                    <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4">2</span>
+                                    <h4 class="text-xl font-bold text-gray-900">Smart Wallet Verification</h4>
+                                </div>
+                                <p class="text-gray-600 mb-4">
+                                    Advanced wallets with DEX trading history may require additional KYC verification. Standard wallets can proceed directly to investment selection.
+                                </p>
+                                <ul class="text-sm text-gray-500 space-y-2">
+                                    <li>• Automatic wallet type detection</li>
+                                    <li>• KYC required only for DEX wallets</li>
+                                    <li>• Fast-track verification for standard wallets</li>
+                                </ul>
+                            </div>
+                            <div class="lg:w-1/2">
+                                <img src="https://readdy.ai/api/search-image?query=Professional%20KYC%20verification%20process%20on%20computer%20screen%20showing%20identity%20verification%20interface%20with%20document%20upload%20section%20and%20verification%20checkmarks%2C%20clean%20modern%20verification%20dashboard%20with%20green%20success%20indicators%20and%20security%20features%2C%20professional%20office%20setting&width=600&height=400&seq=step2_kyc_verification&orientation=landscape" 
+                                     alt="Wallet Verification Process" 
+                                     class="w-full h-64 object-cover rounded-lg shadow-lg">
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="flex flex-col lg:flex-row items-center gap-8">
+                            <div class="lg:w-1/2">
+                                <div class="flex items-center mb-4">
+                                    <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4">3</span>
+                                    <h4 class="text-xl font-bold text-gray-900">Investment Selection & Analysis</h4>
+                                </div>
+                                <p class="text-gray-600 mb-4">
+                                    Browse curated RWA opportunities with institutional due diligence, transparent performance data, and comprehensive risk assessments. Access detailed investment documentation.
+                                </p>
+                                <ul class="text-sm text-gray-500 space-y-2">
+                                    <li>• Professional due diligence and risk assessment</li>
+                                    <li>• Verified performance and transparency data</li>
+                                    <li>• Complete compliance documentation</li>
+                                </ul>
+                            </div>
+                            <div class="lg:w-1/2">
+                                <img src="https://readdy.ai/api/search-image?query=Investment%20portfolio%20dashboard%20on%20large%20computer%20monitor%20showing%20RWA%20project%20cards%20with%20APY%20percentages%20and%20investment%20details%2C%20professional%20investor%20reviewing%20real%20world%20asset%20opportunities%20on%20screen%20with%20charts%20and%20performance%20metrics%2C%20modern%20financial%20workspace%20with%20investment%20analysis%20interface&width=600&height=400&seq=step3_rwa_selection&orientation=landscape" 
+                                     alt="Investment Analysis Process" 
+                                     class="w-full h-64 object-cover rounded-lg shadow-lg">
+                            </div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="flex flex-col lg:flex-row-reverse items-center gap-8">
+                            <div class="lg:w-1/2">
+                                <div class="flex items-center mb-4">
+                                    <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4">4</span>
+                                    <h4 class="text-xl font-bold text-gray-900">Secure Investment Execution</h4>
+                                </div>
+                                <p class="text-gray-600 mb-4">
+                                    Execute investment with secure transaction processing including compliance checks, investment limits, and secure token minting. USDT investment with automatic verification.
+                                </p>
+                                <ul class="text-sm text-gray-500 space-y-2">
+                                    <li>• Secure transaction with compliance checks</li>
+                                    <li>• Investment limits and security enforcement</li>
+                                    <li>• Secure revenue-share token minting</li>
+                                </ul>
+                            </div>
+                            <div class="lg:w-1/2">
+                                <img src="https://readdy.ai/api/search-image?query=Professional%20investment%20confirmation%20screen%20showing%20USDT%20transaction%20interface%20with%20confirm%20investment%20button%2C%20secure%20payment%20processing%20interface%20with%20transaction%20details%20amount%20and%20ERC-3643%20token%20information%2C%20clean%20modern%20investment%20execution%20dashboard%20with%20security%20badges&width=600&height=400&seq=step4_usdt_investment&orientation=landscape" 
+                                     alt="Investment Execution Process" 
+                                     class="w-full h-64 object-cover rounded-lg shadow-lg">
+                            </div>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="flex flex-col lg:flex-row items-center gap-8">
+                            <div class="lg:w-1/2">
+                                <div class="flex items-center mb-4">
+                                    <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4">5</span>
+                                    <h4 class="text-xl font-bold text-gray-900">Portfolio Management & Distributions</h4>
+                                </div>
+                                <p class="text-gray-600 mb-4">
+                                    Monitor your investments with real-time portfolio tracking, verified performance updates, and automated monthly USDT distributions with secure verification and transparent reporting.
+                                </p>
+                                <ul class="text-sm text-gray-500 space-y-2">
+                                    <li>• Real-time portfolio tracking and analytics</li>
+                                    <li>• Monthly USDT distributions with verification</li>
+                                    <li>• Complete transparency and audit logs</li>
+                                </ul>
+                            </div>
+                            <div class="lg:w-1/2">
+                                <img src="https://readdy.ai/api/search-image?query=Professional%20portfolio%20management%20dashboard%20showing%20RWA%20investment%20portfolio%20with%20monthly%20USDT%20distributions%20and%20performance%20charts%2C%20investment%20tracking%20interface%20with%20green%20profit%20indicators%20and%20distribution%20history%2C%20modern%20financial%20management%20screen%20with%20portfolio%20analytics&width=600&height=400&seq=step5_portfolio_management&orientation=landscape" 
+                                     alt="Portfolio Management Process" 
+                                     class="w-full h-64 object-cover rounded-lg shadow-lg">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-white/10 backdrop-blur rounded-xl p-6">
-                    <div class="text-3xl mb-3">🌐</div>
-                    <h3 class="font-semibold mb-2">IPFS Storage</h3>
-                    <p class="text-sm text-gray-200">Documents stored permanently on IPFS with immutable hash verification.</p>
+
+                <!-- Token & Compliance Structure -->
+                <div class="bg-gray-50 rounded-xl p-8 mb-16">
+                    <h3 class="text-2xl font-bold text-gray-900 text-center mb-8">Simple Token & Compliance Structure</h3>
+                    <p class="text-center text-gray-600 mb-8">Built on industry-leading blockchain standards for maximum security and compliance</p>
+                    
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-lg p-6 text-center">
+                            <div class="text-3xl mb-3">🪙</div>
+                            <h4 class="font-bold text-gray-900 mb-2">Revenue-Share Tokens</h4>
+                            <p class="text-sm text-gray-600">Simple tokens that automatically distribute monthly USDT returns from project profits</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-6 text-center">
+                            <div class="text-3xl mb-3">🔐</div>
+                            <h4 class="font-bold text-gray-900 mb-2">Wallet-Based Access</h4>
+                            <p class="text-sm text-gray-600">Connect your wallet to access investments - KYC only required for advanced trading wallets</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-6 text-center">
+                            <div class="text-3xl mb-3">⚖️</div>
+                            <h4 class="font-bold text-gray-900 mb-2">SEC Regulated</h4>
+                            <p class="text-sm text-gray-600">Full regulatory compliance with transparent reporting and investor protection</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-6 text-center">
+                            <div class="text-3xl mb-3">📊</div>
+                            <h4 class="font-bold text-gray-900 mb-2">Transparent Performance</h4>
+                            <p class="text-sm text-gray-600">Real-time project performance tracking with verified data and monthly reporting</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-6 text-center">
+                            <div class="text-3xl mb-3">💰</div>
+                            <h4 class="font-bold text-gray-900 mb-2">Secure Payments</h4>
+                            <p class="text-sm text-gray-600">All investments and distributions processed securely through USDT on Base network</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-6 text-center">
+                            <div class="text-3xl mb-3">📅</div>
+                            <h4 class="font-bold text-gray-900 mb-2">Monthly Distributions</h4>
+                            <p class="text-sm text-gray-600">Automated monthly USDT distributions directly to your wallet from project revenues</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Regulatory Compliance & Security -->
+                <div class="mb-16">
+                    <h3 class="text-2xl font-bold text-gray-900 text-center mb-8">Regulatory Compliance & Security</h3>
+                    <p class="text-center text-gray-600 mb-8">Industry-leading compliance framework designed for institutional investors</p>
+                    
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900 mb-4">Compliance Features</h4>
+                            <div class="space-y-4">
+                                <div class="border-l-4 border-blue-600 pl-4">
+                                    <h5 class="font-semibold text-gray-900">Smart Wallet Verification</h5>
+                                    <p class="text-sm text-gray-600">Automatic detection with KYC only for advanced trading wallets</p>
+                                </div>
+                                <div class="border-l-4 border-green-600 pl-4">
+                                    <h5 class="font-semibold text-gray-900">Investment Limits & Controls</h5>
+                                    <p class="text-sm text-gray-600">Automated enforcement of investment caps and security measures</p>
+                                </div>
+                                <div class="border-l-4 border-purple-600 pl-4">
+                                    <h5 class="font-semibold text-gray-900">SEC Regulatory Compliance</h5>
+                                    <p class="text-sm text-gray-600">Full regulatory compliance with transparent reporting</p>
+                                </div>
+                                <div class="border-l-4 border-orange-600 pl-4">
+                                    <h5 class="font-semibold text-gray-900">Jurisdiction Controls</h5>
+                                    <p class="text-sm text-gray-600">Geographic access controls and eligibility verification</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-900 mb-4">Security & Risk Management</h4>
+                            <div class="space-y-4">
+                                <div class="border-l-4 border-blue-600 pl-4">
+                                    <h5 class="font-semibold text-gray-900">Verified Performance Data</h5>
+                                    <p class="text-sm text-gray-600">Real-time project verification with automated monitoring</p>
+                                </div>
+                                <div class="border-l-4 border-green-600 pl-4">
+                                    <h5 class="font-semibold text-gray-900">Multi-Signature Security</h5>
+                                    <p class="text-sm text-gray-600">Advanced security controls with role-based access</p>
+                                </div>
+                                <div class="border-l-4 border-purple-600 pl-4">
+                                    <h5 class="font-semibold text-gray-900">Complete Audit Trail</h5>
+                                    <p class="text-sm text-gray-600">Full transaction and compliance audit logging</p>
+                                </div>
+                                <div class="border-l-4 border-orange-600 pl-4">
+                                    <h5 class="font-semibold text-gray-900">Transparent Reporting</h5>
+                                    <p class="text-sm text-gray-600">Monthly performance and distribution reports</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Platform Roadmap -->
+                <div class="mb-16">
+                    <h3 class="text-2xl font-bold text-gray-900 text-center mb-8">Platform Roadmap</h3>
+                    <p class="text-center text-gray-600 mb-8">Continuous innovation with institutional-grade features and multi-chain expansion</p>
+                    
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="bg-blue-50 rounded-xl p-6">
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-600 text-white rounded-full px-3 py-1 text-sm font-bold mr-3">V1</span>
+                                <h4 class="text-lg font-bold text-gray-900">MVP Platform (12 Weeks)</h4>
+                            </div>
+                            <ul class="text-sm text-gray-600 space-y-2">
+                                <li>• Project catalog and detailed pages</li>
+                                <li>• KYC verification with SBT minting</li>
+                                <li>• ERC-3643 token minting</li>
+                                <li>• Portfolio management dashboard</li>
+                                <li>• Basic admin controls</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-green-50 rounded-xl p-6">
+                            <div class="flex items-center mb-4">
+                                <span class="bg-green-600 text-white rounded-full px-3 py-1 text-sm font-bold mr-3">V2</span>
+                                <h4 class="text-lg font-bold text-gray-900">Enhanced Features</h4>
+                            </div>
+                            <ul class="text-sm text-gray-600 space-y-2">
+                                <li>• ERC-4626 vault integration</li>
+                                <li>• Issuer portal for KPI uploads</li>
+                                <li>• Oracle PoR guards and auto-pause</li>
+                                <li>• Advanced analytics dashboard</li>
+                                <li>• EAS attestation integration</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-purple-50 rounded-xl p-6">
+                            <div class="flex items-center mb-4">
+                                <span class="bg-purple-600 text-white rounded-full px-3 py-1 text-sm font-bold mr-3">V3</span>
+                                <h4 class="text-lg font-bold text-gray-900">Scale & Expansion</h4>
+                            </div>
+                            <ul class="text-sm text-gray-600 space-y-2">
+                                <li>• Multi-chain support via CCIP</li>
+                                <li>• Permissioned secondary markets</li>
+                                <li>• Fiat on/off ramps</li>
+                                <li>• Advanced compliance tools</li>
+                                <li>• Global market expansion</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ready to Start -->
+                <div class="text-center bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white">
+                    <h3 class="text-2xl font-bold mb-4">Ready to Start Investing?</h3>
+                    <p class="text-xl mb-6">Join institutional investors accessing professional RWA opportunities with complete regulatory compliance</p>
+                    <a href="#investment-form" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-block">
+                        Start Investing Now
+                    </a>
+                </div>
+
+                <!-- Legal Disclaimer -->
+                <div class="mt-8 text-center text-sm text-gray-500">
+                    <p><strong>Important Legal Disclaimer:</strong> This platform is not an offer to sell securities. All investments carry risk of capital loss. Eligibility requirements vary by jurisdiction. Advanced wallet verification may be required. Please read our <a href="/legal/terms" class="text-blue-600 hover:underline">Terms of Service</a> and <a href="/legal/risk-disclosure" class="text-blue-600 hover:underline">Risk Disclosure</a> carefully.</p>
                 </div>
             </div>
+        </div>
 
-            <!-- Network Selection Modal -->
-            <div id="network-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                <div class="bg-white rounded-xl max-w-md w-full p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-semibold">Select Network</h3>
-                        <button id="close-modal" class="text-gray-500 hover:text-gray-700">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div id="networks-list" class="space-y-2">
-                        <!-- Networks will be populated here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Investment Details Modal -->
-            <div id="investment-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                <div class="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-semibold">Investment Contract Details</h3>
-                        <button id="close-investment-modal" class="text-gray-500 hover:text-gray-700">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div id="investment-details">
-                        <!-- Investment details will be populated here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Wallet Details Modal -->
-            <div id="wallet-details-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                <div class="bg-white rounded-xl max-w-md w-full p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-semibold">Wallet Details</h3>
-                        <button id="close-wallet-details-modal" class="text-gray-500 hover:text-gray-700">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div id="wallet-details-content">
-                        <!-- Wallet details will be populated here -->
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="/static/investment-dapp.js"></script>
+    </body>
                     </div>
                 </div>
             </div>
