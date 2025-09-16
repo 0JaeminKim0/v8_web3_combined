@@ -230,7 +230,7 @@ app.get('/project/:id', (c) => {
                         <!-- Hero Image -->
                         <div class="bg-white rounded-xl overflow-hidden mb-6 md:mb-8">
                             <img 
-                                src="https://readdy.ai/api/search-image?query=Professional%20potato%20farming%20operation%20in%20northern%20Thailand%20with%20systematic%20cultivation%20rows%2C%20modern%20agricultural%20facility%20showing%20organized%20potato%20fields%20with%20irrigation%20systems%20and%20farming%20equipment%2C%20commercial%20scale%20seed%20potato%20production%20with%20mountain%20landscape%20background&width=800&height=400&seq=${project.id}_detail_main&orientation=landscape"
+                                src="${project.image ? project.image.replace('width=600&height=300', 'width=800&height=400') : `https://readdy.ai/api/search-image?query=Professional%20investment%20opportunity&width=800&height=400&seq=${project.id}_detail_main&orientation=landscape`}"
                                 alt="${project.title}"
                                 class="w-full h-48 md:h-64 object-cover object-top"
                             />
