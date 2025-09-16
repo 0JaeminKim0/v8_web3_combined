@@ -56,21 +56,21 @@ const projects = [
     tokenStandard: 'ERC-3643'
   },
   {
-    id: 'reh',
-    title: 'REH — Renewable Energy Hub',
-    sector: 'Infrastructure',
+    id: 'mdd',
+    title: 'MDD — Medical Device Distribution',
+    sector: 'Healthcare',
     region: 'Thailand',
-    issuer: 'Southeast Asia Energy Partners',
-    apy: '15.2%',
-    totalRaised: '1000000',
-    targetAmount: '20000000',
+    issuer: 'MedTech Distribution Thailand',
+    apy: '12.4%',
+    totalRaised: '400000',
+    targetAmount: '8000000',
     currency: 'USDT',
-    minInvestment: '50000',
-    tenor: '36 months',
-    riskLevel: 'Medium',
-    description: 'Large‑scale solar and wind energy installation with government PPA contracts.',
-    keyFeatures: ['Government PPAs', 'Industrial Off‑takers', 'Insurance Coverage'],
-    investors: '1',
+    minInvestment: '15000',
+    tenor: '12-24 months',
+    riskLevel: 'Low',
+    description: 'Import and distribution of medical devices across Thailand with receivables-backed cashflows.',
+    keyFeatures: ['Revolving Credit Facility', 'First-Loss Reserve Protection', 'Purchase Order Assignments'],
+    investors: '4',
     distributionFreq: 'Monthly',
     tokenStandard: 'ERC-3643'
   }
@@ -80,6 +80,35 @@ const projects = [
 app.get('/api/projects', (c) => {
   return c.json({ projects })
 })
+
+// Helper functions for project-specific content
+function getProjectOverview(project) {
+  const targetAPY = parseFloat(project.apy.replace('%', ''))
+  
+  switch (project.id) {
+    case 'ptf':
+      return `Target <span class="def-term">APY</span> ${targetAPY}% per year, paid monthly in <span class="def-term">USDT</span>, 
+              for ${project.tenor}. Minimum ${parseInt(project.minInvestment).toLocaleString()} USDT. ${project.riskLevel} risk. 
+              What you fund: seed‑potato growing and processing. How you earn: sales under <span class="def-term">offtake</span> with <span class="def-term">indexed pricing</span>. 
+              Payouts after first harvest ramp. Built on <span class="def-term">ERC‑3643</span> and <span class="def-term">Base L2</span> with <span class="def-term">KYC</span>/<span class="def-term">SBT</span>.`
+    
+    case 'scn':
+      return `SCN 5M USDT Seed Target APY ${targetAPY}% per year, paid monthly in <span class="def-term">USDT</span> starting after 12 months, 
+              for 18-36 months term. Minimum ${parseInt(project.minInvestment).toLocaleString()} USDT. 12-month build phase with milestone escrow releases. 
+              Built on <span class="def-term">ERC‑3643</span>/<span class="def-term">Base L2</span> with <span class="def-term">KYC</span>/<span class="def-term">SBT</span> compliance.`
+    
+    case 'mdd':
+      return `Target APY ${targetAPY}% per year, paid monthly in <span class="def-term">USDT</span>, for ${project.tenor}. 
+              Minimum ${parseInt(project.minInvestment).toLocaleString()} USDT. ${project.riskLevel} risk (relative). 
+              What you fund: imports and distribution to Thai hospitals. How you earn: hospital receivables repay the line. 
+              Payouts begin after payments start. Built on <span class="def-term">ERC‑3643</span>/<span class="def-term">Base</span> with <span class="def-term">KYC</span>/<span class="def-term">SBT</span>.`
+    
+    default:
+      return `Target <span class="def-term">APY</span> ${targetAPY}% per year, paid monthly in <span class="def-term">USDT</span>, 
+              for ${project.tenor}. Minimum ${parseInt(project.minInvestment).toLocaleString()} USDT. ${project.riskLevel} risk. 
+              Built on <span class="def-term">ERC‑3643</span> and <span class="def-term">Base L2</span> with <span class="def-term">KYC</span>/<span class="def-term">SBT</span>.`
+  }
+}
 
 // Project detail page (EXACTLY SAME AS ORIGINAL)
 app.get('/project/:id', (c) => {
@@ -173,10 +202,10 @@ app.get('/project/:id', (c) => {
                         </nav>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <button id="connectWalletBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all">
+                        <a href="/invest" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all inline-flex items-center">
                             <i class="ri-wallet-line mr-2"></i>
                             Connect Wallet
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -229,10 +258,7 @@ app.get('/project/:id', (c) => {
                                 <h2 class="text-xl font-bold text-gray-900 mb-4">Investment Overview</h2>
                                 <div class="prose prose-gray max-w-none">
                                     <p class="text-lg leading-relaxed text-gray-700">
-                                        Target <span class="def-term">APY</span> ${targetAPY}% per year, paid monthly in <span class="def-term">USDT</span>, 
-                                        for ${project.tenor}. Minimum ${parseInt(project.minInvestment).toLocaleString()} USDT. ${project.riskLevel} risk. 
-                                        What you fund: seed‑potato growing and processing. How you earn: sales under <span class="def-term">offtake</span> with <span class="def-term">indexed pricing</span>. 
-                                        Payouts after first harvest ramp. Built on <span class="def-term">ERC‑3643</span> and <span class="def-term">Base L2</span> with <span class="def-term">KYC</span>/<span class="def-term">SBT</span>.
+                                        ${getProjectOverview(project)}
                                     </p>
                                 </div>
                             </div>
@@ -866,17 +892,17 @@ app.get('/api/investment/templates', (c) => {
         currency: 'USDT'
       },
       {
-        id: 'reh',
-        name: 'REH — Renewable Energy Hub',
-        description: 'Large‑scale solar and wind energy installation with government PPA contracts',
-        minAmount: '50.0',
-        maxAmount: '500.0',
-        terms: ['36 months'],
-        targetAPYRange: { min: 15.2, max: 15.2 },
-        features: ['Government PPAs', 'Industrial Off‑takers', 'Insurance Coverage'],
-        sector: 'Infrastructure',
+        id: 'mdd',
+        name: 'MDD — Medical Device Distribution',
+        description: 'Import and distribution of medical devices across Thailand with receivables-backed cashflows',
+        minAmount: '15.0',
+        maxAmount: '200.0',
+        terms: ['12 months', '24 months'],
+        targetAPYRange: { min: 12.4, max: 12.4 },
+        features: ['Revolving Credit Facility', 'First-Loss Reserve Protection', 'Purchase Order Assignments'],
+        sector: 'Healthcare',
         region: 'Thailand',
-        riskLevel: 'Medium',
+        riskLevel: 'Low',
         currency: 'USDT'
       }
     ]
@@ -1344,10 +1370,10 @@ app.get('/', (c) => {
                         </nav>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <button id="connectWalletBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all">
+                        <a href="/invest" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all inline-flex items-center">
                             <i class="ri-wallet-line mr-2"></i>
                             Connect Wallet
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
