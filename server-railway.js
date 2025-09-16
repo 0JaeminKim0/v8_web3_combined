@@ -22,17 +22,17 @@ const projects = [
     title: 'PTF — Potato Tokenized Finance',
     sector: 'Agriculture',
     region: 'Thailand',
-    issuer: 'Agritech SPV',
+    issuer: 'Thai Agritech Partners',
     apy: '14.8%',
-    totalRaised: '150000',
+    totalRaised: '750000',
     targetAmount: '3000000',
     currency: 'USDT',
     minInvestment: '10000',
-    tenor: '12 months',
-    riskLevel: 'Medium',
-    description: 'Seed potato cultivation and processing in Northern Thailand with indexed offtake contracts.',
+    tenor: '18-36 months',
+    riskLevel: 'Low',
+    description: 'Investment in seed potato cultivation and processing operations in Northern Thailand',
     keyFeatures: ['Multi-site Weather Protection', 'Indexed Offtake Contracts', '3M+ Operating Reserve'],
-    investors: '3',
+    investors: '18',
     distributionFreq: 'Monthly',
     tokenStandard: 'ERC-3643'
   },
@@ -289,6 +289,102 @@ app.get('/project/:id', (c) => {
                                 </div>
                             </div>
 
+                            <!-- Scenario Explorer -->
+                            <div class="mb-8">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Scenario Explorer: Monthly Distributions per 10K USDT</h3>
+                                <div class="bg-blue-50 rounded-lg p-6">
+                                    <div class="mb-4">
+                                        <h4 class="font-semibold text-gray-900 mb-2">Expected Distribution Timeline (12 months)</h4>
+                                        <div class="space-y-2 text-sm">
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-600">Months 1-3: Ramp-up</span>
+                                                <span class="font-medium">0 USDT/month (0% distributions)</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-600">Months 4-12: Full distributions</span>
+                                                <span class="font-medium">123 USDT/month</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="border-t pt-4">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-semibold text-gray-900">Total Value (12mo)</span>
+                                            <div class="text-right">
+                                                <div class="text-lg font-bold text-green-600">11,107 USDT</div>
+                                                <div class="text-sm text-gray-500">Principal + Returns</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Security & Reserves -->
+                            <div class="mb-8">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Security & Reserves</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <h4 class="font-semibold text-gray-900 mb-2">
+                                            <i class="ri-file-list-line text-blue-600 mr-2"></i>
+                                            Assignment of Buyer Receivables
+                                        </h4>
+                                        <p class="text-sm text-gray-700">First lien on all accounts receivable from potato sales</p>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <h4 class="font-semibold text-gray-900 mb-2">
+                                            <i class="ri-truck-line text-green-600 mr-2"></i>
+                                            Liens on Inventory & Equipment
+                                        </h4>
+                                        <p class="text-sm text-gray-700">Security interest in all processed potatoes and farm equipment</p>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <h4 class="font-semibold text-gray-900 mb-2">
+                                            <i class="ri-shield-check-line text-orange-600 mr-2"></i>
+                                            Weather Index Coverage
+                                        </h4>
+                                        <p class="text-sm text-gray-700">Insurance protection against adverse weather conditions</p>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-lg p-4">
+                                        <h4 class="font-semibold text-gray-900 mb-2">
+                                            <i class="ri-safe-line text-purple-600 mr-2"></i>
+                                            Operating Reserve Fund
+                                        </h4>
+                                        <p class="text-sm text-gray-700">3-month operating expense reserve for continuity</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Financial Covenants & Automated Protections -->
+                            <div class="mb-8">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Financial Covenants & Automated Protections</h3>
+                                <div class="bg-red-50 rounded-lg p-6 border border-red-200">
+                                    <h4 class="font-semibold text-red-800 mb-3">
+                                        <i class="ri-alert-line mr-2"></i>
+                                        Auto-Pause Trigger
+                                    </h4>
+                                    <p class="text-sm text-red-700 mb-4">
+                                        Oracle monitoring automatically pauses new investments and distributions if any financial covenant is breached, protecting investor capital until issues are resolved.
+                                    </p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <h5 class="font-medium text-gray-900 mb-2">DSCR Buffer</h5>
+                                            <p class="text-sm text-gray-700">Debt Service Coverage Ratio must maintain 15% buffer</p>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium text-gray-900 mb-2">Buyer Concentration</h5>
+                                            <p class="text-sm text-gray-700">No single buyer can represent more than 30% of sales</p>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium text-gray-900 mb-2">Insurance Coverage</h5>
+                                            <p class="text-sm text-gray-700">Weather and operational insurance must remain active</p>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium text-gray-900 mb-2">Oracle Monitoring</h5>
+                                            <p class="text-sm text-gray-700">Automated protection via continuous monitoring</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- KPI Tracking -->
                             <div class="mb-8">
                                 <h3 class="text-lg font-semibold text-gray-900 mb-4">
@@ -337,6 +433,116 @@ app.get('/project/:id', (c) => {
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Investment Documents -->
+                            <div class="mb-8">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Sample Documents Available</h3>
+                                <div class="bg-gray-50 rounded-lg p-6">
+                                    <p class="text-sm text-gray-700 mb-6">
+                                        View sample versions of key investment documents including memorandums, terms, and risk disclosures. 
+                                        Complete documents with full details available exclusively to confirmed investors.
+                                    </p>
+                                    
+                                    <div class="text-center mb-6">
+                                        <a href="/invest" class="inline-flex items-center bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-700 hover:to-blue-700 transition-all">
+                                            <i class="ri-wallet-line mr-2"></i>
+                                            Connect Wallet to Invest
+                                        </a>
+                                    </div>
+
+                                    <div class="border-t pt-6">
+                                        <h4 class="font-semibold text-gray-900 mb-4">All Documents <span class="text-sm font-normal text-gray-500">(5 sample documents available)</span></h4>
+                                        <div class="space-y-3">
+                                            <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                                                <div class="flex items-center space-x-3">
+                                                    <i class="ri-file-pdf-line text-red-600 text-xl"></i>
+                                                    <div>
+                                                        <div class="font-medium text-gray-900">Investment Memorandum</div>
+                                                        <div class="text-sm text-gray-500">2.1 MB • PDF</div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Sample</span>
+                                                    <button class="text-blue-600 hover:text-blue-800 text-sm">Preview</button>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                                                <div class="flex items-center space-x-3">
+                                                    <i class="ri-file-pdf-line text-red-600 text-xl"></i>
+                                                    <div>
+                                                        <div class="font-medium text-gray-900">Risk Disclosure Statement</div>
+                                                        <div class="text-sm text-gray-500">892 KB • PDF</div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Sample</span>
+                                                    <button class="text-blue-600 hover:text-blue-800 text-sm">Preview</button>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                                                <div class="flex items-center space-x-3">
+                                                    <i class="ri-file-text-line text-gray-600 text-xl"></i>
+                                                    <div>
+                                                        <div class="font-medium text-gray-900">Smart Contract Details</div>
+                                                        <div class="text-sm text-gray-500">1.2 KB • TXT</div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Sample</span>
+                                                    <button class="text-blue-600 hover:text-blue-800 text-sm">Preview</button>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center justify-between p-3 bg-white rounded-lg border">
+                                                <div class="flex items-center space-x-3">
+                                                    <i class="ri-file-pdf-line text-red-600 text-xl"></i>
+                                                    <div>
+                                                        <div class="font-medium text-gray-900">Weather Insurance Policy</div>
+                                                        <div class="text-sm text-gray-500">1.8 MB • PDF</div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Sample</span>
+                                                    <button class="text-blue-600 hover:text-blue-800 text-sm">Preview</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-6 border-t pt-6">
+                                        <h4 class="font-semibold text-gray-900 mb-3">Access Complete Investment Package</h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                            <div class="flex items-start space-x-2">
+                                                <i class="ri-shield-check-line text-green-600 mt-0.5"></i>
+                                                <div>
+                                                    <div class="font-medium text-gray-900">Secure Document Delivery</div>
+                                                    <div class="text-gray-600">Complete documents delivered via encrypted email within 24 hours post-investment</div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-start space-x-2">
+                                                <i class="ri-file-shield-line text-green-600 mt-0.5"></i>
+                                                <div>
+                                                    <div class="font-medium text-gray-900">Digital Verification</div>
+                                                    <div class="text-gray-600">Digital signatures and blockchain verification for document authenticity</div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-start space-x-2">
+                                                <i class="ri-customer-service-line text-green-600 mt-0.5"></i>
+                                                <div>
+                                                    <div class="font-medium text-gray-900">24/7 Support</div>
+                                                    <div class="text-gray-600">24/7 investor support for document access assistance</div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-start space-x-2">
+                                                <i class="ri-file-list-3-line text-green-600 mt-0.5"></i>
+                                                <div>
+                                                    <div class="font-medium text-gray-900">Complete Package</div>
+                                                    <div class="text-gray-600">Includes detailed investment memorandum, full legal agreements, and technical specifications</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -371,12 +577,12 @@ app.get('/project/:id', (c) => {
                                 </div>
                             </div>
 
-                            <button 
-                                onclick="showInvestModal()"
-                                class="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 rounded-lg font-semibold hover:from-green-700 hover:to-blue-700 transition-all mb-4 cursor-pointer whitespace-nowrap"
+                            <a 
+                                href="/invest"
+                                class="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 rounded-lg font-semibold hover:from-green-700 hover:to-blue-700 transition-all mb-4 cursor-pointer whitespace-nowrap text-center block"
                             >
-                                <span id="invest-button-text">Connect Wallet to Invest</span>
-                            </button>
+                                Connect Wallet to Invest
+                            </a>
 
                             <div class="text-xs text-gray-500 text-center">
                                 <p class="mb-2">
@@ -390,261 +596,10 @@ app.get('/project/:id', (c) => {
             </div>
         </div>
 
-        <!-- Investment Modal -->
-        <div id="investment-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div class="bg-white rounded-xl p-6 md:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl md:text-2xl font-bold">Invest in PTF</h2>
-                    <button 
-                        onclick="closeInvestModal()"
-                        class="text-gray-400 hover:text-gray-600 cursor-pointer p-1"
-                    >
-                        <i class="ri-close-line text-xl"></i>
-                    </button>
-                </div>
 
-                <div class="space-y-6">
-                    <!-- Preset Investment Amounts -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-3">
-                            Quick Investment Options (${project.currency})
-                        </label>
-                        <div class="grid grid-cols-2 gap-3" id="preset-amounts">
-                            <button
-                                onclick="selectPreset(10000)"
-                                class="preset-btn p-3 border rounded-lg text-center transition-all cursor-pointer border-gray-300 hover:border-gray-400 hover:bg-gray-50"
-                            >
-                                <div class="font-semibold">10,000</div>
-                                <div class="text-xs text-gray-500">Minimum</div>
-                            </button>
-                            <button
-                                onclick="selectPreset(25000)"
-                                class="preset-btn p-3 border rounded-lg text-center transition-all cursor-pointer border-gray-300 hover:border-gray-400 hover:bg-gray-50"
-                            >
-                                <div class="font-semibold">25,000</div>
-                                <div class="text-xs text-gray-500">2.5x Min</div>
-                            </button>
-                            <button
-                                onclick="selectPreset(50000)"
-                                class="preset-btn p-3 border rounded-lg text-center transition-all cursor-pointer border-gray-300 hover:border-gray-400 hover:bg-gray-50"
-                            >
-                                <div class="font-semibold">50,000</div>
-                                <div class="text-xs text-gray-500">5x Min</div>
-                            </button>
-                            <button
-                                onclick="selectPreset(100000)"
-                                class="preset-btn p-3 border rounded-lg text-center transition-all cursor-pointer border-gray-300 hover:border-gray-400 hover:bg-gray-50"
-                            >
-                                <div class="font-semibold">100,000</div>
-                                <div class="text-xs text-gray-500">10x Min</div>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Custom Investment Amount -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Or Enter Custom Amount (${project.currency})
-                        </label>
-                        <input
-                            type="number"
-                            id="investment-amount"
-                            value="10000"
-                            placeholder="${parseInt(project.minInvestment).toLocaleString()}"
-                            min="${project.minInvestment}"
-                            max="${remainingCapacity}"
-                            onchange="updateCustomAmount()"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                        />
-                        <div class="text-xs text-gray-500 mt-1">
-                            Min: ${parseInt(project.minInvestment).toLocaleString()} ${project.currency} • Available: ${remainingCapacity.toLocaleString()} ${project.currency}
-                        </div>
-                    </div>
-
-                    <div class="bg-gray-50 rounded-lg p-4">
-                        <div class="flex justify-between text-sm mb-2">
-                            <span>Investment Amount</span>
-                            <span id="display-amount">10,000 ${project.currency}</span>
-                        </div>
-                        <div class="flex justify-between text-sm mb-2">
-                            <span>Platform Fee (0.5%)</span>
-                            <span id="display-fee">50 ${project.currency}</span>
-                        </div>
-                        <div class="border-t pt-2 flex justify-between font-medium">
-                            <span>Total Required</span>
-                            <span id="display-total">10,050 ${project.currency}</span>
-                        </div>
-                    </div>
-
-                    <div class="bg-green-50 rounded-lg p-4">
-                        <div class="text-sm text-green-800">
-                            <div class="font-medium mb-2">Expected Monthly Distribution:</div>
-                            <div class="text-2xl font-bold text-green-600" id="monthly-return">
-                                $${((10000 * targetAPY / 100) / 12).toFixed(0)} USDT
-                            </div>
-                            <div class="text-xs text-green-700 mt-1">Starting after harvest ramp (est. 3-4 months)</div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start space-x-2">
-                        <input 
-                            type="checkbox" 
-                            id="accept-terms"
-                            class="mt-1" 
-                        />
-                        <div class="text-xs text-gray-600">
-                            I acknowledge that I have read and agree to the 
-                            <span class="text-blue-600 cursor-pointer"> Terms of Service</span>, 
-                            <span class="text-blue-600 cursor-pointer"> Risk Disclosure</span>, and confirm <span class="def-term">KYC</span> compliance
-                        </div>
-                    </div>
-
-                    <button 
-                        onclick="processInvestment()"
-                        id="confirm-invest-btn"
-                        disabled
-                        class="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:from-green-700 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap"
-                    >
-                        Confirm Investment
-                    </button>
-                </div>
-            </div>
-        </div>
 
         <!-- Scripts -->
-        <script>
-            // Global variables
-            window.projectPageWalletConnected = false;
-            window.currentAmount = 10000;
-            window.selectedPreset = '10000';
-            
-            // Wallet connection
-            async function connectWallet() {
-                try {
-                    if (typeof window.ethereum !== 'undefined') {
-                        await window.ethereum.request({ method: 'eth_requestAccounts' });
-                        window.projectPageWalletConnected = true;
-                        document.getElementById('wallet-text').textContent = 'Wallet Connected';
-                        document.getElementById('invest-button-text').textContent = 'Invest Now';
-                        showNotification('Wallet connected successfully!', 'success');
-                    } else {
-                        showNotification('Please install MetaMask wallet', 'error');
-                    }
-                } catch (error) {
-                    showNotification('Failed to connect wallet', 'error');
-                }
-            }
-            
-            // Investment modal functions
-            function showInvestModal() {
-                if (!window.projectPageWalletConnected) {
-                    connectWallet();
-                    return;
-                }
-                document.getElementById('investment-modal').classList.remove('hidden');
-            }
-            
-            function closeInvestModal() {
-                document.getElementById('investment-modal').classList.add('hidden');
-            }
-            
-            function selectPreset(amount) {
-                window.currentAmount = amount;
-                document.getElementById('investment-amount').value = amount;
-                
-                // Update preset button styles
-                document.querySelectorAll('.preset-btn').forEach(btn => {
-                    btn.className = 'preset-btn p-3 border rounded-lg text-center transition-all cursor-pointer border-gray-300 hover:border-gray-400 hover:bg-gray-50';
-                });
-                event.target.closest('.preset-btn').className = 'preset-btn p-3 border rounded-lg text-center transition-all cursor-pointer border-green-500 bg-green-50 text-green-700';
-                
-                updateDisplayAmounts();
-            }
-            
-            function updateCustomAmount() {
-                const input = document.getElementById('investment-amount');
-                window.currentAmount = parseFloat(input.value) || 0;
-                
-                // Reset preset button styles
-                document.querySelectorAll('.preset-btn').forEach(btn => {
-                    btn.className = 'preset-btn p-3 border rounded-lg text-center transition-all cursor-pointer border-gray-300 hover:border-gray-400 hover:bg-gray-50';
-                });
-                
-                updateDisplayAmounts();
-            }
-            
-            function updateDisplayAmounts() {
-                const fee = window.currentAmount * 0.005;
-                const total = window.currentAmount * 1.005;
-                const monthlyReturn = (window.currentAmount * ${targetAPY} / 100) / 12;
-                
-                document.getElementById('display-amount').textContent = window.currentAmount.toLocaleString() + ' ${project.currency}';
-                document.getElementById('display-fee').textContent = fee.toLocaleString() + ' ${project.currency}';
-                document.getElementById('display-total').textContent = total.toLocaleString() + ' ${project.currency}';
-                document.getElementById('monthly-return').textContent = '$' + monthlyReturn.toFixed(0) + ' USDT';
-                
-                // Enable/disable confirm button
-                const termsAccepted = document.getElementById('accept-terms').checked;
-                const validAmount = window.currentAmount >= ${project.minInvestment} && window.currentAmount <= ${remainingCapacity};
-                document.getElementById('confirm-invest-btn').disabled = !(termsAccepted && validAmount);
-            }
-            
-            // Terms checkbox handler
-            document.addEventListener('DOMContentLoaded', function() {
-                document.getElementById('accept-terms').addEventListener('change', updateDisplayAmounts);
-            });
-            
-            async function processInvestment() {
-                const termsAccepted = document.getElementById('accept-terms').checked;
-                if (!termsAccepted) {
-                    showNotification('Please accept the terms and conditions to proceed.', 'error');
-                    return;
-                }
-                
-                if (window.currentAmount < ${project.minInvestment}) {
-                    showNotification('Minimum investment amount is ${parseInt(project.minInvestment).toLocaleString()} ${project.currency}', 'error');
-                    return;
-                }
-                
-                if (window.currentAmount > ${remainingCapacity}) {
-                    showNotification('Investment amount exceeds remaining capacity of ${remainingCapacity.toLocaleString()} ${project.currency}', 'error');
-                    return;
-                }
-                
-                try {
-                    showNotification('Investment processed successfully! You will receive ERC-3643 tokens and monthly distributions.', 'success');
-                    closeInvestModal();
-                    // Reset form
-                    window.currentAmount = 10000;
-                    document.getElementById('investment-amount').value = 10000;
-                    document.getElementById('accept-terms').checked = false;
-                    updateDisplayAmounts();
-                } catch (error) {
-                    showNotification('Investment processing failed. Please try again.', 'error');
-                }
-            }
-            
-            function showNotification(message, type) {
-                const bgColor = type === 'success' ? '#10b981' : '#dc2626';
-                const icon = type === 'success' ? '✅' : '⚠️';
-                
-                const alertDiv = document.createElement('div');
-                alertDiv.innerHTML = \`
-                    <div style="position: fixed; top: 20px; right: 20px; background: \` + bgColor + \`; color: white; padding: 16px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; max-width: 400px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="font-size: 18px;">\` + icon + \`</div>
-                            <div>\` + message + \`</div>
-                        </div>
-                    </div>
-                \`;
-                document.body.appendChild(alertDiv);
-                setTimeout(() => {
-                    if (alertDiv.parentNode) {
-                        alertDiv.parentNode.removeChild(alertDiv);
-                    }
-                }, 4000);
-            }
-        </script>
+        <script src="/static/v8-integration.js"></script>
     </body>
     </html>
   `)
