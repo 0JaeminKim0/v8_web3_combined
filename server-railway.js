@@ -990,7 +990,7 @@ app.get('/invest', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Investment Receipt SBT - Blockchain Investment Contracts</title>
+        <title>Invest in Infinity Ventures - Professional RWA Investment Platform</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <script>
@@ -1068,11 +1068,11 @@ app.get('/invest', (c) => {
             <!-- Header -->
             <div class="text-center mb-8">
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                    <i class="fas fa-file-contract mr-3"></i>
-                    Investment Receipt SBT
+                    <i class="fas fa-coins mr-3"></i>
+                    Invest in Infinity Ventures
                 </h1>
                 <p class="text-xl text-gray-200 max-w-2xl mx-auto">
-                    Create blockchain-verified investment contracts with Soul Bound Token receipts. Transparent, secure, and immutable proof of investment terms.
+                    Join institutional investors accessing professional real-world asset opportunities. Secure, regulated, and transparent investments with automated monthly USDT distributions.
                 </p>
             </div>
 
